@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #1A1410;
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ─── Splash scroll animation ─── */
+@keyframes scrollUp {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* ─── Card & surface utilities — white + shadow ─── */
+.glass-card {
+  background: #FFFBF5;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 8px 28px rgba(0,0,0,0.09);
+}
+
+.glass-dark {
+  background: #FFFBF5;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.055);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.glass-warm {
+  background: rgba(61, 122, 52, 0.06);
+  border: 1px solid rgba(61, 122, 52, 0.18);
+  border-radius: 14px;
+}
+
+.glass-alert {
+  background: rgba(196, 80, 30, 0.05);
+  border: 1px solid rgba(196, 80, 30, 0.22);
+  border-radius: 16px;
+}
+
+.glass-input {
+  background: #FFFBF5;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-input:focus-within {
+  border-color: rgba(122, 15, 70, 0.40);
+  box-shadow: 0 0 0 3px rgba(122,15,70,0.08);
+}
+
+.glass-input input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #1A1410;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  width: 100%;
+}
+
+.glass-input input::placeholder {
+  color: rgba(26, 20, 16, 0.3);
+}
+
+/* ─── Keyframes ─── */
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(122,15,70,0.45); }
+  50%       { box-shadow: 0 0 0 9px rgba(122,15,70,0); }
+}
+
+@keyframes pulse-risk {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(196,80,30,0.55); }
+  50%       { box-shadow: 0 0 0 9px rgba(196,80,30,0); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+@keyframes glow-border-risk {
+  0%, 100% { border-color: rgba(196,80,30,0.25); box-shadow: 0 2px 16px rgba(196,80,30,0.07); }
+  50%       { border-color: rgba(196,80,30,0.5);  box-shadow: 0 2px 24px rgba(196,80,30,0.14); }
+}
+
+@keyframes ripple-gold {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* ─── Animation classes ─── */
+.animate-pulse-gold  { animation: pulse-gold  2.2s ease-in-out infinite; }
+.animate-pulse-risk  { animation: pulse-risk  2s   ease-in-out infinite; }
+.animate-breathe     { animation: breathe     3s   ease-in-out infinite; }
+.animate-glow-risk   { animation: glow-border-risk 3s ease-in-out infinite; }
+
+/* ─── Scrollbar hiding ─── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Divider ─── */
+.gold-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.07);
+}
+
+/* ─── Hover & active states for all interactive elements ─── */
+button,
+label[for],
+a {
+  transition: filter 0.14s ease, transform 0.14s ease;
+}
+
+button:hover:not(:disabled),
+label[for]:hover {
+  filter: brightness(0.86);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+  filter: brightness(0.80);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Card-level hover lift for explicitly clickable glass cards */
+.card-interactive:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card-interactive {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* ─── Tab bottom-nav micro-animation ─── */
+@keyframes tab-pop {
+  0%   { transform: translateX(-50%) scaleX(0.4) scaleY(0.6); opacity: 0; }
+  55%  { transform: translateX(-50%) scaleX(1.18) scaleY(1.1); opacity: 1; }
+  100% { transform: translateX(-50%) scaleX(1) scaleY(1); opacity: 1; }
+}
+.tab-dot-anim {
+  animation: tab-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
