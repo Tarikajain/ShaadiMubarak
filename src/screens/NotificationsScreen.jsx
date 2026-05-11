@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, AlertTriangle, CheckCircle, Clock, Zap } from 'lucide-react'
+import { ArrowLeft, AlertTriangle, CheckCircle, Clock, Zap, Bell } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 
@@ -59,6 +59,15 @@ export default function NotificationsScreen() {
   const navigate = useNavigate()
   const [items, setItems] = useState(notifications)
   const unreadCount = items.filter(n => n.unread).length
+  const [pushEnabled, setPushEnabled] = useState(() => localStorage.getItem('notif_enabled') === '1')
+  const showBanner = !pushEnabled && localStorage.getItem('notif_dismissed') === '1'
+
+  const handleEnableNotifs = async () => {
+    if ('Notification' in window) await Notification.requestPermission()
+    localStorage.setItem('notif_enabled', '1')
+    localStorage.removeItem('notif_dismissed')
+    setPushEnabled(true)
+  }
 
   const markAllRead = () => setItems(ns => ns.map(n => ({ ...n, unread: false })))
 
@@ -87,6 +96,32 @@ export default function NotificationsScreen() {
               </button>
             )}
           </motion.div>
+
+          {/* Push notifications banner */}
+          {showBanner && (
+            <motion.div
+              variants={item}
+              className="mx-5 mb-2"
+              style={{ background: 'linear-gradient(135deg, rgba(122,15,70,0.07) 0%, rgba(92,11,53,0.04) 100%)', border: '1px solid rgba(122,15,70,0.18)', borderRadius: '14px', padding: '14px 16px' }}
+            >
+              <div className="flex items-center gap-3">
+                <div style={{ width: 36, height: 36, borderRadius: '10px', background: 'rgba(122,15,70,0.1)', border: '1px solid rgba(122,15,70,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Bell size={16} color="#7A0F46" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>Stay ahead of every moment</p>
+                  <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.5)', margin: 0 }}>Enable push alerts for vendor updates &amp; crisis warnings</p>
+                </div>
+                <button
+                  onClick={handleEnableNotifs}
+                  className="font-outfit flex-shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '11px', fontWeight: 500, padding: '8px 13px', borderRadius: '10px', border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(122,15,70,0.25)', whiteSpace: 'nowrap' }}
+                >
+                  Enable
+                </button>
+              </div>
+            </motion.div>
+          )}
 
           {groups.map(group => {
             const groupItems = items.filter(n => n.group === group)

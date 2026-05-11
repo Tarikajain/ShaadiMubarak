@@ -166,10 +166,22 @@ function NotificationsSheet({ onClose }) {
     dailyDigest: false,
     marketingEmails: false,
   })
+  const [pushEnabled, setPushEnabled] = useState(() => localStorage.getItem('notif_enabled') === '1')
   const [saved, setSaved] = useState(false)
 
   const toggle = key => setPrefs(p => ({ ...p, [key]: !p[key] }))
   const handleSave = () => { setSaved(true); setTimeout(onClose, 1200) }
+
+  const handlePushToggle = async (val) => {
+    if (val) {
+      if ('Notification' in window) await Notification.requestPermission()
+      localStorage.setItem('notif_enabled', '1')
+      localStorage.removeItem('notif_dismissed')
+    } else {
+      localStorage.removeItem('notif_enabled')
+    }
+    setPushEnabled(val)
+  }
 
   const rows = [
     { key: 'crisisAlerts',   label: 'Crisis alerts',    sub: 'Urgent issues needing attention', locked: true },
@@ -185,6 +197,22 @@ function NotificationsSheet({ onClose }) {
       <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Notifications</p>
       <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 22px' }}>Choose what to hear about</p>
 
+      {/* Push notifications master toggle */}
+      <div className="glass-card flex items-center justify-between gap-3"
+        style={{ padding: '14px 16px', marginBottom: 16, border: pushEnabled ? '1px solid rgba(122,15,70,0.2)' : '1px solid rgba(0,0,0,0.07)', background: pushEnabled ? 'rgba(122,15,70,0.03)' : undefined }}>
+        <div className="flex items-center gap-3">
+          <div style={{ width: 32, height: 32, borderRadius: '9px', background: pushEnabled ? 'rgba(122,15,70,0.1)' : 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Bell size={14} color={pushEnabled ? '#7A0F46' : 'rgba(26,20,16,0.35)'} />
+          </div>
+          <div>
+            <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>Push notifications</p>
+            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{pushEnabled ? 'Alerts delivered to your device' : 'Tap to enable device alerts'}</p>
+          </div>
+        </div>
+        <Toggle value={pushEnabled} onChange={handlePushToggle} />
+      </div>
+
+      <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 10px 2px' }}>Alert types</p>
       <div className="flex flex-col gap-px" style={{ marginBottom: 24 }}>
         {rows.map((row, i) => (
           <div key={row.key} className="glass-card flex items-center justify-between gap-3"

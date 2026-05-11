@@ -72,7 +72,7 @@ export default function App() {
 
   useEffect(() => {
     if (stage === 'app') {
-      const notifAsked = sessionStorage.getItem('notif_asked')
+      const notifAsked = sessionStorage.getItem('notif_asked') || localStorage.getItem('notif_enabled')
       if (!notifAsked) {
         const t = setTimeout(() => setShowNotifPrompt(true), 1200)
         return () => clearTimeout(t)
@@ -82,11 +82,14 @@ export default function App() {
 
   const handleNotifAccept = () => {
     sessionStorage.setItem('notif_asked', '1')
+    localStorage.setItem('notif_enabled', '1')
+    localStorage.removeItem('notif_dismissed')
     setShowNotifPrompt(false)
   }
 
   const handleNotifDismiss = () => {
     sessionStorage.setItem('notif_asked', '1')
+    localStorage.setItem('notif_dismissed', '1')
     setShowNotifPrompt(false)
   }
 
