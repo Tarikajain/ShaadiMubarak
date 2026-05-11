@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, X, Check, Calendar, ArrowRight, Sparkles } from 'lucide-react'
+import { X, Check, Calendar, ArrowRight, Sparkles } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
@@ -266,82 +266,92 @@ export default function HomeScreen({ tasks = [], setTasks }) {
     if (file) setCouplePhoto(URL.createObjectURL(file))
   }
 
-  // Cartouche SVG path for 375px-wide mobile frame
-  // Rotated 90°: concave notch at center-bottom, corner tabs protrude downward
-  const heroCurve = "path('M 0 0 H 375 V 266 C 370 266 358 298 334 288 C 300 276 250 263 187.5 255 C 125 263 75 276 41 288 C 17 298 5 266 0 266 Z')"
+  // Compute live countdown from wedding date
+  const weddingDateTime = new Date('2026-12-17T00:00:00')
+  const msLeft = Math.max(0, weddingDateTime.getTime() - Date.now())
+  const daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24))
+  const hoursLeft = Math.floor((msLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const weddingDayOfWeek = weddingDateTime.toLocaleDateString('en-US', { weekday: 'long' })
+  const shortDate = weddingDateTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  const venueShort = wedding.venue.split(',')[0]
+
+  // Mughal torana arch clip path (375px wide, straight edge at y=268, arch bottom at y=340)
+  const archPath = "path('M 0 0 H 375 V 260 C 375 260 370 268 360 274 C 346 282 326 290 300 294 C 278 297 262 292 248 304 C 238 312 220 335 187.5 340 C 155 335 137 312 127 304 C 113 292 97 297 75 294 C 49 290 29 282 15 274 C 5 268 0 260 0 260 Z')"
 
   return (
     <div className="relative flex flex-col h-full" style={{ background: '#FFFBF5' }}>
       <div className="relative flex flex-col h-full overflow-y-auto no-scrollbar">
 
-        {/* ── Full-bleed cartouche hero ── */}
-        <div style={{ position: 'relative', width: '100%', height: '298px', flexShrink: 0 }}>
+        {/* ── Full-bleed torana hero ── */}
+        <div style={{ position: 'relative', width: '100%', height: '345px', flexShrink: 0 }}>
 
-          {/* Clipped image / placeholder gradient */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            clipPath: heroCurve,
-            background: couplePhoto
-              ? undefined
-              : 'linear-gradient(165deg, #F0D5E5 0%, #E2BAD2 50%, #CDA0C0 100%)',
-            overflow: 'hidden',
-          }}>
+          {/* Clipped background — magenta + damask pattern */}
+          <div style={{ position: 'absolute', inset: 0, clipPath: archPath, overflow: 'hidden' }}>
+            {/* Base colour */}
+            <div style={{ position: 'absolute', inset: 0, background: '#7A0F46' }} />
+
+            {/* Damask / brocade pattern overlay */}
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="damask" patternUnits="userSpaceOnUse" width="80" height="80">
+                  {/* 4-petal lotus */}
+                  <path d="M40 22 Q47 31 40 40 Q33 31 40 22Z M58 40 Q49 47 40 40 Q49 33 58 40Z M40 58 Q33 49 40 40 Q47 49 40 58Z M22 40 Q31 33 40 40 Q31 47 22 40Z" fill="rgba(255,255,255,0.07)"/>
+                  {/* Inner diamond */}
+                  <path d="M40 34 L46 40 L40 46 L34 40Z" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8"/>
+                  {/* Outer circle */}
+                  <circle cx="40" cy="40" r="19" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.7"/>
+                  {/* Corner ornaments */}
+                  <path d="M0 0 L5 3 L0 6Z M80 0 L75 3 L80 6Z M0 80 L5 77 L0 74Z M80 80 L75 77 L80 74Z" fill="rgba(255,255,255,0.06)"/>
+                  {/* Mid-edge diamonds */}
+                  <path d="M40 0 L43 5 L40 10 L37 5Z M40 70 L43 75 L40 80 L37 75Z M0 40 L5 37 L10 40 L5 43Z M70 40 L75 37 L80 40 L75 43Z" fill="rgba(255,255,255,0.05)"/>
+                  {/* Diagonal scroll lines */}
+                  <path d="M0 20 Q20 0 40 20 Q60 40 80 20" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="0.7"/>
+                  <path d="M0 60 Q20 80 40 60 Q60 40 80 60" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="0.7"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#damask)"/>
+            </svg>
+
+            {/* Optional couple photo overlay */}
             {couplePhoto && (
-              <img src={couplePhoto} alt="couple" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+              <img src={couplePhoto} alt="couple" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', opacity: 0.28, mixBlendMode: 'overlay' }} />
             )}
-            {/* Vignette */}
-            <div style={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              background: couplePhoto
-                ? 'linear-gradient(180deg, rgba(0,0,0,0.30) 0%, transparent 28%, transparent 48%, rgba(0,0,0,0.68) 100%)'
-                : 'linear-gradient(180deg, rgba(0,0,0,0.10) 0%, transparent 26%, transparent 44%, rgba(0,0,0,0.76) 100%)',
-            }} />
-            {/* Text overlay — couple name, venue, days away */}
-            <div style={{ position: 'absolute', bottom: 44, left: 0, right: 0, padding: '0 20px' }}>
-              <p className="font-cormorant italic" style={{ fontSize: '30px', color: '#FFFFFF', fontWeight: 300, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                {wedding.couple.bride} &amp; {wedding.couple.groom}
-              </p>
-              <p className="font-outfit" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.72)', margin: '3px 0 10px', fontWeight: 300 }}>
-                {wedding.venue} · {wedding.date}
-              </p>
-              <span className="font-outfit" style={{
-                fontSize: '10px', fontWeight: 500,
-                background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.35)',
-                color: '#FFFFFF', padding: '4px 12px', borderRadius: '99px',
-                backdropFilter: 'blur(6px)',
-              }}>
-                {wedding.daysAway} days away
-              </span>
-            </div>
+
+            {/* Subtle top + bottom vignette */}
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.22) 0%, transparent 30%, transparent 65%, rgba(0,0,0,0.18) 100%)' }} />
           </div>
 
-          {/* StatusBar — overlaid, white text */}
+          {/* StatusBar — white */}
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 5, pointerEvents: 'none' }}>
             <StatusBar light />
           </div>
 
-          {/* Logo mark — top-left */}
-          <div style={{ position: 'absolute', top: 46, left: 18, zIndex: 5 }}>
+          {/* Logo + NavIcons row */}
+          <div style={{ position: 'absolute', top: 46, left: 18, right: 16, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <LogoMark light />
-          </div>
-
-          {/* NavIcons — overlaid top-right, white style */}
-          <div style={{ position: 'absolute', top: 44, right: 16, zIndex: 5 }}>
             <NavIcons light />
           </div>
 
-          {/* Camera badge — bottom-right of card */}
-          <label htmlFor="couple-photo" style={{ position: 'absolute', bottom: 52, right: 18, zIndex: 5, cursor: 'pointer', display: 'block' }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%',
-              background: 'rgba(26,20,16,0.35)', backdropFilter: 'blur(6px)',
-              border: '1.5px solid rgba(255,255,255,0.28)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            }}>
-              <Camera size={13} color="#FFFFFF" />
+          {/* Centred text content */}
+          <div style={{ position: 'absolute', top: 82, left: 20, right: 20, bottom: 90, zIndex: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
+            <h1 className="font-cormorant italic" style={{ fontSize: '42px', color: '#FFFFFF', fontWeight: 300, margin: '0 0 8px', letterSpacing: '-0.02em', textAlign: 'center', lineHeight: 1.05 }}>
+              {wedding.couple.bride} &amp; {wedding.couple.groom}
+            </h1>
+            <p className="font-outfit" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.72)', fontWeight: 300, margin: '0 0 10px', textAlign: 'center', letterSpacing: '0.01em' }}>
+              {weddingDayOfWeek} &nbsp;·&nbsp; {shortDate} &nbsp;·&nbsp; {venueShort}
+            </p>
+            <label htmlFor="couple-photo" style={{ cursor: 'pointer', marginBottom: '18px' }}>
+              <span className="font-outfit" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                Change image
+              </span>
+            </label>
+            <div style={{ border: '1px solid rgba(255,255,255,0.42)', borderRadius: '99px', padding: '7px 22px', backdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.08)' }}>
+              <span className="font-outfit" style={{ fontSize: '13px', color: '#FFFFFF', fontWeight: 400, letterSpacing: '0.02em' }}>
+                {daysLeft} days &nbsp;·&nbsp; {hoursLeft} hrs
+              </span>
             </div>
-          </label>
+          </div>
+
           <input id="couple-photo" type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
         </div>
 
