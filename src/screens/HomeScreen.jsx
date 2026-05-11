@@ -275,15 +275,16 @@ export default function HomeScreen({ tasks = [], setTasks }) {
   const shortDate = weddingDateTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   const venueShort = wedding.venue.split(',')[0]
 
-  // Mughal torana arch clip path (375px wide, straight edge at y=268, arch bottom at y=340)
-  const archPath = "path('M 0 0 H 375 V 260 C 375 260 370 268 360 274 C 346 282 326 290 300 294 C 278 297 262 292 248 304 C 238 312 220 335 187.5 340 C 155 335 137 312 127 304 C 113 292 97 297 75 294 C 49 290 29 282 15 274 C 5 268 0 260 0 260 Z')"
+  // Exact Mughal arch from design file — x scaled 370→375, y as-is
+  // Original SVG: 370×333, arch baseline y≈245, center bottom y=327
+  const archPath = "path('M 0 0 H 375 V 245.6 L 336.72 248.56 C 337.02 256.46 328.98 270.76 294.25 264.84 C 297.50 273.56 292.65 292.67 247.34 299.37 C 202.00 306.08 187.72 320.59 186.24 327 C 183.88 320.09 168.18 304.9 124.27 299.37 C 80.36 293.85 75.28 274.05 78.24 264.84 C 63.77 266.82 35.56 266.32 38.39 248.56 L 0 245.1 Z')"
 
   return (
     <div className="relative flex flex-col h-full" style={{ background: '#FFFBF5' }}>
       <div className="relative flex flex-col h-full overflow-y-auto no-scrollbar">
 
         {/* ── Full-bleed torana hero ── */}
-        <div style={{ position: 'relative', width: '100%', height: '345px', flexShrink: 0 }}>
+        <div style={{ position: 'relative', width: '100%', height: '334px', flexShrink: 0 }}>
 
           {/* Clipped background — magenta + damask pattern */}
           <div style={{ position: 'absolute', inset: 0, clipPath: archPath, overflow: 'hidden' }}>
@@ -332,8 +333,8 @@ export default function HomeScreen({ tasks = [], setTasks }) {
             <NavIcons light />
           </div>
 
-          {/* Centred text content */}
-          <div style={{ position: 'absolute', top: 82, left: 20, right: 20, bottom: 90, zIndex: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
+          {/* Centred text content — sits within straight rectangle portion (y=82 to y=240) */}
+          <div style={{ position: 'absolute', top: 82, left: 20, right: 20, height: 158, zIndex: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
             <h1 className="font-cormorant italic" style={{ fontSize: '42px', color: '#FFFFFF', fontWeight: 300, margin: '0 0 8px', letterSpacing: '-0.02em', textAlign: 'center', lineHeight: 1.05 }}>
               {wedding.couple.bride} &amp; {wedding.couple.groom}
             </h1>
