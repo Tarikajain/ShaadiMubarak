@@ -23,14 +23,14 @@ export const ceremonies = [
 ]
 
 export const vendors = [
-  { id: 1, name: 'Rajan Photography',  category: 'Photographer',      ceremony: 'All events',            status: 'confirmed', lastContact: '2h ago',  risk: 'low',    phone: '+91 98400 12345', image: 'https://picsum.photos/seed/rajan-photography-wedding/120/120' },
-  { id: 2, name: 'Rekha Mehndi Art',   category: 'Mehndi Artist',     ceremony: 'Mehndi · 12–3pm',       status: 'at_risk',   lastContact: '48h ago', risk: 'high', alert: true, phone: '+91 99400 55678', image: 'https://picsum.photos/seed/rekha-mehndi-henna/120/120' },
-  { id: 3, name: 'Aromas Catering',    category: 'Caterer',           ceremony: 'All meals',             status: 'confirmed', lastContact: '1d ago',  risk: 'low',    phone: '+91 98765 00123', image: 'https://picsum.photos/seed/aromas-catering-food/120/120' },
-  { id: 4, name: 'Pandit Sureshji',    category: 'Pandit',            ceremony: 'Pheras · 7–8:30pm',    status: 'pending',   lastContact: '3d ago',  risk: 'medium', phone: '+91 94400 77890', image: 'https://picsum.photos/seed/pandit-pheras-fire/120/120' },
-  { id: 5, name: 'Bloom Florals',      category: 'Florist',           ceremony: 'All events',            status: 'confirmed', lastContact: '6h ago',  risk: 'low',    phone: '+91 98200 34567', image: 'https://picsum.photos/seed/bloom-florals-flowers/120/120' },
-  { id: 6, name: 'Rhythm DJ Services', category: 'DJ',                ceremony: 'Sangeet · 7pm–1am',    status: 'pending',   lastContact: '2d ago',  risk: 'medium', phone: '+91 97300 22456', image: 'https://picsum.photos/seed/rhythm-dj-sangeet/120/120' },
-  { id: 7, name: 'Grand Decorators',   category: 'Decorator',         ceremony: 'All events',            status: 'confirmed', lastContact: '1h ago',  risk: 'low',    phone: '+91 98900 11234', image: 'https://picsum.photos/seed/grand-decorators-mandap/120/120' },
-  { id: 8, name: 'Royal Baraat Band',  category: 'Baraat Band',       ceremony: 'Baraat · 4–6pm',        status: 'confirmed', lastContact: '5h ago',  risk: 'low',    phone: '+91 96600 88012', image: 'https://picsum.photos/seed/royal-baraat-band/120/120' },
+  { id: 1, name: 'Rajan Photography',  category: 'Photographer',      ceremony: 'All events',            status: 'confirmed', lastContact: '2h ago',  risk: 'low',    phone: '+91 98400 12345', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=RP' },
+  { id: 2, name: 'Rekha Mehndi Art',   category: 'Mehndi Artist',     ceremony: 'Mehndi · 12–3pm',       status: 'at_risk',   lastContact: '48h ago', risk: 'high', alert: true, phone: '+91 99400 55678', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=RM' },
+  { id: 3, name: 'Aromas Catering',    category: 'Caterer',           ceremony: 'All meals',             status: 'confirmed', lastContact: '1d ago',  risk: 'low',    phone: '+91 98765 00123', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=AC' },
+  { id: 4, name: 'Pandit Sureshji',    category: 'Pandit',            ceremony: 'Pheras · 7–8:30pm',    status: 'pending',   lastContact: '3d ago',  risk: 'medium', phone: '+91 94400 77890', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=PS' },
+  { id: 5, name: 'Bloom Florals',      category: 'Florist',           ceremony: 'All events',            status: 'confirmed', lastContact: '6h ago',  risk: 'low',    phone: '+91 98200 34567', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=BF' },
+  { id: 6, name: 'Rhythm DJ Services', category: 'DJ',                ceremony: 'Sangeet · 7pm–1am',    status: 'pending',   lastContact: '2d ago',  risk: 'medium', phone: '+91 97300 22456', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=RD' },
+  { id: 7, name: 'Grand Decorators',   category: 'Decorator',         ceremony: 'All events',            status: 'confirmed', lastContact: '1h ago',  risk: 'low',    phone: '+91 98900 11234', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=GD' },
+  { id: 8, name: 'Royal Baraat Band',  category: 'Baraat Band',       ceremony: 'Baraat · 4–6pm',        status: 'confirmed', lastContact: '5h ago',  risk: 'low',    phone: '+91 96600 88012', image: 'https://placehold.co/80x104/EDE0D4/7A0F46?text=RB' },
 ]
 
 export const crisis = {

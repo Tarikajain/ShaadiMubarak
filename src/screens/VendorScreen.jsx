@@ -132,7 +132,7 @@ function MyVendors({ onVendorClick }) {
                 style={{
                   padding: '0', cursor: 'pointer', overflow: 'hidden',
                   height: `${CARD_HEIGHT}px`,
-                  border: vendor.risk === 'high' ? '1px solid rgba(196,80,30,0.3)' : vendor.risk === 'medium' ? '1px solid rgba(200,151,58,0.25)' : '1px solid rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(0,0,0,0.06)',
                 }}
                 onClick={() => onVendorClick(String(vendor.id))}
                 whileHover={{ y: -2, transition: { duration: 0.15 } }}
