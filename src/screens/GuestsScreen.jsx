@@ -259,6 +259,15 @@ const INVITE_TEMPLATES = [
 ]
 
 // ─── Website / Invite Setup Sheet ────────────────────────────────
+// ─── Asset tile config ────────────────────────────────────────────
+const CORE_ASSETS = [
+  { id: 'website',  label: 'Wedding Website',  icon: Globe,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)', iconBorder: 'rgba(122,15,70,0.20)', tileBg: 'linear-gradient(145deg,rgba(122,15,70,0.10) 0%,rgba(122,15,70,0.03) 100%)' },
+  { id: 'invites',  label: 'Digital Invites',  icon: Mail,   color: '#1A3A6B', iconBg: 'rgba(26,58,107,0.10)',  iconBorder: 'rgba(26,58,107,0.20)',  tileBg: 'linear-gradient(145deg,rgba(26,58,107,0.10) 0%,rgba(26,58,107,0.03) 100%)' },
+  { id: 'registry', label: 'Gift Registry',    icon: Gift,   color: '#2D6025', iconBg: 'rgba(45,96,37,0.10)',   iconBorder: 'rgba(45,96,37,0.20)',   tileBg: 'linear-gradient(145deg,rgba(45,96,37,0.10) 0%,rgba(45,96,37,0.03) 100%)' },
+  { id: 'wardrobe', label: 'Wardrobe Planner', icon: Shirt,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)',  iconBorder: 'rgba(122,15,70,0.20)',  tileBg: 'linear-gradient(145deg,rgba(122,15,70,0.10) 0%,rgba(122,15,70,0.03) 100%)' },
+  { id: 'favors',   label: 'Guest Favors',     icon: Heart,  color: '#A07020', iconBg: 'rgba(160,112,32,0.10)', iconBorder: 'rgba(160,112,32,0.22)', tileBg: 'linear-gradient(145deg,rgba(160,112,32,0.10) 0%,rgba(160,112,32,0.03) 100%)' },
+]
+
 function AssetSetupSheet({ type, onClose, onSave }) {
   const [mode, setMode] = useState(null) // 'template' | 'custom'
   const [selectedTemplate, setSelectedTemplate] = useState(null)
@@ -564,49 +573,305 @@ function FavorsCard() {
   )
 }
 
-// ─── Full Guest Assets Tab ────────────────────────────────────────
-function GuestAssets() {
-  const [websiteConfig, setWebsiteConfig] = useState(null)
-  const [inviteConfig, setInviteConfig] = useState(null)
-  const [setupSheet, setSetupSheet] = useState(null) // 'website' | 'invite'
+// ─── Asset detail sheets ─────────────────────────────────────────
+
+function FavorsSheet({ onClose }) {
+  const GUEST_TYPES = ['All guests', "Bride's side", "Groom's side", 'VIP / Core family']
+  const [activeType, setActiveType] = useState('All guests')
+  const [items, setItems] = useState([
+    { name: 'Personalised photo frames', qty: 320, types: ['All guests'] },
+    { name: 'Mithai boxes',              qty: 500, types: ['All guests'] },
+    { name: 'Mehendi kits',              qty: 100, types: ["Bride's side", 'VIP / Core family'] },
+    { name: 'Thank-you cards',           qty: 500, types: ['All guests'] },
+  ])
+  const [newName, setNewName] = useState('')
+  const [newQty, setNewQty]   = useState('')
+  const visible = activeType === 'All guests' ? items : items.filter(it => it.types.includes(activeType))
+
+  const toggleType = (item, type) => {
+    setItems(prev => prev.map(it => it.name !== item.name ? it : {
+      ...it,
+      types: it.types.includes(type)
+        ? (it.types.length > 1 ? it.types.filter(t => t !== type) : it.types) // keep at least 1
+        : [...it.types, type],
+    }))
+  }
+  const addItem = () => {
+    if (!newName.trim()) return
+    setItems(prev => [...prev, { name: newName.trim(), qty: parseInt(newQty) || 0, types: ['All guests'] }])
+    setNewName(''); setNewQty('')
+  }
 
   return (
     <>
-      <motion.div className="flex flex-col gap-5" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.22 }}>
-
-        {/* For All Guests */}
-        <div className="flex flex-col gap-3">
-          <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>For all guests</p>
-          <WebsiteCard config={websiteConfig} onSetup={() => setSetupSheet('website')} />
-          <InviteCard config={inviteConfig} onSetup={() => setSetupSheet('invite')} />
-          <GiftRegistryCard />
+      <motion.div key="favors-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+      <motion.div key="favors-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px', maxHeight: '82%', overflowY: 'auto' }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
+        <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(160,112,32,0.10)', border: '1px solid rgba(160,112,32,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Heart size={18} color="#A07020" strokeWidth={1.8} />
+          </div>
+          <div>
+            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Guest Favors</p>
+            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests · customize per type below</p>
+          </div>
         </div>
 
-        {/* Core Family Only */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>Core family</p>
-            <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: '#7A0F46', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.2)', padding: '2px 7px', borderRadius: '99px' }}>Restricted</span>
+        {/* Guest type filter */}
+        <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>Show favors for</p>
+        <div className="flex gap-2 flex-wrap" style={{ marginBottom: 16 }}>
+          {GUEST_TYPES.map(t => (
+            <button key={t} onClick={() => setActiveType(t)} className="font-outfit"
+              style={{ fontSize: '11px', fontWeight: 500, padding: '6px 12px', borderRadius: '99px', cursor: 'pointer', border: activeType === t ? '1px solid rgba(160,112,32,0.5)' : '1px solid rgba(0,0,0,0.09)', background: activeType === t ? 'rgba(160,112,32,0.10)' : 'rgba(0,0,0,0.02)', color: activeType === t ? '#A07020' : 'rgba(26,20,16,0.5)' }}>
+              {t}
+            </button>
+          ))}
+        </div>
+
+        {/* Favor items */}
+        <div className="flex flex-col gap-2" style={{ marginBottom: 16 }}>
+          {visible.map(item => (
+            <div key={item.name} className="glass-card" style={{ padding: '12px 14px' }}>
+              <div className="flex items-start justify-between gap-2" style={{ marginBottom: activeType === 'All guests' ? 8 : 0 }}>
+                <div>
+                  <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 2px' }}>{item.name}</p>
+                  <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: 0 }}>Qty: {item.qty}</p>
+                </div>
+              </div>
+              {activeType === 'All guests' && (
+                <div className="flex flex-wrap gap-1.5">
+                  {GUEST_TYPES.filter(t => t !== 'All guests').map(t => (
+                    <button key={t} onClick={() => toggleType(item, t)} className="font-outfit"
+                      style={{ fontSize: '10px', fontWeight: 500, padding: '3px 9px', borderRadius: '99px', cursor: 'pointer', border: item.types.includes(t) ? '1px solid rgba(160,112,32,0.45)' : '1px solid rgba(0,0,0,0.09)', background: item.types.includes(t) ? 'rgba(160,112,32,0.09)' : 'transparent', color: item.types.includes(t) ? '#A07020' : 'rgba(26,20,16,0.4)' }}>
+                      {item.types.includes(t) ? '✓ ' : ''}{t}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Add favor */}
+        <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>Add favor</p>
+        <div className="flex gap-2">
+          <div className="glass-input flex-1 flex items-center" style={{ padding: '9px 12px' }}>
+            <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Favor name" onKeyDown={e => e.key === 'Enter' && addItem()}
+              style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
           </div>
-          <WardrobeCard />
-          <FavorsCard />
+          <div className="glass-input flex items-center" style={{ padding: '9px 12px', width: 72 }}>
+            <input value={newQty} onChange={e => setNewQty(e.target.value)} placeholder="Qty" type="number"
+              style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+          </div>
+          <button onClick={addItem} style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(160,112,32,0.10)', border: '1px solid rgba(160,112,32,0.28)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Check size={14} color="#A07020" strokeWidth={2.5} />
+          </button>
+        </div>
+      </motion.div>
+    </>
+  )
+}
+
+function WardrobeSheet({ onClose }) {
+  const ceremonies = ['Mehndi · Dec 17', 'Sangeet · Dec 18', 'Baraat · Dec 19', 'Pheras · Dec 19', 'Reception · Dec 19']
+  const [planned, setPlanned] = useState(2)
+  return (
+    <>
+      <motion.div key="wd-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+      <motion.div key="wd-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px', maxHeight: '80%', overflowY: 'auto' }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
+        <div className="flex items-center gap-3" style={{ marginBottom: 20 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(122,15,70,0.10)', border: '1px solid rgba(122,15,70,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Shirt size={18} color="#7A0F46" strokeWidth={1.8} />
+          </div>
+          <div>
+            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Wardrobe Planner</p>
+            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Plan outfits per ceremony for the family</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          {ceremonies.map((c, i) => (
+            <div key={c} className="glass-card flex items-center justify-between" style={{ padding: '12px 14px' }}>
+              <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 300, color: '#1A1410' }}>{c}</span>
+              <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 500, color: i < planned ? '#2D6025' : '#A07020', background: i < planned ? 'rgba(45,96,37,0.08)' : 'rgba(200,151,58,0.09)', border: `1px solid ${i < planned ? 'rgba(45,96,37,0.22)' : 'rgba(200,151,58,0.28)'}`, padding: '3px 9px', borderRadius: '99px' }}>
+                {i < planned ? 'Planned' : 'Pending'}
+              </span>
+            </div>
+          ))}
+        </div>
+        <button className="w-full font-outfit" style={{ marginTop: 16, padding: '14px', borderRadius: '14px', background: 'linear-gradient(135deg,#7A0F46,#5C0B35)', color: '#FFFBF5', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(122,15,70,0.25)' }}>
+          Plan outfits →
+        </button>
+      </motion.div>
+    </>
+  )
+}
+
+function RegistrySheet({ onClose }) {
+  const [url, setUrl] = useState('')
+  const [saved, setSaved] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+  return (
+    <>
+      <motion.div key="rg-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+      <motion.div key="rg-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px' }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
+        <div className="flex items-center gap-3" style={{ marginBottom: 20 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(45,96,37,0.10)', border: '1px solid rgba(45,96,37,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Gift size={18} color="#2D6025" strokeWidth={1.8} />
+          </div>
+          <div>
+            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Gift Registry</p>
+            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Shared via website &amp; digital invites</p>
+          </div>
+        </div>
+        <div className="glass-input flex items-center gap-2" style={{ padding: '12px 14px', marginBottom: 10 }}>
+          <Link2 size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
+          <input value={url} onChange={e => { setUrl(e.target.value); setSaved(false) }} placeholder="amazon.in/registry/… or any registry link"
+            style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+        </div>
+        {url.trim() && !saved && (
+          <button onClick={() => setSaved(true)} className="w-full font-outfit"
+            style={{ padding: '13px', borderRadius: '13px', background: 'linear-gradient(135deg,#2D6025,#1e4419)', color: '#FFFBF5', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(45,96,37,0.25)' }}>
+            Save registry link →
+          </button>
+        )}
+        {saved && (
+          <div style={{ background: 'rgba(45,96,37,0.07)', border: '1px solid rgba(45,96,37,0.2)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Check size={14} color="#2D6025" strokeWidth={2.5} />
+            <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>Registry linked — guests will see this on your website &amp; invite</span>
+          </div>
+        )}
+      </motion.div>
+    </>
+  )
+}
+
+function CustomAssetSheet({ onClose, onSave }) {
+  const [name, setName] = useState('')
+  const [note, setNote] = useState('')
+  return (
+    <>
+      <motion.div key="ca-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+      <motion.div key="ca-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px' }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
+        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Add custom asset</p>
+        <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 20px' }}>Track anything else you're managing for your guests.</p>
+        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.07em', textTransform: 'uppercase', margin: '0 0 7px' }}>Asset name</p>
+        <div className="glass-input flex items-center" style={{ padding: '12px 14px', marginBottom: 14 }}>
+          <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Shuttle coordination, Hotel blocks…"
+            style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+        </div>
+        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.07em', textTransform: 'uppercase', margin: '0 0 7px' }}>Note (optional)</p>
+        <div className="glass-input flex items-center" style={{ padding: '12px 14px', marginBottom: 20 }}>
+          <input value={note} onChange={e => setNote(e.target.value)} placeholder="Brief description"
+            style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+        </div>
+        <button onClick={() => { if (name.trim()) { onSave({ name: name.trim(), note }); onClose() } }}
+          disabled={!name.trim()}
+          className="w-full font-outfit"
+          style={{ padding: '15px', borderRadius: '14px', background: name.trim() ? 'linear-gradient(135deg,#7A0F46,#5C0B35)' : 'rgba(0,0,0,0.07)', color: name.trim() ? '#FFFBF5' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 500, border: 'none', cursor: name.trim() ? 'pointer' : 'default', boxShadow: name.trim() ? '0 6px 20px rgba(122,15,70,0.28)' : 'none' }}>
+          Add asset →
+        </button>
+      </motion.div>
+    </>
+  )
+}
+
+// ─── Full Guest Assets Tab ────────────────────────────────────────
+function GuestAssets() {
+  const [websiteConfig, setWebsiteConfig]   = useState(null)
+  const [inviteConfig, setInviteConfig]     = useState(null)
+  const [openSheet, setOpenSheet]           = useState(null) // 'website'|'invites'|'registry'|'wardrobe'|'favors'|'custom'
+  const [customAssets, setCustomAssets]     = useState([])
+
+  const getStatus = (id) => {
+    if (id === 'website') return websiteConfig ? (websiteConfig.mode === 'template' ? 'Live' : 'Connected') : null
+    if (id === 'invites') return inviteConfig ? 'Active' : null
+    return null
+  }
+
+  const allTiles = [
+    ...CORE_ASSETS,
+    ...customAssets.map(a => ({ id: `custom_${a.name}`, label: a.name, icon: Sparkles, color: '#7A0F46', iconBg: 'rgba(122,15,70,0.09)', iconBorder: 'rgba(122,15,70,0.20)', tileBg: 'linear-gradient(145deg,rgba(122,15,70,0.08) 0%,rgba(122,15,70,0.02) 100%)', custom: true })),
+  ]
+
+  return (
+    <>
+      <motion.div initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.22 }}>
+
+        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 12px' }}>For all guests</p>
+
+        {/* 2-column tile grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+          {allTiles.map(asset => {
+            const Icon = asset.icon
+            const status = getStatus(asset.id)
+            return (
+              <motion.button key={asset.id} onClick={() => setOpenSheet(asset.id)}
+                whileTap={{ scale: 0.97 }}
+                style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 16, padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}>
+                {/* Coloured icon area */}
+                <div style={{ background: asset.tileBg, padding: '18px 18px 14px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 13, background: asset.iconBg, border: `1px solid ${asset.iconBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon size={20} color={asset.color} strokeWidth={1.8} />
+                  </div>
+                  {status && (
+                    <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.10)', border: '1px solid rgba(45,96,37,0.22)', padding: '2px 7px', borderRadius: '99px' }}>{status}</span>
+                  )}
+                </div>
+                {/* Label area */}
+                <div style={{ padding: '10px 14px 14px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                  <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 3px', lineHeight: 1.2 }}>{asset.label}</p>
+                  <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: 0 }}>
+                    {status ? 'Tap to manage' : 'Not set up'}
+                  </p>
+                </div>
+              </motion.button>
+            )
+          })}
+
+          {/* Add custom tile */}
+          <motion.button onClick={() => setOpenSheet('custom')} whileTap={{ scale: 0.97 }}
+            style={{ background: 'transparent', border: '1.5px dashed rgba(122,15,70,0.25)', borderRadius: 16, padding: '22px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 130 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: 22, lineHeight: 1, color: '#7A0F46', fontWeight: 300 }}>+</span>
+            </div>
+            <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: '#7A0F46', margin: 0, textAlign: 'center' }}>Add custom</p>
+          </motion.button>
         </div>
 
         <div style={{ height: '80px' }} />
       </motion.div>
 
-      {/* Setup sheets */}
+      {/* Sheets */}
       <AnimatePresence>
-        {setupSheet && (
+        {(openSheet === 'website' || openSheet === 'invites') && (
           <AssetSetupSheet
-            type={setupSheet}
-            onClose={() => setSetupSheet(null)}
+            type={openSheet === 'website' ? 'website' : 'invite'}
+            onClose={() => setOpenSheet(null)}
             onSave={(cfg) => {
-              if (setupSheet === 'website') setWebsiteConfig(cfg)
+              if (openSheet === 'website') setWebsiteConfig(cfg)
               else setInviteConfig(cfg)
             }}
           />
         )}
+        {openSheet === 'registry' && <RegistrySheet onClose={() => setOpenSheet(null)} />}
+        {openSheet === 'wardrobe' && <WardrobeSheet onClose={() => setOpenSheet(null)} />}
+        {openSheet === 'favors'   && <FavorsSheet   onClose={() => setOpenSheet(null)} />}
+        {openSheet === 'custom'   && <CustomAssetSheet onClose={() => setOpenSheet(null)} onSave={(a) => setCustomAssets(prev => [...prev, a])} />}
       </AnimatePresence>
     </>
   )
