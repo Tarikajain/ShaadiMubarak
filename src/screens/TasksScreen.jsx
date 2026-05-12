@@ -54,11 +54,11 @@ function TaskDetailDrawer({ task, onClose, onEdit, onUpdateAssignees }) {
     <>
       <motion.div key="td-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.40)', zIndex: 60 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.40)', zIndex: 60 }} />
       <motion.div key="td-sh"
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 360, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 61, maxHeight: '88%', overflowY: 'auto' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 61, maxHeight: '88%', overflowY: 'auto' }}
       >
         {/* Cover image with gradient overlay */}
         <div style={{ position: 'relative', height: 148, flexShrink: 0, overflow: 'hidden', borderRadius: '22px 22px 0 0' }}>
@@ -212,11 +212,11 @@ function DatePickerModal({ task, onClose, onSave }) {
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 70 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 70 }} />
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 71, padding: '20px 20px 36px', maxWidth: 430, margin: '0 auto' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 71, padding: '20px 20px 36px' }}
       >
         <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 20px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px' }}>Set due date</p>
@@ -538,11 +538,11 @@ function EditTaskSheet({ task, onClose, onSave }) {
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 60 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 60 }} />
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 61, padding: '20px 20px 36px' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 61, padding: '20px 20px 36px' }}
       >
         <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 18px' }} />
         <div className="flex items-center justify-between" style={{ marginBottom: 18 }}>
