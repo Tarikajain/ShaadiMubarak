@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   UserPlus, Check, X, Clock, Users, Upload, Sheet, Link2, ChevronDown,
@@ -620,6 +620,7 @@ export default function GuestsScreen() {
   const [filter, setFilter]               = useState('All')
   const [sideFilter, setSideFilter]       = useState('All') // 'All' | 'bride' | 'groom'
   const [search, setSearch]               = useState('')
+  const [searchOpen, setSearchOpen]       = useState(false)
   const [showRsvpDrop, setShowRsvpDrop]   = useState(false)
   const [showSideDrop, setShowSideDrop]   = useState(false)
   const [showUploadDrop, setShowUploadDrop] = useState(false)
@@ -716,24 +717,50 @@ export default function GuestsScreen() {
               <motion.div key="list" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }} transition={{ duration: 0.22 }}
                 className="flex flex-col gap-4">
 
-                {/* Search bar */}
-                <div className="glass-input flex items-center gap-2" style={{ padding: '10px 14px' }}>
-                  <Search size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
-                  <input
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    placeholder="Search guests…"
-                    style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }}
-                  />
-                  {search && (
-                    <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
-                      <X size={13} color="rgba(26,20,16,0.3)" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Filter row: RSVP dropdown + Side dropdown + Upload button */}
+                {/* Combined search + filter row */}
                 <div className="flex items-center gap-2">
+
+                  {/* Search — icon that expands to full input */}
+                  <AnimatePresence mode="wait">
+                    {searchOpen ? (
+                      <motion.div key="search-open"
+                        initial={{ opacity: 0, width: 36 }} animate={{ opacity: 1, width: '100%' }} exit={{ opacity: 0, width: 36 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                        className="glass-input flex items-center gap-2"
+                        style={{ padding: '8px 12px', flexShrink: 0, overflow: 'hidden', minWidth: 0 }}
+                      >
+                        <button onClick={() => { setSearchOpen(false); setSearch('') }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
+                          <X size={13} color="rgba(26,20,16,0.35)" />
+                        </button>
+                        <input
+                          autoFocus
+                          value={search}
+                          onChange={e => setSearch(e.target.value)}
+                          placeholder="Search guests…"
+                          style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }}
+                        />
+                        {search && (
+                          <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
+                            <X size={11} color="rgba(26,20,16,0.28)" />
+                          </button>
+                        )}
+                      </motion.div>
+                    ) : (
+                      <motion.button key="search-icon"
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        onClick={() => setSearchOpen(true)}
+                        style={{ width: 36, height: 36, borderRadius: '10px', border: '1px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.02)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Search size={14} color="rgba(26,20,16,0.45)" />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Filter pills — hidden while search is open */}
+                  <AnimatePresence>
+                    {!searchOpen && (
+                      <motion.div key="filters" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
+                        className="flex items-center gap-2" style={{ flex: 1, minWidth: 0 }}>
 
                   {/* RSVP status dropdown */}
                   <div className="relative flex-1">
@@ -849,6 +876,10 @@ export default function GuestsScreen() {
                       )}
                     </AnimatePresence>
                   </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                 </div>
 
                 {/* Contacts banner */}
