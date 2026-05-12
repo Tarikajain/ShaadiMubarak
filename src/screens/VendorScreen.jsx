@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { MessageSquare, AlertTriangle, Star, ChevronRight, Phone, Send, X } from 'lucide-react'
+import { MessageSquare, AlertTriangle, Star, ChevronRight, Phone, Send, X, Clock } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
@@ -20,7 +20,6 @@ const atRiskCount = vendors.filter(v => v.status === 'at_risk' || v.status === '
 
 const DISC_CATS = ['All', 'Photographer', 'Caterer', 'Florist', 'Decorator', 'DJ', 'Pandit', 'Mehndi Artist', 'Videographer']
 
-const CARD_HEIGHT = 104 // fixed height for all vendor cards
 
 function draftMessage(vendor) {
   if (vendor.status === 'at_risk') {
@@ -129,51 +128,47 @@ function MyVendors({ onVendorClick }) {
               <motion.div
                 key={vendor.id}
                 className="glass-card"
-                style={{
-                  padding: '0', cursor: 'pointer', overflow: 'hidden',
-                  height: `${CARD_HEIGHT}px`,
-                  border: '1px solid rgba(0,0,0,0.06)',
-                }}
+                style={{ padding: '13px 14px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
                 onClick={() => onVendorClick(String(vendor.id))}
                 whileHover={{ y: -2, transition: { duration: 0.15 } }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="flex" style={{ height: '100%' }}>
-                  {/* Left: info */}
-                  <div className="flex flex-col justify-between flex-1 min-w-0" style={{ padding: '12px 12px 12px 14px' }}>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>{vendor.name}</p>
-                        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{vendor.category}</p>
-                      </div>
-                      <StatusBadge status={vendor.status} />
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.42)', margin: '0 0 1px' }}>{vendor.ceremony}</p>
-                        <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.28)', margin: 0 }}>Last contact: {vendor.lastContact}</p>
-                      </div>
-                      {needsFollowUp ? (
-                        <button
-                          onClick={e => { e.stopPropagation(); setFollowUpVendor(vendor) }}
-                          className="inline-flex items-center gap-1.5 font-outfit flex-shrink-0"
-                          style={{ border: '1px solid rgba(196,80,30,0.35)', color: '#B03A10', background: 'rgba(196,80,30,0.05)', fontSize: '11px', fontWeight: 500, padding: '7px 11px', borderRadius: '10px', cursor: 'pointer' }}>
-                          <MessageSquare size={11} /> Follow up
-                        </button>
-                      ) : (
-                        <div className="inline-flex items-center gap-1 flex-shrink-0" style={{ color: 'rgba(122,15,70,0.5)' }}>
-                          <ChevronRight size={14} strokeWidth={1.5} />
-                        </div>
-                      )}
-                    </div>
+                {/* Left: content */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {/* Vendor name */}
+                  <p className="font-outfit" style={{ fontSize: '14px', fontWeight: 500, color: '#1A1410', margin: '0 0 5px' }}>
+                    {vendor.name}
+                  </p>
+                  {/* Category + ceremony chips */}
+                  <div className="flex items-center gap-2 flex-wrap" style={{ marginBottom: 7 }}>
+                    <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.4)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 99, padding: '2px 7px', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                      {vendor.category.toUpperCase()}
+                    </span>
+                    <span className="font-outfit flex items-center gap-1" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.38)' }}>
+                      <Clock size={9} strokeWidth={2} />
+                      {vendor.ceremony}
+                    </span>
                   </div>
-                  {/* Right: vendor image — same height as card */}
-                  {vendor.image && (
-                    <div style={{ width: 80, flexShrink: 0 }}>
-                      <img src={vendor.image} alt={vendor.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                    </div>
-                  )}
+                  {/* Status + follow-up */}
+                  <div className="flex items-center justify-between gap-2">
+                    <StatusBadge status={vendor.status} />
+                    {needsFollowUp && (
+                      <button
+                        onClick={e => { e.stopPropagation(); setFollowUpVendor(vendor) }}
+                        className="inline-flex items-center gap-1 font-outfit flex-shrink-0"
+                        style={{ border: '1px solid rgba(122,15,70,0.28)', color: '#7A0F46', background: 'rgba(122,15,70,0.05)', fontSize: '10px', fontWeight: 500, padding: '4px 10px', borderRadius: '99px', cursor: 'pointer' }}>
+                        <MessageSquare size={9} /> Follow up
+                      </button>
+                    )}
+                  </div>
                 </div>
+
+                {/* Right: vendor image */}
+                {vendor.image && (
+                  <div style={{ width: 72, height: 72, borderRadius: 12, overflow: 'hidden', flexShrink: 0 }}>
+                    <img src={vendor.image} alt={vendor.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                )}
               </motion.div>
             )
           })}
