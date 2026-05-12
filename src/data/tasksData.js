@@ -67,6 +67,8 @@ export const initialTasks = [
     dueDate: '2026-12-10',
     done: false,
     description: 'Confirm 8:30pm hard stop and Pheras window with Pandit Sureshji.',
+    location: null,
+    assignees: [],
   },
   {
     id: 't2',
@@ -76,6 +78,8 @@ export const initialTasks = [
     dueDate: '2026-12-10',
     done: false,
     description: 'Rekha Mehndi Art unresponsive for 48h — find and confirm a backup.',
+    location: null,
+    assignees: [],
   },
   {
     id: 't3',
@@ -85,6 +89,8 @@ export const initialTasks = [
     dueDate: '2026-12-11',
     done: false,
     description: 'Test bridal look — foundation shade, eye makeup, lip colour.',
+    location: 'Glamour Studio, Bandra West, Mumbai',
+    assignees: ['bride'],
   },
   {
     id: 't4',
@@ -94,6 +100,8 @@ export const initialTasks = [
     dueDate: '2026-12-12',
     done: false,
     description: 'Third fitting with hem and blouse alterations.',
+    location: 'Sabyasachi Flagship, Kala Ghoda, Mumbai',
+    assignees: ['bride', 'bride_mom'],
   },
   {
     id: 't5',
@@ -103,6 +111,8 @@ export const initialTasks = [
     dueDate: '2026-12-12',
     done: false,
     description: 'Key moments, must-have portraits, family group combinations.',
+    location: null,
+    assignees: [],
   },
   {
     id: 't6',
@@ -112,6 +122,8 @@ export const initialTasks = [
     dueDate: '2026-12-13',
     done: false,
     description: 'Send confirmed tracklist to Rhythm DJ Services.',
+    location: null,
+    assignees: ['groom'],
   },
   {
     id: 't7',
@@ -121,6 +133,8 @@ export const initialTasks = [
     dueDate: '2026-12-13',
     done: false,
     description: 'Vegetarian count, nut allergy requirements, live station list.',
+    location: 'Aromas Catering Office, Andheri East',
+    assignees: ['groom_dad'],
   },
   {
     id: 't8',
@@ -130,6 +144,8 @@ export const initialTasks = [
     dueDate: '2026-12-14',
     done: false,
     description: 'Entry route, parking for Baraat vehicles, security clearance.',
+    location: 'Taj Coromandel, Nungambakkam, Chennai',
+    assignees: ['groom', 'bestman'],
   },
   {
     id: 't9',
@@ -139,6 +155,8 @@ export const initialTasks = [
     dueDate: '2026-12-14',
     done: false,
     description: 'Gold sets from family safe for reception and Pheras.',
+    location: "Bride's family home, Juhu",
+    assignees: ['bride_mom'],
   },
   {
     id: 't10',
@@ -148,6 +166,8 @@ export const initialTasks = [
     dueDate: '2026-12-15',
     done: false,
     description: 'Snacks, itinerary card, Chennai tips, emergency contacts.',
+    location: null,
+    assignees: ['moh'],
   },
   {
     id: 't11',
@@ -157,6 +177,8 @@ export const initialTasks = [
     dueDate: '2026-12-18',
     done: false,
     description: 'Pickup from Chennai airport to Maldives resort after Dec 18.',
+    location: null,
+    assignees: ['groom'],
   },
   // ── Completed tasks (history) ─────────────────────────────────────────────
   {

@@ -1,6 +1,6 @@
 import { useState, useContext, createContext, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, ChevronDown, ChevronUp, Calendar, Check, RotateCcw, X, Pencil } from 'lucide-react'
+import { Plus, ChevronDown, ChevronUp, Calendar, Check, RotateCcw, X, Pencil, MapPin, Users, UserPlus, MessageCircle, Navigation } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
@@ -10,9 +10,200 @@ import { initialTasks, taskCategories, formatDue } from '../data/tasksData'
 const spring = { type: 'spring', stiffness: 420, damping: 32 }
 const FILTERS = ['All', 'Today', 'This week', 'By category']
 
+const WEDDING_PEOPLE = [
+  { id: 'bride',     name: 'Ananya', role: 'Bride',           initials: 'An', color: '#7A0F46', bg: 'rgba(122,15,70,0.10)' },
+  { id: 'groom',     name: 'Rahul',  role: 'Groom',           initials: 'Ra', color: '#1A3A6B', bg: 'rgba(26,58,107,0.10)' },
+  { id: 'bride_mom', name: 'Priya',  role: "Bride's Mom",     initials: 'Pr', color: '#2D6025', bg: 'rgba(45,96,37,0.10)'  },
+  { id: 'bride_dad', name: 'Suresh', role: "Bride's Dad",     initials: 'Su', color: '#8B4513', bg: 'rgba(139,69,19,0.10)' },
+  { id: 'groom_mom', name: 'Meena',  role: "Groom's Mom",     initials: 'Me', color: '#2D6025', bg: 'rgba(45,96,37,0.10)'  },
+  { id: 'groom_dad', name: 'Vikram', role: "Groom's Dad",     initials: 'Vi', color: '#8B4513', bg: 'rgba(139,69,19,0.10)' },
+  { id: 'moh',       name: 'Divya',  role: 'Maid of Honour',  initials: 'Di', color: '#7A0F46', bg: 'rgba(122,15,70,0.10)' },
+  { id: 'bestman',   name: 'Arjun',  role: 'Best Man',        initials: 'Ar', color: '#1A3A6B', bg: 'rgba(26,58,107,0.10)' },
+]
+
+const PRIORITY_CONFIG = {
+  high:   { label: 'High',   color: '#B03A10', bg: 'rgba(196,80,30,0.08)',  border: 'rgba(196,80,30,0.22)'  },
+  medium: { label: 'Medium', color: '#A07020', bg: 'rgba(200,151,58,0.10)', border: 'rgba(200,151,58,0.30)' },
+  low:    { label: 'Low',    color: '#2D6025', bg: 'rgba(45,96,37,0.08)',   border: 'rgba(45,96,37,0.22)'   },
+}
+
 // ── Shared task state via context ─────────────────────────────────────────────
 export const TasksContext = createContext(null)
 export function useTasks() { return useContext(TasksContext) }
+
+// ── Task Detail Drawer ────────────────────────────────────────────────────────
+function TaskDetailDrawer({ task, onClose, onEdit, onUpdateAssignees }) {
+  const cat = taskCategories[task.category] || taskCategories.vendors
+  const pri = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium
+  const [showAssignPicker, setShowAssignPicker] = useState(false)
+  const assignees = (task.assignees || []).map(id => WEDDING_PEOPLE.find(p => p.id === id)).filter(Boolean)
+
+  const toggleAssignee = (personId) => {
+    const current = task.assignees || []
+    const next = current.includes(personId)
+      ? current.filter(id => id !== personId)
+      : [...current, personId]
+    onUpdateAssignees(task.id, next)
+  }
+
+  const mapsUrl = task.location
+    ? `https://maps.google.com/?q=${encodeURIComponent(task.location)}`
+    : null
+
+  return (
+    <>
+      <motion.div key="td-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.40)', zIndex: 60 }} />
+      <motion.div key="td-sh"
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 360, damping: 36 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 61, maxHeight: '88%', overflowY: 'auto' }}
+      >
+        {/* Cover image with gradient overlay */}
+        <div style={{ position: 'relative', height: 148, flexShrink: 0, overflow: 'hidden', borderRadius: '22px 22px 0 0' }}>
+          <img src={cat.image} alt={cat.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(26,20,16,0.65) 100%)' }} />
+          {/* Drag handle */}
+          <div style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.45)' }} />
+          {/* Category chip */}
+          <span className="font-outfit" style={{ position: 'absolute', top: 22, left: 20, fontSize: '9px', fontWeight: 600, color: 'rgba(255,255,255,0.85)', background: 'rgba(0,0,0,0.30)', border: '1px solid rgba(255,255,255,0.22)', padding: '3px 9px', borderRadius: 99, letterSpacing: '0.06em' }}>
+            {cat.label.toUpperCase()}
+          </span>
+          {/* Priority badge */}
+          <span className="font-outfit" style={{ position: 'absolute', top: 22, right: 20, fontSize: '9px', fontWeight: 700, color: pri.color, background: 'rgba(255,255,255,0.92)', border: `1px solid ${pri.border}`, padding: '3px 9px', borderRadius: 99, letterSpacing: '0.05em' }}>
+            {pri.label.toUpperCase()}
+          </span>
+          {/* Title on image */}
+          <p className="font-cormorant italic" style={{ position: 'absolute', bottom: 16, left: 20, right: 20, fontSize: '22px', fontWeight: 300, color: '#FFFFFF', margin: 0, lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+            {task.title}
+          </p>
+        </div>
+
+        <div style={{ padding: '18px 20px 40px' }}>
+
+          {/* Due date row */}
+          <div className="flex items-center gap-2" style={{ marginBottom: 16 }}>
+            <Calendar size={13} color="rgba(26,20,16,0.38)" />
+            <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.55)' }}>
+              {task.dueDate ? formatDue(task.dueDate) : 'No due date set'}
+            </span>
+          </div>
+
+          {/* Location */}
+          <div style={{ marginBottom: 18 }}>
+            <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 7px' }}>Location</p>
+            {task.location ? (
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(26,20,16,0.03)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 12, padding: '10px 12px', textDecoration: 'none' }}>
+                <MapPin size={14} color="#7A0F46" strokeWidth={2} style={{ flexShrink: 0 }} />
+                <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: '#1A1410', flex: 1 }}>{task.location}</span>
+                <Navigation size={11} color="#7A0F46" strokeWidth={2} style={{ flexShrink: 0 }} />
+              </a>
+            ) : (
+              <div className="flex items-center gap-2" style={{ padding: '10px 12px', background: 'rgba(26,20,16,0.02)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12 }}>
+                <MapPin size={14} color="rgba(26,20,16,0.25)" strokeWidth={2} />
+                <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.38)' }}>No visit needed — handle remotely</span>
+              </div>
+            )}
+          </div>
+
+          {/* Description */}
+          {task.description && (
+            <div style={{ marginBottom: 18 }}>
+              <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 7px' }}>Notes</p>
+              <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 300, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.6 }}>{task.description}</p>
+            </div>
+          )}
+
+          {/* Assigned to */}
+          <div style={{ marginBottom: 20 }}>
+            <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
+              <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>
+                Assigned to {assignees.length > 0 ? `· ${assignees.length}` : ''}
+              </p>
+              <button onClick={() => setShowAssignPicker(v => !v)}
+                className="font-outfit flex items-center gap-1"
+                style={{ fontSize: '11px', fontWeight: 500, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.22)', padding: '5px 11px', borderRadius: 99, cursor: 'pointer' }}>
+                <UserPlus size={11} /> {showAssignPicker ? 'Done' : 'Assign'}
+              </button>
+            </div>
+
+            {/* Assignee pills */}
+            {assignees.length > 0 && (
+              <div className="flex flex-wrap gap-2" style={{ marginBottom: showAssignPicker ? 12 : 0 }}>
+                {assignees.map(p => (
+                  <div key={p.id} className="flex items-center gap-1.5 font-outfit"
+                    style={{ background: p.bg, border: `1px solid ${p.color}30`, borderRadius: 99, padding: '5px 10px 5px 6px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: p.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: '8px', fontWeight: 700, color: '#FFFFFF' }}>{p.initials}</span>
+                    </div>
+                    <span style={{ fontSize: '11px', fontWeight: 500, color: p.color }}>{p.name}</span>
+                    <span style={{ fontSize: '9px', fontWeight: 300, color: 'rgba(26,20,16,0.4)' }}>{p.role}</span>
+                    <a href={`https://wa.me/?text=${encodeURIComponent(`Hi ${p.name}! Could you help with: "${task.title}"? 🙏`)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      style={{ display: 'flex', alignItems: 'center', marginLeft: 2 }}>
+                      <MessageCircle size={11} color={p.color} strokeWidth={2} />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* People picker */}
+            <AnimatePresence>
+              {showAssignPicker && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    {WEDDING_PEOPLE.map(p => {
+                      const isAssigned = (task.assignees || []).includes(p.id)
+                      return (
+                        <button key={p.id} onClick={() => toggleAssignee(p.id)}
+                          className="flex items-center gap-2 font-outfit"
+                          style={{ padding: '9px 12px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', border: isAssigned ? `1.5px solid ${p.color}55` : '1px solid rgba(0,0,0,0.08)', background: isAssigned ? p.bg : 'rgba(0,0,0,0.02)' }}>
+                          <div style={{ width: 28, height: 28, borderRadius: '50%', background: isAssigned ? p.color : 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: '9px', fontWeight: 700, color: isAssigned ? '#FFFFFF' : 'rgba(26,20,16,0.4)' }}>{p.initials}</span>
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontSize: '12px', fontWeight: 500, color: isAssigned ? p.color : '#1A1410', margin: 0 }}>{p.name}</p>
+                            <p style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.role}</p>
+                          </div>
+                          {isAssigned && <Check size={12} color={p.color} strokeWidth={2.5} style={{ marginLeft: 'auto', flexShrink: 0 }} />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {assignees.length === 0 && !showAssignPicker && (
+              <div className="flex items-center gap-2" style={{ padding: '10px 12px', background: 'rgba(26,20,16,0.02)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12 }}>
+                <Users size={13} color="rgba(26,20,16,0.25)" />
+                <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.38)' }}>Not yet assigned to anyone</span>
+              </div>
+            )}
+          </div>
+
+          {/* Footer actions */}
+          <div className="flex gap-2">
+            <button onClick={() => { onClose(); setTimeout(() => onEdit(task), 100) }}
+              className="font-outfit flex items-center justify-center gap-2 flex-1"
+              style={{ padding: '13px', borderRadius: 13, border: '1px solid rgba(122,15,70,0.28)', background: 'rgba(122,15,70,0.05)', fontSize: '13px', fontWeight: 500, color: '#7A0F46', cursor: 'pointer' }}>
+              <Pencil size={13} /> Edit task
+            </button>
+            <button onClick={onClose}
+              className="font-outfit flex-1"
+              style={{ padding: '13px', borderRadius: 13, border: '1px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.02)', fontSize: '13px', fontWeight: 400, color: 'rgba(26,20,16,0.55)', cursor: 'pointer' }}>
+              Close
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </>
+  )
+}
 
 // ── Date picker mini-modal ────────────────────────────────────────────────────
 function DatePickerModal({ task, onClose, onSave }) {
@@ -56,7 +247,7 @@ function DatePickerModal({ task, onClose, onSave }) {
 }
 
 // ── Task tile ─────────────────────────────────────────────────────────────────
-function TaskTile({ task, onToggle, onSetDue, onEdit, compact = false }) {
+function TaskTile({ task, onToggle, onSetDue, onEdit, onDetail, compact = false }) {
   const cat = taskCategories[task.category] || taskCategories.vendors
   const dueLabel = task.dueDate ? formatDue(task.dueDate) : 'No date'
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.done
@@ -87,8 +278,9 @@ function TaskTile({ task, onToggle, onSetDue, onEdit, compact = false }) {
           {task.done && <Check size={12} color="#FFFFFF" strokeWidth={2.5} />}
         </button>
 
-        {/* Content */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Content — tappable to open detail drawer */}
+        <div style={{ flex: 1, minWidth: 0, cursor: task.done ? 'default' : 'pointer' }}
+          onClick={() => !task.done && onDetail && onDetail(task)}>
           <p className="font-outfit" style={{
             fontSize: compact ? '12px' : '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 3px',
             textDecoration: task.done ? 'line-through' : 'none',
@@ -113,16 +305,6 @@ function TaskTile({ task, onToggle, onSetDue, onEdit, compact = false }) {
           </div>
         </div>
 
-        {/* Edit button */}
-        {!task.done && onEdit && (
-          <button
-            onClick={e => { e.stopPropagation(); onEdit(task) }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0, display: 'flex', alignItems: 'center', opacity: 0.35 }}
-          >
-            <Pencil size={13} color="#1A1410" strokeWidth={1.8} />
-          </button>
-        )}
-
         {/* Square category image */}
         <div style={{ width: compact ? 48 : 56, height: compact ? 48 : 56, borderRadius: 12, overflow: 'hidden', flexShrink: 0, opacity: task.done ? 0.4 : 1 }}>
           <img src={cat.image} alt={cat.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -144,7 +326,7 @@ function TaskTile({ task, onToggle, onSetDue, onEdit, compact = false }) {
 }
 
 // ── Category section ──────────────────────────────────────────────────────────
-function CategorySection({ category, tasks, onToggle, onSetDue, onEdit }) {
+function CategorySection({ category, tasks, onToggle, onSetDue, onEdit, onDetail }) {
   const [open, setOpen] = useState(true)
   const cat = taskCategories[category] || taskCategories.vendors
   const undone = tasks.filter(t => !t.done)
@@ -167,7 +349,7 @@ function CategorySection({ category, tasks, onToggle, onSetDue, onEdit }) {
         {open && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
             className="flex flex-col gap-2">
-            {undone.map(t => <TaskTile key={t.id} task={t} onToggle={onToggle} onSetDue={onSetDue} onEdit={onEdit} />)}
+            {undone.map(t => <TaskTile key={t.id} task={t} onToggle={onToggle} onSetDue={onSetDue} onEdit={onEdit} onDetail={onDetail} />)}
           </motion.div>
         )}
       </AnimatePresence>
@@ -440,9 +622,10 @@ function EditTaskSheet({ task, onClose, onSave }) {
 
 // ── Main TasksScreen ──────────────────────────────────────────────────────────
 export default function TasksScreen({ tasks, setTasks }) {
-  const [filter, setFilter]       = useState('All')
-  const [showAdd, setShowAdd]     = useState(false)
+  const [filter, setFilter]           = useState('All')
+  const [showAdd, setShowAdd]         = useState(false)
   const [editingTask, setEditingTask] = useState(null)
+  const [detailTask, setDetailTask]   = useState(null)
 
   const toggleTask = useCallback((id) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
@@ -458,6 +641,12 @@ export default function TasksScreen({ tasks, setTasks }) {
 
   const saveEdit = useCallback((updated) => {
     setTasks(prev => prev.map(t => t.id === updated.id ? updated : t))
+  }, [setTasks])
+
+  const updateAssignees = useCallback((id, assignees) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, assignees } : t))
+    // keep detail drawer in sync
+    setDetailTask(prev => prev?.id === id ? { ...prev, assignees } : prev)
   }, [setTasks])
 
   // Filter undone tasks
@@ -548,7 +737,7 @@ export default function TasksScreen({ tasks, setTasks }) {
             {filter === 'By category' ? (
               Object.keys(taskCategories).map(cat =>
                 byCategory[cat]?.length ? (
-                  <CategorySection key={cat} category={cat} tasks={byCategory[cat]} onToggle={toggleTask} onSetDue={setDue} onEdit={setEditingTask} />
+                  <CategorySection key={cat} category={cat} tasks={byCategory[cat]} onToggle={toggleTask} onSetDue={setDue} onEdit={setEditingTask} onDetail={setDetailTask} />
                 ) : null
               )
             ) : (
@@ -565,7 +754,7 @@ export default function TasksScreen({ tasks, setTasks }) {
                   </motion.div>
                 ) : (
                   sortedTasks.map(task => (
-                    <TaskTile key={task.id} task={task} onToggle={toggleTask} onSetDue={setDue} onEdit={setEditingTask} />
+                    <TaskTile key={task.id} task={task} onToggle={toggleTask} onSetDue={setDue} onEdit={setEditingTask} onDetail={setDetailTask} />
                   ))
                 )}
               </AnimatePresence>
@@ -583,6 +772,16 @@ export default function TasksScreen({ tasks, setTasks }) {
 
       <AnimatePresence>
         {showAdd && <AddTaskSheet onClose={() => setShowAdd(false)} onAdd={addTask} />}
+        <AnimatePresence>
+          {detailTask && (
+            <TaskDetailDrawer
+              task={detailTask}
+              onClose={() => setDetailTask(null)}
+              onEdit={setEditingTask}
+              onUpdateAssignees={updateAssignees}
+            />
+          )}
+        </AnimatePresence>
         <AnimatePresence>
           {editingTask && (
             <EditTaskSheet task={editingTask} onClose={() => setEditingTask(null)} onSave={saveEdit} />
