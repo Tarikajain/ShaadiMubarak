@@ -1,32 +1,35 @@
-import { useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import LogoMark from '../components/layout/LogoMark'
 
 const MAGENTA = '#7A0F46'
 
-// Per-icon animation params: [translateY range, rotate range, duration, delay]
-// Varied so icons feel independent, not synchronized
+// Phase durations (ms)
+const BRAND_DURATION = 2600   // branding screen hold time
+const TOTAL_DURATION = 4800   // when onComplete fires
+
+// Per-icon animation params: [y0, y1, r0, r1, duration, delay]
 const ICON_ANIMS = [
-  [-4,  4,  -1.5, 1.5,  3.2, 0.0 ],   // ic-1
-  [-3,  5,   1.0,-1.0,  2.8, 0.4 ],   // ic-2
-  [-5,  3,  -2.0, 2.0,  3.6, 0.8 ],   // ic-3
-  [-3,  4,   1.5,-1.5,  3.0, 0.2 ],   // ic-4
-  [-6,  4,  -1.0, 1.0,  4.0, 1.0 ],   // ic-5
-  [-4,  6,   2.0,-2.0,  3.4, 0.6 ],   // ic-6
-  [-5,  3,  -1.5, 1.5,  2.9, 0.3 ],   // ic-7
-  [-3,  5,   1.0,-1.0,  3.7, 0.9 ],   // ic-8
-  [-4,  4,  -2.0, 2.0,  3.1, 0.5 ],   // ic-9
-  [-6,  3,   1.5,-1.5,  3.5, 0.1 ],   // ic-10
-  [-3,  5,  -1.0, 1.0,  2.7, 0.7 ],   // ic-11
-  [-5,  4,   2.0,-2.0,  3.8, 0.4 ],   // ic-12
-  [-4,  6,  -1.5, 1.5,  3.2, 1.1 ],   // ic-13
-  [-3,  4,   1.0,-1.0,  2.9, 0.2 ],   // ic-14
-  [-5,  3,  -2.0, 2.0,  3.6, 0.8 ],   // ic-15
-  [-4,  5,   1.5,-1.5,  3.3, 0.5 ],   // ic-16
-  [-3,  4,  -1.0, 1.0,  4.1, 0.3 ],   // ic-17
-  [-5,  3,   2.0,-2.0,  3.0, 0.9 ],   // ic-18
+  [-4,  4,  -1.5, 1.5,  3.2, 0.0 ],
+  [-3,  5,   1.0,-1.0,  2.8, 0.4 ],
+  [-5,  3,  -2.0, 2.0,  3.6, 0.8 ],
+  [-3,  4,   1.5,-1.5,  3.0, 0.2 ],
+  [-6,  4,  -1.0, 1.0,  4.0, 1.0 ],
+  [-4,  6,   2.0,-2.0,  3.4, 0.6 ],
+  [-5,  3,  -1.5, 1.5,  2.9, 0.3 ],
+  [-3,  5,   1.0,-1.0,  3.7, 0.9 ],
+  [-4,  4,  -2.0, 2.0,  3.1, 0.5 ],
+  [-6,  3,   1.5,-1.5,  3.5, 0.1 ],
+  [-3,  5,  -1.0, 1.0,  2.7, 0.7 ],
+  [-5,  4,   2.0,-2.0,  3.8, 0.4 ],
+  [-4,  6,  -1.5, 1.5,  3.2, 1.1 ],
+  [-3,  4,   1.0,-1.0,  2.9, 0.2 ],
+  [-5,  3,  -2.0, 2.0,  3.6, 0.8 ],
+  [-4,  5,   1.5,-1.5,  3.3, 0.5 ],
+  [-3,  4,  -1.0, 1.0,  4.1, 0.3 ],
+  [-5,  3,   2.0,-2.0,  3.0, 0.9 ],
 ]
 
-// Build the CSS animation block for all 18 icons + SVG sizing
 function buildIconCSS() {
   const sizing = `
     #splash-svg-host svg {
@@ -48,12 +51,15 @@ function buildIconCSS() {
 }
 
 export default function SplashScreen({ onComplete }) {
+  const [showIcons, setShowIcons] = useState(false)
+
   useEffect(() => {
-    const t = setTimeout(onComplete, 4500)
-    return () => clearTimeout(t)
+    const brandTimer = setTimeout(() => setShowIcons(true), BRAND_DURATION)
+    const doneTimer  = setTimeout(onComplete, TOTAL_DURATION)
+    return () => { clearTimeout(brandTimer); clearTimeout(doneTimer) }
   }, [onComplete])
 
-  // Fetch the pre-processed SVG (in /public)
+  // Fetch SVG into the always-present host div
   useEffect(() => {
     fetch('/vendor-icons.svg')
       .then(r => r.text())
@@ -78,14 +84,70 @@ export default function SplashScreen({ onComplete }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {/* CSS animations injected into <head> */}
       <style>{buildIconCSS()}</style>
 
-      {/* SVG host — icons fill the screen */}
-      <div
+      {/* Icon field — always in the DOM so the fetch can populate it; fades in at phase 2 */}
+      <motion.div
         id="splash-svg-host"
-        style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'stretch' }}
+        animate={{ opacity: showIcons ? 1 : 0 }}
+        transition={{ duration: 0.6 }}
+        style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'stretch', zIndex: 5 }}
       />
+
+      {/* ── Phase 1: plain magenta + logo + name ── */}
+      <AnimatePresence>
+        {!showIcons && (
+          <motion.div
+            key="brand"
+            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+            style={{
+              position: 'absolute', inset: 0, zIndex: 20,
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              gap: 12,
+            }}
+          >
+            {/* Real logo — white */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.7, ease: [0.34, 1.45, 0.64, 1] }}
+            >
+              <LogoMark light width={96} height={67} />
+            </motion.div>
+
+            {/* App name */}
+            <motion.span
+              className="font-cormorant italic"
+              style={{ fontSize: '40px', color: '#FFFFFF', fontWeight: 300, lineHeight: 1, letterSpacing: '-0.01em' }}
+              initial={{ opacity: 0, letterSpacing: '0.06em' }}
+              animate={{ opacity: 1, letterSpacing: '-0.01em' }}
+              transition={{ delay: 0.55, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              Shaadi Mubarak
+            </motion.span>
+
+            {/* Divider */}
+            <motion.div
+              style={{ height: '1px', background: 'rgba(255,255,255,0.45)' }}
+              initial={{ width: 0 }}
+              animate={{ width: '48px' }}
+              transition={{ delay: 1.05, duration: 0.5, ease: 'easeOut' }}
+            />
+
+            {/* Tagline */}
+            <motion.p
+              className="font-outfit"
+              style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.60)', letterSpacing: '0.14em', margin: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.35, duration: 0.5 }}
+            >
+              YOUR WEDDING, ALWAYS IN VIEW
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

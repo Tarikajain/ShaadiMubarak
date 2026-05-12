@@ -1,14 +1,14 @@
 // Real logo mark — Group 1000002962.svg
 // light=true  → white logo (for use on dark/magenta backgrounds)
 // light=false → brand-colour logo (for use on light backgrounds)
-export default function LogoMark({ light = false }) {
+export default function LogoMark({ light = false, width = 46, height = 32 }) {
   const main = light ? '#FFFFFF' : '#600C38'
   const detail = light ? 'rgba(122,15,70,0.70)' : '#FFFFFF'
 
   return (
     <svg
-      width="46"
-      height="32"
+      width={width}
+      height={height}
       viewBox="0 0 56 39"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
