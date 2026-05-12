@@ -261,11 +261,16 @@ const INVITE_TEMPLATES = [
 // ─── Website / Invite Setup Sheet ────────────────────────────────
 // ─── Asset tile config ────────────────────────────────────────────
 const CORE_ASSETS = [
-  { id: 'website',  label: 'Wedding Website',  icon: Globe,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)', iconBorder: 'rgba(122,15,70,0.20)', tileBg: 'linear-gradient(145deg,rgba(122,15,70,0.10) 0%,rgba(122,15,70,0.03) 100%)' },
-  { id: 'invites',  label: 'Digital Invites',  icon: Mail,   color: '#1A3A6B', iconBg: 'rgba(26,58,107,0.10)',  iconBorder: 'rgba(26,58,107,0.20)',  tileBg: 'linear-gradient(145deg,rgba(26,58,107,0.10) 0%,rgba(26,58,107,0.03) 100%)' },
-  { id: 'registry', label: 'Gift Registry',    icon: Gift,   color: '#2D6025', iconBg: 'rgba(45,96,37,0.10)',   iconBorder: 'rgba(45,96,37,0.20)',   tileBg: 'linear-gradient(145deg,rgba(45,96,37,0.10) 0%,rgba(45,96,37,0.03) 100%)' },
-  { id: 'wardrobe', label: 'Wardrobe Planner', icon: Shirt,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)',  iconBorder: 'rgba(122,15,70,0.20)',  tileBg: 'linear-gradient(145deg,rgba(122,15,70,0.10) 0%,rgba(122,15,70,0.03) 100%)' },
-  { id: 'favors',   label: 'Guest Favors',     icon: Heart,  color: '#A07020', iconBg: 'rgba(160,112,32,0.10)', iconBorder: 'rgba(160,112,32,0.22)', tileBg: 'linear-gradient(145deg,rgba(160,112,32,0.10) 0%,rgba(160,112,32,0.03) 100%)' },
+  { id: 'website',  label: 'Wedding Website',  icon: Globe,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)', iconBorder: 'rgba(122,15,70,0.20)',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&h=220&q=75' },
+  { id: 'invites',  label: 'Digital Invites',  icon: Mail,   color: '#1A3A6B', iconBg: 'rgba(26,58,107,0.10)',  iconBorder: 'rgba(26,58,107,0.20)',
+    image: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=400&h=220&q=75' },
+  { id: 'registry', label: 'Gift Registry',    icon: Gift,   color: '#2D6025', iconBg: 'rgba(45,96,37,0.10)',   iconBorder: 'rgba(45,96,37,0.20)',
+    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=400&h=220&q=75' },
+  { id: 'wardrobe', label: 'Wardrobe Planner', icon: Shirt,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)',  iconBorder: 'rgba(122,15,70,0.20)',
+    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=400&h=220&q=75' },
+  { id: 'favors',   label: 'Guest Favors',     icon: Heart,  color: '#A07020', iconBg: 'rgba(160,112,32,0.10)', iconBorder: 'rgba(160,112,32,0.22)',
+    image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=400&h=220&q=75' },
 ]
 
 function AssetSetupSheet({ type, onClose, onSave }) {
@@ -823,21 +828,30 @@ function GuestAssets() {
               <motion.button key={asset.id} onClick={() => setOpenSheet(asset.id)}
                 whileTap={{ scale: 0.97 }}
                 style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 16, padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}>
-                {/* Coloured icon area */}
-                <div style={{ background: asset.tileBg, padding: '18px 18px 14px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 13, background: asset.iconBg, border: `1px solid ${asset.iconBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon size={20} color={asset.color} strokeWidth={1.8} />
+                {/* Cover image */}
+                <div style={{ position: 'relative', height: 110, overflow: 'hidden' }}>
+                  <img src={asset.image} alt={asset.label}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+                  />
+                  {/* Fallback gradient */}
+                  <div style={{ display: 'none', position: 'absolute', inset: 0, background: `linear-gradient(145deg,${asset.iconBg},transparent)`, alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon size={32} color={asset.color} strokeWidth={1.5} />
                   </div>
+                  {/* Status badge over image */}
                   {status && (
-                    <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.10)', border: '1px solid rgba(45,96,37,0.22)', padding: '2px 7px', borderRadius: '99px' }}>{status}</span>
+                    <span className="font-outfit" style={{ position: 'absolute', top: 8, right: 8, fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(255,255,255,0.92)', border: '1px solid rgba(45,96,37,0.28)', padding: '2px 7px', borderRadius: '99px' }}>{status}</span>
                   )}
                 </div>
                 {/* Label area */}
-                <div style={{ padding: '10px 14px 14px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                  <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 3px', lineHeight: 1.2 }}>{asset.label}</p>
-                  <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: 0 }}>
-                    {status ? 'Tap to manage' : 'Not set up'}
-                  </p>
+                <div style={{ padding: '10px 12px 13px', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: asset.iconBg, border: `1px solid ${asset.iconBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Icon size={13} color={asset.color} strokeWidth={1.8} />
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{asset.label}</p>
+                    <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: 0 }}>{status ? 'Tap to manage' : 'Not set up'}</p>
+                  </div>
                 </div>
               </motion.button>
             )

@@ -1,6 +1,6 @@
 import { useState, useContext, createContext, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, ChevronDown, ChevronUp, Calendar, Check, RotateCcw, X } from 'lucide-react'
+import { Plus, ChevronDown, ChevronUp, Calendar, Check, RotateCcw, X, Pencil } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
@@ -56,7 +56,7 @@ function DatePickerModal({ task, onClose, onSave }) {
 }
 
 // ── Task tile ─────────────────────────────────────────────────────────────────
-function TaskTile({ task, onToggle, onSetDue, compact = false }) {
+function TaskTile({ task, onToggle, onSetDue, onEdit, compact = false }) {
   const cat = taskCategories[task.category] || taskCategories.vendors
   const dueLabel = task.dueDate ? formatDue(task.dueDate) : 'No date'
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.done
@@ -113,6 +113,16 @@ function TaskTile({ task, onToggle, onSetDue, compact = false }) {
           </div>
         </div>
 
+        {/* Edit button */}
+        {!task.done && onEdit && (
+          <button
+            onClick={e => { e.stopPropagation(); onEdit(task) }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0, display: 'flex', alignItems: 'center', opacity: 0.35 }}
+          >
+            <Pencil size={13} color="#1A1410" strokeWidth={1.8} />
+          </button>
+        )}
+
         {/* Square category image */}
         <div style={{ width: compact ? 48 : 56, height: compact ? 48 : 56, borderRadius: 12, overflow: 'hidden', flexShrink: 0, opacity: task.done ? 0.4 : 1 }}>
           <img src={cat.image} alt={cat.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -134,7 +144,7 @@ function TaskTile({ task, onToggle, onSetDue, compact = false }) {
 }
 
 // ── Category section ──────────────────────────────────────────────────────────
-function CategorySection({ category, tasks, onToggle, onSetDue }) {
+function CategorySection({ category, tasks, onToggle, onSetDue, onEdit }) {
   const [open, setOpen] = useState(true)
   const cat = taskCategories[category] || taskCategories.vendors
   const undone = tasks.filter(t => !t.done)
@@ -157,7 +167,7 @@ function CategorySection({ category, tasks, onToggle, onSetDue }) {
         {open && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
             className="flex flex-col gap-2">
-            {undone.map(t => <TaskTile key={t.id} task={t} onToggle={onToggle} onSetDue={onSetDue} />)}
+            {undone.map(t => <TaskTile key={t.id} task={t} onToggle={onToggle} onSetDue={onSetDue} onEdit={onEdit} />)}
           </motion.div>
         )}
       </AnimatePresence>
@@ -329,10 +339,110 @@ function AddTaskSheet({ onClose, onAdd }) {
   )
 }
 
+// ── Edit Task Sheet ───────────────────────────────────────────────────────────
+function EditTaskSheet({ task, onClose, onSave }) {
+  const [title, setTitle]       = useState(task.title)
+  const [category, setCategory] = useState(task.category)
+  const [dueDate, setDueDate]   = useState(task.dueDate || '')
+  const [priority, setPriority] = useState(task.priority || 'medium')
+
+  const submit = () => {
+    if (!title.trim()) return
+    onSave({ ...task, title: title.trim(), category, dueDate, priority })
+    onClose()
+  }
+
+  return (
+    <>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 60 }} />
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 61, padding: '20px 20px 36px' }}
+      >
+        <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 18px' }} />
+        <div className="flex items-center justify-between" style={{ marginBottom: 18 }}>
+          <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: 0 }}>Edit task</p>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+            <X size={18} color="rgba(26,20,16,0.4)" />
+          </button>
+        </div>
+
+        {/* Title */}
+        <div className="glass-input flex items-center" style={{ padding: '12px 14px', marginBottom: 12 }}>
+          <input
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="Task title…"
+            autoFocus
+            onKeyDown={e => e.key === 'Enter' && submit()}
+            style={{ fontSize: '14px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }}
+          />
+        </div>
+
+        {/* Category */}
+        <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.08em', margin: '0 0 8px' }}>CATEGORY</p>
+        <div className="flex flex-wrap gap-2" style={{ marginBottom: 14 }}>
+          {Object.entries(taskCategories).map(([key, cat]) => (
+            <button key={key} onClick={() => setCategory(key)}
+              className="font-outfit"
+              style={{ fontSize: '10px', fontWeight: 500, padding: '5px 11px', borderRadius: 99, cursor: 'pointer', transition: 'all 0.15s ease',
+                border: category === key ? '1px solid rgba(122,15,70,0.45)' : '1px solid rgba(0,0,0,0.09)',
+                background: category === key ? 'rgba(122,15,70,0.08)' : 'rgba(0,0,0,0.02)',
+                color: category === key ? '#7A0F46' : 'rgba(26,20,16,0.5)',
+              }}>
+              {cat.label.split(' ')[0]}
+            </button>
+          ))}
+        </div>
+
+        {/* Priority + Due date row */}
+        <div className="flex gap-2" style={{ marginBottom: 18 }}>
+          <div style={{ flex: 1 }}>
+            <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.08em', margin: '0 0 8px' }}>PRIORITY</p>
+            <div className="flex gap-1">
+              {['high', 'medium', 'low'].map(p => (
+                <button key={p} onClick={() => setPriority(p)}
+                  className="font-outfit flex-1"
+                  style={{ fontSize: '10px', fontWeight: 500, padding: '6px 0', borderRadius: 9, cursor: 'pointer', transition: 'all 0.15s ease', textTransform: 'capitalize',
+                    border: priority === p ? '1px solid rgba(122,15,70,0.45)' : '1px solid rgba(0,0,0,0.09)',
+                    background: priority === p ? 'rgba(122,15,70,0.08)' : 'rgba(0,0,0,0.02)',
+                    color: priority === p ? '#7A0F46' : 'rgba(26,20,16,0.5)',
+                  }}>
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.08em', margin: '0 0 8px' }}>DUE DATE</p>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={e => setDueDate(e.target.value)}
+              className="font-outfit"
+              style={{ width: '100%', padding: '7px 10px', borderRadius: 9, border: '1px solid rgba(0,0,0,0.1)', fontSize: '11px', fontWeight: 300, color: '#1A1410', outline: 'none', boxSizing: 'border-box', background: '#FFFBF5' }}
+            />
+          </div>
+        </div>
+
+        <button onClick={submit} disabled={!title.trim()}
+          className="w-full font-outfit"
+          style={{ background: title.trim() ? 'linear-gradient(135deg, #7A0F46, #5C0B35)' : 'rgba(0,0,0,0.06)', color: title.trim() ? '#FFFFFF' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 500, padding: '14px', borderRadius: 14, border: 'none', cursor: title.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.18s ease', boxShadow: title.trim() ? '0 4px 14px rgba(122,15,70,0.25)' : 'none' }}>
+          Save changes
+        </button>
+      </motion.div>
+    </>
+  )
+}
+
 // ── Main TasksScreen ──────────────────────────────────────────────────────────
 export default function TasksScreen({ tasks, setTasks }) {
-  const [filter, setFilter] = useState('All')
-  const [showAdd, setShowAdd] = useState(false)
+  const [filter, setFilter]       = useState('All')
+  const [showAdd, setShowAdd]     = useState(false)
+  const [editingTask, setEditingTask] = useState(null)
 
   const toggleTask = useCallback((id) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
@@ -344,6 +454,10 @@ export default function TasksScreen({ tasks, setTasks }) {
 
   const addTask = useCallback((task) => {
     setTasks(prev => [task, ...prev])
+  }, [setTasks])
+
+  const saveEdit = useCallback((updated) => {
+    setTasks(prev => prev.map(t => t.id === updated.id ? updated : t))
   }, [setTasks])
 
   // Filter undone tasks
@@ -434,7 +548,7 @@ export default function TasksScreen({ tasks, setTasks }) {
             {filter === 'By category' ? (
               Object.keys(taskCategories).map(cat =>
                 byCategory[cat]?.length ? (
-                  <CategorySection key={cat} category={cat} tasks={byCategory[cat]} onToggle={toggleTask} onSetDue={setDue} />
+                  <CategorySection key={cat} category={cat} tasks={byCategory[cat]} onToggle={toggleTask} onSetDue={setDue} onEdit={setEditingTask} />
                 ) : null
               )
             ) : (
@@ -451,7 +565,7 @@ export default function TasksScreen({ tasks, setTasks }) {
                   </motion.div>
                 ) : (
                   sortedTasks.map(task => (
-                    <TaskTile key={task.id} task={task} onToggle={toggleTask} onSetDue={setDue} />
+                    <TaskTile key={task.id} task={task} onToggle={toggleTask} onSetDue={setDue} onEdit={setEditingTask} />
                   ))
                 )}
               </AnimatePresence>
@@ -469,6 +583,11 @@ export default function TasksScreen({ tasks, setTasks }) {
 
       <AnimatePresence>
         {showAdd && <AddTaskSheet onClose={() => setShowAdd(false)} onAdd={addTask} />}
+        <AnimatePresence>
+          {editingTask && (
+            <EditTaskSheet task={editingTask} onClose={() => setEditingTask(null)} onSave={saveEdit} />
+          )}
+        </AnimatePresence>
       </AnimatePresence>
     </div>
   )
