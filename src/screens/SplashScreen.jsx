@@ -113,7 +113,7 @@ export default function SplashScreen({ onComplete }) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.7, ease: [0.34, 1.45, 0.64, 1] }}
             >
-              <LogoMark light width={96} height={67} />
+              <LogoMark light width={60} height={42} />
             </motion.div>
 
             {/* App name */}
