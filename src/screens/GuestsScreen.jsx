@@ -718,7 +718,7 @@ export default function GuestsScreen() {
                 className="flex flex-col gap-4">
 
                 {/* Combined search + filter row */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" style={{ overflow: 'hidden' }}>
 
                   {/* Search — icon that expands to full input */}
                   {/* Search — expands to ~120px, filters stay visible */}
@@ -762,7 +762,7 @@ export default function GuestsScreen() {
                   <div className="flex items-center gap-2" style={{ flex: 1, minWidth: 0 }}>
 
                   {/* RSVP status dropdown */}
-                  <div className="relative flex-1">
+                  <div className="relative flex-1" style={{ minWidth: 0 }}>
                     <button onClick={() => { setShowRsvpDrop(v => !v); setShowSideDrop(false); setShowUploadDrop(false) }}
                       className="w-full flex items-center justify-between gap-1.5 font-outfit"
                       style={{ fontSize: '11px', fontWeight: 500, padding: '8px 12px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.18s ease',
@@ -770,7 +770,7 @@ export default function GuestsScreen() {
                         background: filter !== 'All' ? 'rgba(122,15,70,0.07)' : 'rgba(0,0,0,0.02)',
                         color: filter !== 'All' ? '#7A0F46' : 'rgba(26,20,16,0.55)',
                       }}>
-                      <span>{filter === 'All' ? 'Status' : filter}</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{filter === 'All' ? 'Status' : filter}</span>
                       <ChevronDown size={11} style={{ flexShrink: 0, transition: 'transform 0.18s', transform: showRsvpDrop ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                     </button>
                     <AnimatePresence>
@@ -799,7 +799,7 @@ export default function GuestsScreen() {
                   </div>
 
                   {/* Side dropdown */}
-                  <div className="relative flex-1">
+                  <div className="relative flex-1" style={{ minWidth: 0 }}>
                     <button onClick={() => { setShowSideDrop(v => !v); setShowRsvpDrop(false); setShowUploadDrop(false) }}
                       className="w-full flex items-center justify-between gap-1.5 font-outfit"
                       style={{ fontSize: '11px', fontWeight: 500, padding: '8px 12px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.18s ease',
