@@ -638,7 +638,12 @@ export default function GuestsScreen() {
   const coupleNames = `${wedding.couple.bride} & ${wedding.couple.groom}`
   const sideFiltered   = sideFilter === 'All' ? guestList : guestList.filter(g => g.side === sideFilter)
   const searchFiltered = search.trim()
-    ? sideFiltered.filter(g => g.name.toLowerCase().includes(search.toLowerCase()) || (g.contact && g.contact.toLowerCase().includes(search.toLowerCase())))
+    ? sideFiltered.filter(g => {
+        const q = search.trim().toLowerCase()
+        const nameMatch = g.name.toLowerCase().split(/\s+/).some(word => word.startsWith(q))
+        const contactMatch = g.contact && g.contact.toLowerCase().startsWith(q)
+        return nameMatch || contactMatch
+      })
     : sideFiltered
   const filtered   = filter === 'All' ? searchFiltered : searchFiltered.filter(g => g.rsvp === filter.toLowerCase())
   const confirmed  = sideFiltered.filter(g => g.rsvp === 'confirmed')
@@ -737,9 +742,6 @@ export default function GuestsScreen() {
                   >
                     {searchOpen ? (
                       <>
-                        <button onClick={() => { setSearchOpen(false); setSearch('') }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
-                          <X size={12} color="rgba(26,20,16,0.35)" />
-                        </button>
                         <input
                           autoFocus
                           value={search}
@@ -747,11 +749,12 @@ export default function GuestsScreen() {
                           placeholder="Search…"
                           style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif', minWidth: 0 }}
                         />
-                        {search && (
-                          <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
-                            <X size={10} color="rgba(26,20,16,0.28)" />
-                          </button>
-                        )}
+                        {/* Single X: clears text if present, collapses search if empty */}
+                        <button
+                          onClick={() => search ? setSearch('') : (setSearchOpen(false))}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
+                          <X size={12} color="rgba(26,20,16,0.35)" />
+                        </button>
                       </>
                     ) : (
                       <Search size={14} color="rgba(26,20,16,0.45)" />
