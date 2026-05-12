@@ -723,16 +723,16 @@ export default function GuestsScreen() {
                 className="flex flex-col gap-4">
 
                 {/* Combined search + filter row */}
-                <div className="flex items-center gap-2" style={{ overflow: 'hidden' }}>
+                <div className="flex items-center gap-2">
 
                   {/* Search — icon that expands to full input */}
                   {/* Search — expands to ~120px, filters stay visible */}
                   <motion.div
-                    animate={{ width: searchOpen ? 120 : 36 }}
+                    animate={{ width: searchOpen ? 116 : 36, flexShrink: searchOpen ? 1 : 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                     className={searchOpen ? 'glass-input' : ''}
                     style={{
-                      flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', gap: 6,
+                      overflow: 'hidden', display: 'flex', alignItems: 'center', gap: 6, flexShrink: searchOpen ? 1 : 0, minWidth: searchOpen ? 60 : 36,
                       ...(searchOpen
                         ? { padding: '8px 10px', height: 36 }
                         : { width: 36, height: 36, borderRadius: '10px', border: '1px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.02)', cursor: 'pointer', justifyContent: 'center' }
@@ -773,7 +773,7 @@ export default function GuestsScreen() {
                         background: filter !== 'All' ? 'rgba(122,15,70,0.07)' : 'rgba(0,0,0,0.02)',
                         color: filter !== 'All' ? '#7A0F46' : 'rgba(26,20,16,0.55)',
                       }}>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{filter === 'All' ? 'Status' : filter}</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{filter === 'All' ? 'All' : filter}</span>
                       <ChevronDown size={11} style={{ flexShrink: 0, transition: 'transform 0.18s', transform: showRsvpDrop ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                     </button>
                     <AnimatePresence>
