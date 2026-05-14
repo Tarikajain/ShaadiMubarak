@@ -449,7 +449,6 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
             Edit with Mubarak
           </button>
         </div>
-        <BottomNav />
       </motion.div>
     )
   }
@@ -615,8 +614,6 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
               </div>
             </div>
 
-            {/* BottomNav anchors the AgentBar pill at its correct position */}
-            <BottomNav />
           </motion.div>
         )}
 
