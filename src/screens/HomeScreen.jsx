@@ -1,19 +1,22 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Check, Calendar, ArrowRight, Sparkles } from 'lucide-react'
+import { X, Check, Calendar, ArrowRight } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
 import LogoMark from '../components/layout/LogoMark'
-import { wedding, crisis } from '../data/mockData'
+import { ceremonies } from '../data/mockData'
 import { taskCategories, getTopTasks, formatDue } from '../data/tasksData'
+import { getWeddingProfile } from '../utils/profileUtils'
+import { TaskDetailDrawer } from './TasksScreen'
+import { VIBES, DEFAULT_VIBE } from '../data/vibesData'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } }
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] } } }
 
 // ── Compact task tile for home screen ────────────────────────────────────────
-function HomeTaskTile({ task, onToggle }) {
+function HomeTaskTile({ task, onToggle, onSelect }) {
   const cat = taskCategories[task.category] || taskCategories.vendors
   const dueLabel = task.dueDate ? formatDue(task.dueDate) : ''
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date()
@@ -26,11 +29,12 @@ function HomeTaskTile({ task, onToggle }) {
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 420, damping: 32 }}
       className="glass-card flex items-center gap-3"
-      style={{ padding: '11px 12px' }}
+      style={{ padding: '11px 12px', cursor: 'pointer' }}
+      onClick={() => onSelect(task)}
     >
       {/* Checkbox */}
       <button
-        onClick={() => onToggle(task.id)}
+        onClick={(e) => { e.stopPropagation(); onToggle(task.id) }}
         style={{
           width: 21, height: 21, borderRadius: '50%', flexShrink: 0, cursor: 'pointer',
           border: `2px solid ${task.done ? '#7A0F46' : 'rgba(0,0,0,0.18)'}`,
@@ -44,15 +48,15 @@ function HomeTaskTile({ task, onToggle }) {
 
       {/* Text */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', textDecoration: task.done ? 'line-through' : 'none', opacity: task.done ? 0.5 : 1 }}>
+        <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', textDecoration: task.done ? 'line-through' : 'none', opacity: task.done ? 0.5 : 1 }}>
           {task.title}
         </p>
         <div className="flex items-center gap-2">
-          <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 99, padding: '1px 6px', letterSpacing: '0.04em' }}>
+          <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 99, padding: '1px 6px', letterSpacing: '0.04em' }}>
             {cat.label.split(' ')[0].toUpperCase()}
           </span>
           {dueLabel && (
-            <span className="font-outfit flex items-center gap-1" style={{ fontSize: '10px', fontWeight: 300, color: isOverdue ? '#B03A10' : 'rgba(26,20,16,0.38)' }}>
+            <span className="font-work-sans flex items-center gap-1" style={{ fontSize: '10px', fontWeight: 400, color: isOverdue ? '#B03A10' : 'rgba(26,20,16,0.54)' }}>
               <Calendar size={8} strokeWidth={2} />{dueLabel}
             </span>
           )}
@@ -127,13 +131,13 @@ function WidgetModal({ onClose, installPrompt }) {
             <div style={{ width: 22, height: 22, borderRadius: 6, background: '#7A0F46', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ fontSize: 11, color: '#fff' }}>✦</span>
             </div>
-            <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 500, color: 'rgba(122,15,70,0.9)', letterSpacing: '0.1em' }}>SHAADI MUBARAK</span>
+            <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 500, color: 'rgba(122,15,70,0.9)', letterSpacing: '0.1em' }}>SHAADI MUBARAK</span>
           </div>
-          <p className="font-cormorant italic" style={{ fontSize: '15px', color: '#FFFFFF', fontWeight: 300, margin: '0 0 12px' }}>Dec 17 · 4 days away</p>
+          <p className="font-cormorant italic" style={{ fontSize: '15px', color: '#FFFFFF', fontWeight: 400, margin: '0 0 12px', textAlign: 'center' }}>Dec 17 · 4 days away</p>
           {['Confirm Pandit Sureshji', 'Send mehndi backup message', 'Review Baraat timeline'].map((task, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: i < 2 ? 8 : 0 }}>
               <div style={{ width: 15, height: 15, borderRadius: '50%', border: '1.5px solid rgba(122,15,70,0.6)', flexShrink: 0 }} />
-              <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.7)' }}>{task}</span>
+              <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.7)' }}>{task}</span>
             </div>
           ))}
         </div>
@@ -147,32 +151,32 @@ function WidgetModal({ onClose, installPrompt }) {
               </div>
             </motion.div>
             <div>
-              <p className="font-outfit" style={{ fontSize: '15px', fontWeight: 600, color: '#1A1410', margin: '0 0 4px' }}>You're all set!</p>
-              <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: 0 }}>Shaadi Mubarak is on your home screen</p>
+              <p className="font-work-sans" style={{ fontSize: '15px', fontWeight: 600, color: '#1A1410', margin: '0 0 4px' }}>You're all set!</p>
+              <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>Shaadi Mubarak is on your home screen</p>
             </div>
           </div>
         ) : canNativeInstall ? (
           // Android native install (1-tap)
           <>
-            <p className="font-cormorant italic" style={{ fontSize: '24px', color: '#1A1410', fontWeight: 300, margin: '0 0 6px', letterSpacing: '-0.01em' }}>Add to home screen</p>
-            <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.5)', lineHeight: 1.6, margin: '0 0 20px' }}>
+            <p className="font-cormorant italic" style={{ fontSize: '24px', color: '#1A1410', fontWeight: 500, margin: '0 0 6px', letterSpacing: '-0.01em', textAlign: 'center' }}>Add to home screen</p>
+            <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.5)', lineHeight: 1.6, margin: '0 0 20px' }}>
               Get instant access to your wedding tasks and countdown without opening the browser.
             </p>
             <button onClick={handleNativeInstall}
-              className="w-full font-outfit flex items-center justify-center gap-2"
-              style={{ background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', color: '#FFFFFF', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.3)' }}>
+              className="w-full font-work-sans flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', color: '#FFFFFF', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.3)' }}>
               <AddToHomeIcon size={17} />
               Add to Home Screen
             </button>
-            <p className="font-outfit text-center" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.35)', margin: '12px 0 0' }}>
+            <p className="font-work-sans text-center" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: '12px 0 0' }}>
               Your browser will ask for confirmation
             </p>
           </>
         ) : (
           // iOS / fallback illustrated guide
           <>
-            <p className="font-cormorant italic" style={{ fontSize: '24px', color: '#1A1410', fontWeight: 300, margin: '0 0 6px', letterSpacing: '-0.01em' }}>Add to home screen</p>
-            <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.5)', lineHeight: 1.6, margin: '0 0 18px' }}>
+            <p className="font-cormorant italic" style={{ fontSize: '24px', color: '#1A1410', fontWeight: 500, margin: '0 0 6px', letterSpacing: '-0.01em', textAlign: 'center' }}>Add to home screen</p>
+            <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.5)', lineHeight: 1.6, margin: '0 0 18px' }}>
               {ios ? 'Follow these steps in Safari:' : 'In Chrome, tap the menu (⋮) then:'}
             </p>
 
@@ -222,16 +226,16 @@ function WidgetModal({ onClose, installPrompt }) {
                     {step.icon}
                   </div>
                   <div>
-                    <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>{step.label}</p>
-                    <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: '2px 0 0' }}>{step.sub}</p>
+                    <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>{step.label}</p>
+                    <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: '2px 0 0' }}>{step.sub}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             <button onClick={onClose}
-              className="w-full font-outfit"
-              style={{ background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', color: '#FFFFFF', fontSize: '14px', fontWeight: 500, padding: '14px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+              className="w-full font-work-sans"
+              style={{ background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', color: '#FFFFFF', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '14px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
               Got it
             </button>
           </>
@@ -241,12 +245,13 @@ function WidgetModal({ onClose, installPrompt }) {
   )
 }
 
-export default function HomeScreen({ tasks = [], setTasks }) {
+export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests = [], onOpenAgent }) {
   const navigate = useNavigate()
   const [couplePhoto, setCouplePhoto] = useState(null)
   const [widgetDismissed, setWidgetDismissed] = useState(false)
   const [showWidgetModal, setShowWidgetModal] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
+  const [selectedTask, setSelectedTask] = useState(null)
 
   // Capture the browser's install prompt (Android/Chrome only)
   useEffect(() => {
@@ -259,6 +264,10 @@ export default function HomeScreen({ tasks = [], setTasks }) {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
   }, [setTasks])
 
+  const updateAssignees = useCallback((id, assignees) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, assignees } : t))
+  }, [setTasks])
+
   const topTasks = getTopTasks(tasks, 5)
 
   const handlePhotoChange = (e) => {
@@ -266,142 +275,142 @@ export default function HomeScreen({ tasks = [], setTasks }) {
     if (file) setCouplePhoto(URL.createObjectURL(file))
   }
 
+  // Read profile data (falls back to sensible defaults if no profile set)
+  const profile = getWeddingProfile()
+  const brideName = profile?.bride || 'The Bride'
+  const partnerName = profile?.partner || 'The Groom'
+  const venueShort = (profile?.location || 'Venue TBD').split(',')[0]
+
   // Compute live countdown from wedding date
-  const weddingDateTime = new Date('2026-12-17T00:00:00')
+  const weddingDateTime = profile?.date ? new Date(profile.date) : new Date('2026-12-17T00:00:00')
   const msLeft = Math.max(0, weddingDateTime.getTime() - Date.now())
   const daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24))
   const hoursLeft = Math.floor((msLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
   const weddingDayOfWeek = weddingDateTime.toLocaleDateString('en-US', { weekday: 'long' })
   const shortDate = weddingDateTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-  const venueShort = wedding.venue.split(',')[0]
-
-  // Exact Mughal arch from design file — x scaled 370→375, y as-is
-  // Original SVG: 370×333, arch baseline y≈245, center bottom y=327
-  const archPath = "path('M 0 0 H 375 V 245.6 L 336.72 248.56 C 337.02 256.46 328.98 270.76 294.25 264.84 C 297.50 273.56 292.65 292.67 247.34 299.37 C 202.00 306.08 187.72 320.59 186.24 327 C 183.88 320.09 168.18 304.9 124.27 299.37 C 80.36 293.85 75.28 274.05 78.24 264.84 C 63.77 266.82 35.56 266.32 38.39 248.56 L 0 245.1 Z')"
 
   return (
     <div className="relative flex flex-col h-full" style={{ background: '#FFFBF5' }}>
       <div className="relative flex flex-col h-full overflow-y-auto no-scrollbar">
 
-        {/* ── Full-bleed torana hero ── */}
-        <div style={{ position: 'relative', width: '100%', height: '334px', flexShrink: 0 }}>
+        {/* ── Vibe tile hero card ── */}
+        {(() => {
+          const profile = getWeddingProfile()
+          const vibeId = profile?.vibe
+          const vibe = VIBES.find(v => v.id === vibeId) || DEFAULT_VIBE
+          return (
+            <div style={{ position: 'relative', flexShrink: 0, height: 290 }}>
+              {/* Full-bleed hero — no side padding, no border radius */}
+              <div style={{ position: 'relative', height: '100%', overflow: 'hidden' }}>
+                {/* Vibe background image */}
+                <img
+                  src={couplePhoto || vibe.img}
+                  alt=""
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+                />
+                {/* Gradient overlay */}
+                <div style={{ position: 'absolute', inset: 0, background: vibe.gradient }} />
 
-          {/* Clipped background — magenta + damask pattern */}
-          <div style={{ position: 'absolute', inset: 0, clipPath: archPath, overflow: 'hidden' }}>
-            {/* Base colour */}
-            <div style={{ position: 'absolute', inset: 0, background: '#7A0F46' }} />
+                {/* StatusBar */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 5, pointerEvents: 'none' }}>
+                  <StatusBar light />
+                </div>
 
-            {/* Damask / brocade pattern overlay */}
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="damask" patternUnits="userSpaceOnUse" width="80" height="80">
-                  {/* 4-petal lotus */}
-                  <path d="M40 22 Q47 31 40 40 Q33 31 40 22Z M58 40 Q49 47 40 40 Q49 33 58 40Z M40 58 Q33 49 40 40 Q47 49 40 58Z M22 40 Q31 33 40 40 Q31 47 22 40Z" fill="rgba(255,255,255,0.07)"/>
-                  {/* Inner diamond */}
-                  <path d="M40 34 L46 40 L40 46 L34 40Z" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8"/>
-                  {/* Outer circle */}
-                  <circle cx="40" cy="40" r="19" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.7"/>
-                  {/* Corner ornaments */}
-                  <path d="M0 0 L5 3 L0 6Z M80 0 L75 3 L80 6Z M0 80 L5 77 L0 74Z M80 80 L75 77 L80 74Z" fill="rgba(255,255,255,0.06)"/>
-                  {/* Mid-edge diamonds */}
-                  <path d="M40 0 L43 5 L40 10 L37 5Z M40 70 L43 75 L40 80 L37 75Z M0 40 L5 37 L10 40 L5 43Z M70 40 L75 37 L80 40 L75 43Z" fill="rgba(255,255,255,0.05)"/>
-                  {/* Diagonal scroll lines */}
-                  <path d="M0 20 Q20 0 40 20 Q60 40 80 20" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="0.7"/>
-                  <path d="M0 60 Q20 80 40 60 Q60 40 80 60" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="0.7"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#damask)"/>
-            </svg>
+                {/* Logo + NavIcons */}
+                <div style={{ position: 'absolute', top: 46, left: 18, right: 16, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <LogoMark light />
+                  <NavIcons light />
+                </div>
 
-            {/* Optional couple photo overlay */}
-            {couplePhoto && (
-              <img src={couplePhoto} alt="couple" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', opacity: 0.28, mixBlendMode: 'overlay' }} />
-            )}
-
-            {/* Subtle top + bottom vignette */}
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.22) 0%, transparent 30%, transparent 65%, rgba(0,0,0,0.18) 100%)' }} />
-          </div>
-
-          {/* StatusBar — white */}
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 5, pointerEvents: 'none' }}>
-            <StatusBar light />
-          </div>
-
-          {/* Logo + NavIcons row */}
-          <div style={{ position: 'absolute', top: 46, left: 18, right: 16, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <LogoMark light />
-            <NavIcons light />
-          </div>
-
-          {/* Centred text content — sits within straight rectangle portion (y=82 to y=240) */}
-          <div style={{ position: 'absolute', top: 82, left: 20, right: 20, height: 158, zIndex: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
-            <h1 className="font-cormorant italic" style={{ fontSize: '42px', color: '#FFFFFF', fontWeight: 300, margin: '0 0 8px', letterSpacing: '-0.02em', textAlign: 'center', lineHeight: 1.05 }}>
-              {wedding.couple.bride} &amp; {wedding.couple.groom}
-            </h1>
-            <p className="font-outfit" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.72)', fontWeight: 300, margin: '0 0 10px', textAlign: 'center', letterSpacing: '0.01em' }}>
-              {weddingDayOfWeek} &nbsp;·&nbsp; {shortDate} &nbsp;·&nbsp; {venueShort}
-            </p>
-            <label htmlFor="couple-photo" style={{ cursor: 'pointer', marginBottom: '18px' }}>
-              <span className="font-outfit" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
-                Change image
-              </span>
-            </label>
-            <div style={{ border: '1px solid rgba(255,255,255,0.42)', borderRadius: '99px', padding: '7px 22px', backdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.08)' }}>
-              <span className="font-outfit" style={{ fontSize: '13px', color: '#FFFFFF', fontWeight: 400, letterSpacing: '0.02em' }}>
-                {daysLeft} days &nbsp;·&nbsp; {hoursLeft} hrs
-              </span>
-            </div>
-          </div>
-
-          <input id="couple-photo" type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
-        </div>
-
-        <motion.div className="flex flex-col gap-5 px-5 pb-4" variants={container} initial="hidden" animate="show" style={{ marginTop: '-4px' }}>
-
-          {/* Crisis card */}
-          <motion.div variants={item}>
-            <motion.div
-              className="cursor-pointer card-interactive"
-              style={{ padding: '18px', borderRadius: '16px', background: 'rgba(122,15,70,0.06)', border: '1px solid rgba(122,15,70,0.20)' }}
-              onClick={() => navigate('/crisis')}
-              whileHover={{ y: -2, transition: { duration: 0.15 } }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <p className="font-outfit flex-1" style={{ fontSize: '15px', fontWeight: 500, color: '#1A1410', margin: 0, lineHeight: 1.35 }}>{crisis.title}</p>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(122,15,70,0.1)', border: '1px solid rgba(122,15,70,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Sparkles size={14} color="#7A0F46" strokeWidth={1.8} />
+                {/* Text at bottom */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 20px 20px', zIndex: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <h1 className="font-cormorant italic" style={{ fontSize: '38px', color: '#FFFFFF', fontWeight: 500, margin: '0 0 6px', letterSpacing: '-0.02em', textAlign: 'center', lineHeight: 1.05 }}>
+                    {brideName} &amp; {partnerName}
+                  </h1>
+                  <p className="font-work-sans" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.70)', fontWeight: 400, margin: '0 0 12px', textAlign: 'center', letterSpacing: '0.01em' }}>
+                    {weddingDayOfWeek} &nbsp;·&nbsp; {shortDate} &nbsp;·&nbsp; {venueShort}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <label htmlFor="couple-photo" style={{ cursor: 'pointer' }}>
+                      <span className="font-work-sans" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.50)', fontWeight: 400, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                        Change image
+                      </span>
+                    </label>
+                    <div style={{ border: '1px solid rgba(255,255,255,0.40)', borderRadius: '99px', padding: '6px 18px', backdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.08)' }}>
+                      <span className="font-work-sans" style={{ fontSize: '13px', color: '#FFFFFF', fontWeight: 400, letterSpacing: '0.02em' }}>
+                        {daysLeft}d &nbsp;·&nbsp; {hoursLeft}h
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.55)', margin: '0 0 16px', lineHeight: 1.55 }}>{crisis.summary}</p>
+            </div>
+          )
+        })()}
 
-              <div className="flex items-center gap-1.5 flex-wrap mb-4">
-                {crisis.cascade.slice(0, 3).map((step, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', background: 'rgba(255,255,255,0.85)', border: '1px solid rgba(0,0,0,0.08)', padding: '5px 11px', borderRadius: '99px', whiteSpace: 'nowrap', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                      {step.label}
-                    </span>
-                    {i < 2 && <span style={{ color: 'rgba(196,80,30,0.55)', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>→</span>}
-                  </div>
-                ))}
+        <input id="couple-photo" type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+
+        <motion.div className="flex flex-col gap-5 px-5 pb-4" variants={container} initial="hidden" animate="show" style={{ paddingTop: 20 }}>
+
+          {/* ── Plan-ready alert banner ── */}
+          <motion.div variants={item}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, background: 'rgba(122,15,70,0.05)', border: '1px solid rgba(122,15,70,0.18)' }}>
+              <div style={{ width: 28, height: 28, borderRadius: 9, background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 13, color: '#fff' }}>✦</span>
+              </div>
+              <p className="font-work-sans flex-1" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.70)', margin: 0, lineHeight: 1.45 }}>
+                Your wedding plan is ready — curated from your inputs
+              </p>
+              <button
+                onClick={onOpenAgent}
+                className="font-work-sans flex-shrink-0"
+                style={{ fontSize: '10px', fontWeight: 600, color: '#7A0F46', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.24)', borderRadius: '99px', padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Customize →
+              </button>
+            </div>
+          </motion.div>
+
+          {/* ── AT A GLANCE stats card ── */}
+          <motion.div variants={item}>
+            <div className="glass-card" style={{ padding: '16px 18px' }}>
+              {/* Header row */}
+              <div className="flex items-center justify-between" style={{ marginBottom: 16 }}>
+                <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(26,20,16,0.45)', letterSpacing: '0.16em' }}>AT A GLANCE</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-cormorant italic" style={{ fontSize: '14px', fontWeight: 500, color: '#1A1410' }}>{daysLeft} days</span>
+                  <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.40)' }}>until {shortDate}</span>
+                </div>
               </div>
 
-              <button
-                className="w-full font-outfit"
-                style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFFFF', fontSize: '13px', fontWeight: 500, padding: '13px', borderRadius: '12px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(122,15,70,0.28)' }}
-                onClick={e => { e.stopPropagation(); navigate('/crisis') }}
-              >
-                Resolve now →
-              </button>
-            </motion.div>
+              {/* Stats grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
+                {[
+                  { label: 'VENDORS',    value: vendors.length,                         sub: `${vendors.filter(v => v.status !== 'confirmed').length} pending`,  path: '/vendors' },
+                  { label: 'CEREMONIES', value: ceremonies.length,                      sub: `${ceremonies.filter(c => c.status === 'upcoming' || c.status === 'live').length} upcoming`, path: '/ceremonies' },
+                  { label: 'GUESTS',     value: guests.length,                          sub: `${guests.filter(g => g.rsvp === 'pending').length} pending`,        path: '/guests' },
+                  { label: 'TASKS',      value: tasks.filter(t => !t.done).length,      sub: `${tasks.filter(t => !t.done && t.priority === 'high').length} urgent`, path: '/tasks' },
+                ].map(stat => {
+                  const inner = (
+                    <div style={{ textAlign: 'center', padding: '8px 4px', borderRadius: 10, background: stat.path ? 'rgba(0,0,0,0.02)' : 'transparent', cursor: stat.path ? 'pointer' : 'default' }}>
+                      <p className="font-work-sans" style={{ fontSize: '8px', fontWeight: 700, color: 'rgba(26,20,16,0.40)', letterSpacing: '0.12em', margin: '0 0 4px' }}>{stat.label}</p>
+                      <p className="font-cormorant" style={{ fontSize: '28px', fontWeight: 600, color: stat.path ? '#7A0F46' : '#1A1410', margin: '0 0 2px', lineHeight: 1 }}>{stat.value}</p>
+                      <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(26,20,16,0.42)', margin: 0 }}>{stat.sub}</p>
+                    </div>
+                  )
+                  return stat.path
+                    ? <button key={stat.label} onClick={() => navigate(stat.path)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}>{inner}</button>
+                    : <div key={stat.label}>{inner}</div>
+                })}
+              </div>
+            </div>
           </motion.div>
 
           {/* Tasks label + view all */}
           <motion.div variants={item} className="flex items-center gap-3 mt-1">
-            <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.16em' }}>TODAY'S TASKS</span>
+            <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.16em' }}>TODAY'S TASKS</span>
             <div className="flex-1" style={{ height: '1px', background: 'rgba(0,0,0,0.07)' }} />
             <button onClick={() => navigate('/tasks')}
-              className="flex items-center gap-1 font-outfit"
+              className="flex items-center gap-1 font-work-sans"
               style={{ fontSize: '10px', fontWeight: 500, color: '#7A0F46', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               View all <ArrowRight size={10} />
             </button>
@@ -417,12 +426,12 @@ export default function HomeScreen({ tasks = [], setTasks }) {
                   <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(45,96,37,0.08)', border: '1px solid rgba(45,96,37,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Check size={20} color="#2D6025" />
                   </div>
-                  <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#2D6025', margin: 0 }}>All tasks done!</p>
-                  <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Nothing pending for today</p>
+                  <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#2D6025', margin: 0 }}>All tasks done!</p>
+                  <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Nothing pending for today</p>
                 </motion.div>
               ) : (
                 topTasks.map(task => (
-                  <HomeTaskTile key={task.id} task={task} onToggle={toggleTask} />
+                  <HomeTaskTile key={task.id} task={task} onToggle={toggleTask} onSelect={setSelectedTask} />
                 ))
               )}
             </AnimatePresence>
@@ -441,17 +450,17 @@ export default function HomeScreen({ tasks = [], setTasks }) {
                   <span style={{ fontSize: 17, color: '#fff' }}>✦</span>
                 </div>
                 <div className="flex flex-col flex-1" style={{ minWidth: 0 }}>
-                  <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>
+                  <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>
                     {installPrompt ? 'Install app to home screen' : 'Add to your home screen'}
                   </span>
-                  <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', marginTop: '1px' }}>
+                  <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', marginTop: '1px' }}>
                     {installPrompt ? 'One tap — no browser needed' : 'Track top tasks without opening the app'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowWidgetModal(true)}
-                    className="font-outfit"
+                    className="font-work-sans"
                     style={{ fontSize: '11px', fontWeight: 500, color: '#7A0F46', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.22)', borderRadius: '99px', padding: '5px 11px', cursor: 'pointer', whiteSpace: 'nowrap' }}
                   >
                     {installPrompt ? 'Install' : 'Set up'}
@@ -474,6 +483,18 @@ export default function HomeScreen({ tasks = [], setTasks }) {
       <AnimatePresence>
         {showWidgetModal && (
           <WidgetModal onClose={() => setShowWidgetModal(false)} installPrompt={installPrompt} />
+        )}
+      </AnimatePresence>
+
+      {/* Task detail drawer */}
+      <AnimatePresence>
+        {selectedTask && (
+          <TaskDetailDrawer
+            task={selectedTask}
+            onClose={() => setSelectedTask(null)}
+            onEdit={() => {}}
+            onUpdateAssignees={updateAssignees}
+          />
         )}
       </AnimatePresence>
     </div>

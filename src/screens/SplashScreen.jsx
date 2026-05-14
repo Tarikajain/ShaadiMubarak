@@ -1,153 +1,135 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import LogoMark from '../components/layout/LogoMark'
+import { useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { preloadSVG, injectIllustrationSVG } from '../utils/svgPreloader'
 
 const MAGENTA = '#7A0F46'
+const BRAND_DURATION = 2600
+const TOTAL_DURATION = 4800
 
-// Phase durations (ms)
-const BRAND_DURATION = 2600   // branding screen hold time
-const TOTAL_DURATION = 4800   // when onComplete fires
-
-// Per-icon animation params: [y0, y1, r0, r1, duration, delay]
-const ICON_ANIMS = [
-  [-4,  4,  -1.5, 1.5,  3.2, 0.0 ],
-  [-3,  5,   1.0,-1.0,  2.8, 0.4 ],
-  [-5,  3,  -2.0, 2.0,  3.6, 0.8 ],
-  [-3,  4,   1.5,-1.5,  3.0, 0.2 ],
-  [-6,  4,  -1.0, 1.0,  4.0, 1.0 ],
-  [-4,  6,   2.0,-2.0,  3.4, 0.6 ],
-  [-5,  3,  -1.5, 1.5,  2.9, 0.3 ],
-  [-3,  5,   1.0,-1.0,  3.7, 0.9 ],
-  [-4,  4,  -2.0, 2.0,  3.1, 0.5 ],
-  [-6,  3,   1.5,-1.5,  3.5, 0.1 ],
-  [-3,  5,  -1.0, 1.0,  2.7, 0.7 ],
-  [-5,  4,   2.0,-2.0,  3.8, 0.4 ],
-  [-4,  6,  -1.5, 1.5,  3.2, 1.1 ],
-  [-3,  4,   1.0,-1.0,  2.9, 0.2 ],
-  [-5,  3,  -2.0, 2.0,  3.6, 0.8 ],
-  [-4,  5,   1.5,-1.5,  3.3, 0.5 ],
-  [-3,  4,  -1.0, 1.0,  4.1, 0.3 ],
-  [-5,  3,   2.0,-2.0,  3.0, 0.9 ],
+// Per-illustration wobble params: [xA, xB, rot, duration, delay]
+const WOBBLE = [
+  [-3,  3, -1.2, 3.1, 0.00], [-2,  4, -0.8, 2.7, 0.35], [-4,  2, -1.5, 3.4, 0.70],
+  [-3,  3,  1.0, 2.9, 0.15], [-2,  4, -1.0, 3.6, 0.55], [-4,  2,  1.3, 2.8, 0.90],
+  [-3,  3, -0.9, 3.2, 0.25], [-2,  4,  1.1, 3.0, 0.65], [-3,  3, -1.4, 3.5, 0.10],
+  [-4,  2,  0.8, 2.7, 0.80], [-2,  4, -1.2, 3.3, 0.45], [-3,  3,  1.4, 2.9, 0.20],
+  [-4,  2, -0.8, 3.7, 0.60], [-2,  4,  1.0, 3.1, 0.95], [-3,  3, -1.3, 2.8, 0.30],
+  [-4,  2,  0.9, 3.4, 0.75], [-2,  4, -1.1, 3.0, 0.50], [-3,  3,  1.2, 2.6, 0.05],
+  [-4,  2, -0.9, 3.3, 0.85], [-2,  4,  1.3, 3.6, 0.40], [-3,  3, -1.0, 2.9, 0.15],
+  [-4,  2,  0.8, 3.2, 0.70], [-2,  4, -1.4, 2.7, 0.55], [-3,  3,  1.1, 3.5, 0.20],
+  [-4,  2, -0.8, 3.0, 0.90], [-2,  4,  1.4, 2.8, 0.35], [-3,  3, -1.2, 3.4, 0.60],
+  [-4,  2,  0.9, 2.6, 0.25], [-2,  4, -1.0, 3.1, 0.80], [-3,  3,  1.3, 3.3, 0.45],
+  [-4,  2, -1.1, 2.9, 0.10], [-2,  4,  0.8, 3.6, 0.65], [-3,  3, -1.3, 3.0, 0.30],
+  [-4,  2,  1.0, 2.7, 0.95], [-2,  4, -0.9, 3.2, 0.50], [-3,  3,  1.2, 3.5, 0.75],
+  [-4,  2, -1.4, 2.8, 0.20], [-2,  4,  0.8, 3.1, 0.85], [-3,  3, -1.1, 2.6, 0.40],
+  [-4,  2,  1.3, 3.4, 0.05], [-2,  4, -1.0, 3.0, 0.60], [-3,  3,  0.9, 2.9, 0.35],
+  [-4,  2, -1.2, 3.3, 0.70], [-2,  4,  1.1, 2.7, 0.15], [-3,  3, -1.4, 3.6, 0.55],
+  [-4,  2,  0.8, 3.2, 0.80], [-2,  4, -0.9, 2.8, 0.25], [-3,  3,  1.3, 3.5, 0.90],
+  [-4,  2, -1.1, 3.0, 0.45], [-2,  4,  1.0, 2.6, 0.10], [-3,  3, -1.3, 3.4, 0.65],
+  [-4,  2,  0.9, 2.9, 0.30],
 ]
 
-function buildIconCSS() {
-  const sizing = `
-    #splash-svg-host svg {
-      width: 100%; height: 100%;
-      position: absolute; inset: 0;
-    }
-  `
-  return sizing + ICON_ANIMS.map(([y0, y1, r0, r1, dur, del], i) => `
-    #ic-${i + 1} {
-      animation: float${i + 1} ${dur}s ${del}s ease-in-out infinite alternate;
+function buildWobbleCSS() {
+  return WOBBLE.map(([xA, xB, rot, dur, del], i) => `
+    .sw-${i} {
+      animation: sw${i} ${dur}s ${del}s ease-in-out infinite alternate;
       transform-box: fill-box;
       transform-origin: center;
     }
-    @keyframes float${i + 1} {
-      from { transform: translateY(${y0}px) rotate(${r0}deg); }
-      to   { transform: translateY(${y1}px) rotate(${r1}deg); }
+    @keyframes sw${i} {
+      from { transform: translateX(${xA}px) rotate(${rot * -1}deg); }
+      to   { transform: translateX(${xB}px) rotate(${rot}deg); }
     }
   `).join('')
 }
 
 export default function SplashScreen({ onComplete }) {
-  const [showIcons, setShowIcons] = useState(false)
-
   useEffect(() => {
-    const brandTimer = setTimeout(() => setShowIcons(true), BRAND_DURATION)
-    const doneTimer  = setTimeout(onComplete, TOTAL_DURATION)
-    return () => { clearTimeout(brandTimer); clearTimeout(doneTimer) }
+    const doneTimer = setTimeout(onComplete, TOTAL_DURATION)
+    return () => clearTimeout(doneTimer)
   }, [onComplete])
 
-  // Fetch SVG into the always-present host div
+  // Use preloaded SVG — already fetching since module load, inject immediately
   useEffect(() => {
-    fetch('/vendor-icons.svg')
-      .then(r => r.text())
-      .then(html => {
-        const container = document.getElementById('splash-svg-host')
-        if (container) {
-          container.innerHTML = html
-          const svg = container.querySelector('svg')
-          if (svg) {
-            svg.setAttribute('width', '100%')
-            svg.setAttribute('height', '100%')
-            svg.setAttribute('preserveAspectRatio', 'xMidYMid slice')
-          }
-        }
-      })
-      .catch(() => {})
+    preloadSVG('/splash-bg.svg').then(html => {
+      if (!html) return
+      const container = document.getElementById('splash-svg-host')
+      if (!container) return
+      injectIllustrationSVG(container, html, 'sw', WOBBLE.length)
+    })
   }, [])
 
   return (
     <motion.div
-      style={{ position: 'relative', width: '100%', height: '100%', background: MAGENTA, overflow: 'hidden' }}
+      style={{ position: 'absolute', inset: 0, background: MAGENTA, overflow: 'hidden' }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.85, ease: [0.4, 0, 0.2, 1] }}
     >
-      <style>{buildIconCSS()}</style>
+      <style>{buildWobbleCSS()}</style>
 
-      {/* Icon field — always in the DOM so the fetch can populate it; fades in at phase 2 */}
-      <motion.div
+      {/* Illustration field — always visible, populates as SVG resolves */}
+      <div
         id="splash-svg-host"
-        animate={{ opacity: showIcons ? 1 : 0 }}
-        transition={{ duration: 0.6 }}
-        style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'stretch', zIndex: 5 }}
+        style={{ position: 'absolute', inset: 0, zIndex: 5 }}
       />
 
-      {/* ── Phase 1: plain magenta + logo + name ── */}
-      <AnimatePresence>
-        {!showIcons && (
-          <motion.div
-            key="brand"
-            exit={{ opacity: 0, transition: { duration: 0.5 } }}
-            style={{
-              position: 'absolute', inset: 0, zIndex: 20,
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: 12,
-            }}
-          >
-            {/* Real logo — white */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.75 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.7, ease: [0.34, 1.45, 0.64, 1] }}
-            >
-              <LogoMark light width={60} height={42} />
-            </motion.div>
+      {/* Magenta overlay — keeps brand color strong over the illustration field */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none',
+        background: 'linear-gradient(180deg, rgba(122,15,70,0.92) 0%, rgba(122,15,70,0.70) 50%, rgba(122,15,70,0.92) 100%)',
+      }} />
 
-            {/* App name */}
-            <motion.span
-              className="font-cormorant italic"
-              style={{ fontSize: '40px', color: '#FFFFFF', fontWeight: 300, lineHeight: 1, letterSpacing: '-0.01em' }}
-              initial={{ opacity: 0, letterSpacing: '0.06em' }}
-              animate={{ opacity: 1, letterSpacing: '-0.01em' }}
-              transition={{ delay: 0.55, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              Shaadi Mubarak
-            </motion.span>
+      {/* Text — always visible, centered, on top of illustrations */}
+      <style>{`
+        @keyframes cinematicReveal {
+          from {
+            opacity: 0;
+            transform: scale(0.80);
+            letter-spacing: 0.02em;
+            filter: blur(6px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+            letter-spacing: 0.12em;
+            filter: blur(0px);
+          }
+        }
+      `}</style>
+      <div
+        style={{
+          position: 'absolute', inset: 0, zIndex: 20,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          gap: 12,
+        }}
+      >
+        {/* layoutId wrapper stays clean; inner span carries the cinematic animation */}
+        <motion.span layoutId="brand-title" className="font-cormorant"
+          style={{ fontSize: '40px', color: '#FFFFFF', fontWeight: 700, textTransform: 'uppercase', lineHeight: 1, letterSpacing: '0.12em', textAlign: 'center' }}
+        >
+          <span style={{ display: 'inline-block', animation: 'cinematicReveal 1.2s 0.1s both cubic-bezier(0.16, 1, 0.3, 1)' }}>
+            Shaadi Mubarak
+          </span>
+        </motion.span>
 
-            {/* Divider */}
-            <motion.div
-              style={{ height: '1px', background: 'rgba(255,255,255,0.45)' }}
-              initial={{ width: 0 }}
-              animate={{ width: '48px' }}
-              transition={{ delay: 1.05, duration: 0.5, ease: 'easeOut' }}
-            />
+        <motion.div
+          layoutId="brand-divider"
+          style={{ height: '1px', background: 'rgba(255,255,255,0.45)' }}
+          initial={{ width: 0 }}
+          animate={{ width: '48px' }}
+          transition={{ delay: 0.85, duration: 0.6, ease: 'easeOut' }}
+        />
 
-            {/* Tagline */}
-            <motion.p
-              className="font-outfit"
-              style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.60)', letterSpacing: '0.14em', margin: 0 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.35, duration: 0.5 }}
-            >
-              YOUR WEDDING, ALWAYS IN VIEW
-            </motion.p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <motion.p
+          className="font-work-sans"
+          style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.18em', margin: 0 }}
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1, duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          YOUR WEDDING, ALWAYS IN VIEW
+        </motion.p>
+      </div>
     </motion.div>
   )
 }

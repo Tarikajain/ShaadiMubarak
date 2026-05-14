@@ -33,8 +33,12 @@ export default {
         confirmed: '#3D7A34',
       },
       fontFamily: {
-        cormorant: ['"Cormorant Garamond"', 'serif'],
-        outfit: ['Outfit', 'sans-serif'],
+        cormorant: ['"Cormorant Garamond"', 'Cormorant', 'serif'],
+        // Body / UI text → Inter. work-sans alias preserved so no component changes needed.
+        'work-sans': ['Inter', '"Work Sans"', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
+        // legacy alias — maps to Inter via work-sans stack
+        outfit: ['Inter', '"Work Sans"', 'sans-serif'],
       },
     },
   },

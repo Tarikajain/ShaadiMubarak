@@ -189,7 +189,7 @@ export default function EventDayScreen({ onClose }) {
         >
           <span style={{
             display: 'inline-block',
-            fontSize: '10px', fontFamily: 'Outfit', fontWeight: 500,
+            fontSize: '10px', fontFamily: 'Inter', fontWeight: 500,
             letterSpacing: '0.12em', textTransform: 'uppercase',
             color: 'rgba(255,255,255,0.75)',
             background: 'rgba(255,255,255,0.14)',
@@ -203,7 +203,7 @@ export default function EventDayScreen({ onClose }) {
           <h1
             className="font-cormorant italic"
             style={{
-              fontSize: '40px', fontWeight: 300,
+              fontSize: '40px', fontWeight: 500,
               color: '#FFFFFF', margin: 0, lineHeight: 1.05,
               letterSpacing: '-0.02em',
               textShadow: '0 2px 16px rgba(0,0,0,0.4)',
@@ -233,13 +233,13 @@ export default function EventDayScreen({ onClose }) {
         {/* Greeting */}
         <div>
           <p
-            className="font-outfit"
-            style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 4px' }}
+            className="font-work-sans"
+            style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 4px' }}
           >
             {isCouple ? `Happy ${liveEvent.name}, ${name}` : `Hello, ${name}`}
           </p>
           <p
-            className="font-outfit"
+            className="font-work-sans"
             style={{ fontSize: '14px', fontWeight: 400, color: '#1A1410', lineHeight: 1.55, margin: 0 }}
           >
             {message}
@@ -257,10 +257,10 @@ export default function EventDayScreen({ onClose }) {
             }}
           >
             <div className="flex items-center justify-between mb-2">
-              <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>
+              <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>
                 Wedding checklist
               </p>
-              <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 400, color: completionPct === 100 ? '#2D6025' : 'rgba(26,20,16,0.45)' }}>
+              <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: completionPct === 100 ? '#2D6025' : 'rgba(26,20,16,0.62)' }}>
                 {completionPct}% done
               </span>
             </div>
@@ -279,13 +279,13 @@ export default function EventDayScreen({ onClose }) {
                 }}
               />
             </div>
-            <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: '6px 0 0' }}>
+            <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', margin: '6px 0 0' }}>
               {initialTasks.filter(t => t.done).length} of {initialTasks.length} tasks completed
             </p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>
               Pending by category
             </p>
             {categoryBreakdown.length > 0 ? (
@@ -306,11 +306,11 @@ export default function EventDayScreen({ onClose }) {
                       <span
                         style={{ width: 6, height: 6, borderRadius: '50%', background: cat.color, flexShrink: 0 }}
                       />
-                      <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 400, color: '#1A1410' }}>
+                      <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: '#1A1410' }}>
                         {cat.label}
                       </span>
                       <span
-                        className="font-outfit"
+                        className="font-work-sans"
                         style={{
                           fontSize: '10px', fontWeight: 600,
                           color: cat.color,
@@ -327,7 +327,7 @@ export default function EventDayScreen({ onClose }) {
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <CheckCircle2 size={14} color="#2D6025" />
-                <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>
+                <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>
                   All tasks complete — enjoy the day!
                 </span>
               </div>
@@ -341,11 +341,12 @@ export default function EventDayScreen({ onClose }) {
         {/* CTA */}
         <motion.button
           onClick={handleCta}
-          className="w-full font-outfit flex items-center justify-center gap-2"
+          className="w-full font-work-sans flex items-center justify-center gap-2"
           style={{
             background: `linear-gradient(135deg, ${config.accentColor} 0%, #1A1410 100%)`,
             color: '#FFFFFF',
-            fontSize: '14px', fontWeight: 500,
+            fontSize: '14px', fontWeight: 600,
+            fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em',
             padding: '15px',
             borderRadius: '14px',
             border: 'none',
@@ -361,8 +362,8 @@ export default function EventDayScreen({ onClose }) {
 
         {/* Dismiss hint */}
         <p
-          className="font-outfit text-center"
-          style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.3)', margin: 0 }}
+          className="font-work-sans text-center"
+          style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.3)', margin: 0 }}
         >
           Tap × to go to your home screen
         </p>

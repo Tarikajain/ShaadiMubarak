@@ -267,6 +267,23 @@ export const vendorDirectory = [
   { id: 'd6', name: 'Pandit Ramachandran',      category: 'Pandit',        location: 'Chennai', rating: 5.0, reviews: 31,  priceRange: '₹15–30K', tag: 'Highly rated' },
   { id: 'd7', name: 'Golden Thread Decorators', category: 'Decorator',     location: 'Chennai', rating: 4.8, reviews: 126, priceRange: '₹3–8L', tag: 'Popular' },
   { id: 'd8', name: 'Artistry Mehndi',          category: 'Mehndi Artist', location: 'Chennai', rating: 4.9, reviews: 97,  priceRange: '₹8–20K', tag: 'Top rated' },
+  // ── AI-suggested decorators ──────────────────────────────────────────────────
+  { id: 'sd1', name: 'The Decor Studio',    category: 'Decorator', location: 'Mumbai',  rating: 4.9, reviews: 412, priceRange: '₹5–12L',  tag: 'Top rated' },
+  { id: 'sd2', name: 'Blooms & Beyond',     category: 'Decorator', location: 'Delhi',   rating: 4.7, reviews: 203, priceRange: '₹1.5–4L', tag: null },
+  { id: 'sd3', name: 'Kalank Events',       category: 'Decorator', location: 'Jaipur',  rating: 4.8, reviews: 318, priceRange: '₹3–7L',   tag: 'Popular' },
+  { id: 'sd4', name: 'Minimal Shaadi Co.', category: 'Decorator', location: 'Bengaluru', rating: 4.6, reviews: 147, priceRange: '₹80K–2L', tag: null },
+  { id: 'sd5', name: 'Regal Weddings',      category: 'Decorator', location: 'Udaipur', rating: 5.0, reviews: 89,  priceRange: '₹10–25L', tag: 'Top rated' },
+  // ── Makeup / Beauty ──────────────────────────────────────────────────────────
+  { id: 'mu1', name: 'Glam by Priya',        category: 'Makeup Artist', location: 'Chennai',   rating: 4.9, reviews: 167, priceRange: '₹25–50K',  tag: 'Top rated',     aiSuggested: true },
+  { id: 'mu2', name: 'Bridal Bliss Studio',  category: 'Makeup Artist', location: 'Chennai',   rating: 4.8, reviews: 112, priceRange: '₹20–40K',  tag: 'Popular',       aiSuggested: false },
+  { id: 'mu3', name: 'The Bridal Atelier',   category: 'Makeup Artist', location: 'Bengaluru', rating: 4.7, reviews: 88,  priceRange: '₹30–60K',  tag: null,            aiSuggested: true },
+  // ── Choreographer ────────────────────────────────────────────────────────────
+  { id: 'ch1', name: 'Nrityanjali Dance Co.', category: 'Choreographer', location: 'Chennai', rating: 4.8, reviews: 54, priceRange: '₹40–80K', tag: 'Popular',  aiSuggested: true },
+  { id: 'ch2', name: 'Step & Celebrate',      category: 'Choreographer', location: 'Chennai', rating: 4.6, reviews: 39, priceRange: '₹25–50K', tag: null,        aiSuggested: false },
+  // ── Invitation / Stationery ──────────────────────────────────────────────────
+  { id: 'in1', name: 'Paper & Petals Studio', category: 'Invitation Designer', location: 'Chennai',  rating: 4.9, reviews: 201, priceRange: '₹15–40K', tag: 'Top rated', aiSuggested: true },
+  { id: 'in2', name: 'Shagun Prints',          category: 'Invitation Designer', location: 'Delhi',    rating: 4.7, reviews: 134, priceRange: '₹8–25K',  tag: 'Popular',   aiSuggested: false },
+  { id: 'in3', name: 'Ivory & Gold Designs',   category: 'Invitation Designer', location: 'Chennai',  rating: 4.8, reviews: 78,  priceRange: '₹20–50K', tag: null,        aiSuggested: true },
 ]
 
 // ── Rich vendor details (packages, contact, bio, reviews) ────────────────────
@@ -519,6 +536,192 @@ export const vendorDetails = {
     reviews: [
       { name: 'Pallavi Desai', rating: 5, text: 'Artistry Mehndi is exceptional. My custom portrait took 3 hours alone and was absolutely breathtaking.' },
       { name: 'Jyoti Varma', rating: 5, text: "Three artists working simultaneously meant everyone was done in time. The organic henna colour was the deepest I've ever seen." },
+    ],
+  },
+  // ── AI-suggested decorators ────────────────────────────────────────────────
+  sd1: {
+    bio: 'The Decor Studio is Mumbai\'s most sought-after luxury decorator, known for lush floral mandap installations and bespoke tablescapes. Their work has graced 600+ five-star weddings.',
+    contact: { phone: '+91 98400 44200', email: 'hello@thedecor.studio', website: 'thedecor.studio' },
+    galleryColors: ['#4A7840', '#2E5C28', '#80C870', '#1C3C14', '#B8E0A8'],
+    packages: [
+      { name: 'Bloom',     label: '₹5,00,000',  features: ['Mandap floral arch', 'Entrance arrangements', '15 table centrepieces', 'Stage draping', 'Fairy light canopy'] },
+      { name: 'Grand',     label: '₹8,00,000',  selected: true, features: ['Full venue floral transformation', 'Luxury mandap installation', 'Entrance + pathway florals', '25 centrepieces', 'Flower wall backdrop', 'Lounge styling'] },
+      { name: 'Signature', label: '₹12,00,000', features: ['Bespoke full-venue concept', 'Ceiling floral installation', 'Phoolon ki chaadar', '35+ centrepieces', 'Bridal suite decor', 'Dedicated design director'] },
+    ],
+    reviews: [
+      { name: 'Priya & Aditya', rating: 5, text: 'The Decor Studio made our wedding look like a Vogue editorial. Every corner was immaculate — guests were speechless the moment they walked in.' },
+      { name: 'Sunita Mehta', rating: 5, text: 'Worth every rupee. They took our Pinterest board and turned it into something ten times better. The flower wall alone made a thousand Instagram moments.' },
+    ],
+  },
+  sd2: {
+    bio: 'Blooms & Beyond brings a soft, romantic aesthetic to every wedding — think garden parties, soft draping, and florals that feel freshly picked. Based in Delhi with pan-India delivery.',
+    contact: { phone: '+91 99400 22310', email: 'hello@bloomsandbeyond.in', website: 'bloomsandbeyond.in' },
+    galleryColors: ['#C4688A', '#8B3060', '#F0A0C0', '#5C1840', '#E8C8D8'],
+    packages: [
+      { name: 'Garden',   label: '₹1,50,000', features: ['Mandap arch', 'Entrance florals', '10 table centrepieces', 'Bride garland'] },
+      { name: 'Romantic', label: '₹2,80,000', selected: true, features: ['Full mandap', 'Entrance + pathway', '20 centrepieces', 'Pastel draping', 'Flower wall', 'Car decor'] },
+      { name: 'Dreamy',   label: '₹4,00,000', features: ['Full venue florals', 'Ceiling installation', 'Phoolon ki chaadar', 'Bridal bouquet', 'Suite decoration', 'Floral jewellery'] },
+    ],
+    reviews: [
+      { name: 'Neha & Rohan', rating: 5, text: 'Our venue felt like a secret garden. Blooms & Beyond captured exactly the soft, romantic look we wanted. Guests were in awe.' },
+      { name: 'Kavya Sharma', rating: 4, text: 'Beautiful florals and a lovely team to work with. Delivery was seamless and setup was complete well before guests arrived.' },
+    ],
+  },
+  sd3: {
+    bio: 'Kalank Events specialises in traditional North Indian and fusion wedding decor with rich fabrics, gold tones, and intricate detailing. Jaipur\'s premier heritage decorator for 18 years.',
+    contact: { phone: '+91 98100 55678', email: 'events@kalankevents.in', website: 'kalankevents.in' },
+    galleryColors: ['#8B4010', '#6B2808', '#C87040', '#3A1404', '#E8A878'],
+    packages: [
+      { name: 'Heritage',   label: '₹3,00,000', features: ['Traditional mandap', 'Marigold entrance', 'Brass lamp + diya setup', '15 table settings', 'Rajasthani draping'] },
+      { name: 'Royal',      label: '₹5,50,000', selected: true, features: ['Grand durbar-style mandap', 'Full venue transformation', 'Gold + jewel-tone draping', 'Hand-painted props', '25 centrepieces', 'Mirror work accents'] },
+      { name: 'Maharaja',   label: '₹7,00,000', features: ['Palace-inspired full venue', 'Ceiling gold canopy', 'Jharokha photo booths', 'Custom monogram work', 'Elephant prop entrance', 'Meenakari table decor'] },
+    ],
+    reviews: [
+      { name: 'Pooja & Vikram', rating: 5, text: 'Kalank Events made our wedding feel like a royal Rajasthani celebration. The mandap was breathtaking and every detail was perfect.' },
+      { name: 'Ritu Agarwal', rating: 5, text: 'We wanted a traditional yet grand wedding — Kalank delivered exactly that. The marigold entrance was stunning and guests loved the heritage feel.' },
+    ],
+  },
+  sd4: {
+    bio: 'Minimal Shaadi Co. redefines Indian wedding decor with a clean, contemporary aesthetic. Neutral palettes, architectural structures, and thoughtful lighting make every element intentional.',
+    contact: { phone: '+91 97300 11456', email: 'hello@minimalshaadi.co', website: 'minimalshaadi.co' },
+    galleryColors: ['#9080A0', '#6B5880', '#C0B0D8', '#3A2858', '#E0D8F0'],
+    packages: [
+      { name: 'Edit',    label: '₹80,000',   features: ['Minimal mandap frame', 'Neutral draping', 'Geometric centrepieces (10)', 'Warm Edison lighting'] },
+      { name: 'Studio',  label: '₹1,40,000', selected: true, features: ['Architectural mandap structure', 'Full venue neutral palette', 'Statement lighting rig', '20 centrepieces', 'Pampas + dried floral styling', 'Photo-ready vignettes'] },
+      { name: 'Gallery', label: '₹2,00,000', features: ['Full venue concept design', 'Bespoke structure build', 'Neon/acrylic name signage', 'Hanging installations', 'Furniture curation', 'Dedicated stylist on-site'] },
+    ],
+    reviews: [
+      { name: 'Tara & Karan', rating: 5, text: 'Finally a decorator that understood we wanted something different. No gold, no chaos — just clean, beautiful, intentional decor. Exactly us.' },
+      { name: 'Ananya Reddy', rating: 4, text: "Minimal Shaadi Co.'s aesthetic is unlike anything else in the market. The pampas grass centrepieces and Edison lights were perfect." },
+    ],
+  },
+  sd5: {
+    bio: 'Regal Weddings creates palace-style heritage events that transport guests to another era. Specialists in destination weddings at Udaipur, Jodhpur, and Jaipur forts and havelis.',
+    contact: { phone: '+91 98200 77890', email: 'luxury@regalweddings.in', website: 'regalweddings.in' },
+    galleryColors: ['#1A3A6B', '#0E2248', '#4878C8', '#080E30', '#80A8F0'],
+    packages: [
+      { name: 'Palace',    label: '₹10,00,000', features: ['Grand durbar hall setup', 'Royalty-inspired mandap', 'Full venue florals & draping', '30 centrepieces', 'Vintage furniture pieces'] },
+      { name: 'Maharaja',  label: '₹17,00,000', selected: true, features: ['Complete heritage transformation', 'Ceiling fabric installation', 'Monogram projections', 'Antique prop collection', 'Fountain focal point', 'Dedicated art director'] },
+      { name: 'Imperial',  label: '₹25,00,000', features: ['2-day multi-venue styling', 'Custom-built set pieces', 'Live flower installation team', 'Candelabra + crystal chandeliers', 'Film-grade lighting design', 'Butler service coordination'] },
+    ],
+    reviews: [
+      { name: 'Ishaan & Meera', rating: 5, text: 'Regal Weddings took our Udaipur venue and made it look like a scene from Devdas. Guests were stunned. Worth absolutely every rupee.' },
+      { name: 'Nidhi Bajaj', rating: 5, text: 'We had 5.0 expectations and they delivered 10. The imperial setup with the fountain centrepiece and projections was unlike anything we had ever seen.' },
+    ],
+  },
+  // ── Makeup / Beauty ──────────────────────────────────────────────────────────
+  mu1: {
+    bio: 'Priya has transformed 800+ brides across South India with her signature clean-glam look. She specialises in long-wear airbrush formulas and classic Kanjeevaram-ready styles that hold all day.',
+    contact: { phone: '+91 98401 23456', email: 'glam@priyamakeup.in', website: 'glambypriya.in' },
+    galleryColors: ['#E8A0B0', '#C47080', '#F0D0D8', '#A05060', '#F8E8EC'],
+    packages: [
+      { name: 'Bride',         label: '₹25,000', features: ['Full bridal makeup', 'Hair styling', 'Airbrush foundation', 'Lash application'] },
+      { name: 'Bridal Suite',  label: '₹40,000', selected: true, features: ['Bride + 3 family members', 'Pre-event trial session', 'Touch-up kit', 'All-day artist on-call', 'Airbrush finish'] },
+      { name: 'Premier',       label: '₹50,000', features: ['Bride + 5 family members', 'Full-day artist present', 'Premium luxury products', 'Hair + bun styling', 'Saree/lehenga draping assistance'] },
+    ],
+    reviews: [
+      { name: 'Sneha Nair', rating: 5, text: 'Priya made me look like myself but ten times better. My makeup lasted from 8am to 2am without a single touch-up!' },
+      { name: 'Aditi Rao',  rating: 5, text: 'Absolutely phenomenal artist. She understood exactly the look I wanted and delivered it perfectly.' },
+    ],
+  },
+  mu2: {
+    bio: 'Bridal Bliss Studio is a Chennai-based boutique beauty parlour specialising in South Indian bridal looks — silk saree draping, jasmine arrangements, and classic kohl-lined looks.',
+    contact: { phone: '+91 97400 65432', email: 'bookings@bridalbliss.in', website: 'bridalbliss.in' },
+    galleryColors: ['#C4A060', '#8B6830', '#E8D090', '#5C3810', '#F5E8C0'],
+    packages: [
+      { name: 'Classic',    label: '₹20,000', features: ['Bridal makeup + hair', 'Saree draping', 'Silk blouse assistance', 'Jasmine arrangement'] },
+      { name: 'Signature',  label: '₹32,000', selected: true, features: ['Bride + 2 family', 'Pre-event trial', 'South Indian bridal look', 'Traditional hair accessories', 'Jasmine + gajra arrangement', 'Touch-up pack'] },
+      { name: 'Royal',      label: '₹45,000', features: ['Bride + 4 family', 'Morning + evening looks', 'Silk saree & lehenga draping', 'Premium jewellery staging photos', 'Full-day team'] },
+    ],
+    reviews: [
+      { name: 'Ramya Krishnan', rating: 5, text: 'They nailed the traditional look I wanted. The jasmine braiding was intricate and beautiful. Highly recommend for South Indian weddings.' },
+      { name: 'Vaishali Iyer',  rating: 4, text: 'Lovely team, very experienced with Kanchipuram sarees. My look lasted the full day — no touch-ups needed till the reception.' },
+    ],
+  },
+  mu3: {
+    bio: 'The Bridal Atelier is a luxury beauty collective offering editorial and destination-ready bridal looks. They have worked on Bollywood film sets and international bridal editorials.',
+    contact: { phone: '+91 99800 11223', email: 'book@thebridalatelier.in', website: 'thebridalatelier.in' },
+    galleryColors: ['#7A5080', '#502858', '#C090D0', '#300838', '#F0D8F8'],
+    packages: [
+      { name: 'Editorial',  label: '₹30,000', features: ['Signature editorial bridal look', 'High-fashion hair styling', 'Professional lighting-tested formula', '2 trials included'] },
+      { name: 'Couture',    label: '₹48,000', selected: true, features: ['Bride + 3 family', 'Pre-wedding editorial trial', 'Custom look moodboard', 'Professional kit with HD products', 'All-day artist presence'] },
+      { name: 'Atelier',    label: '₹65,000', features: ['Full team of 3 artists', 'Destination-ready look', 'Couture saree + lehenga draping', 'Behind-the-scenes photo set', 'Luxury branded touch-up kit as gift'] },
+    ],
+    reviews: [
+      { name: 'Nisha Singhania', rating: 5, text: 'I have never felt more beautiful. The Bridal Atelier gave me a magazine-cover look — effortless, luminous, and totally ME.' },
+      { name: 'Preethi Kumar',   rating: 5, text: 'Worth every rupee. They brought 3 artists and transformed our whole bridal party. The lighting-tested formulas truly lasted all night.' },
+    ],
+  },
+  // ── Choreographer ────────────────────────────────────────────────────────────
+  ch1: {
+    bio: 'Nrityanjali Dance Co. is a Chennai-based performance collective known for breathtaking Sangeet choreography. Their signature fusion of Bharatanatyam, Bollywood, and contemporary dance is unmissable.',
+    contact: { phone: '+91 98500 88760', email: 'perform@nrityanjali.in', website: 'nrityanjali.in' },
+    galleryColors: ['#C87840', '#8B4810', '#E8B078', '#5C2808', '#F5D8B0'],
+    packages: [
+      { name: 'Spark',     label: '₹40,000', features: ['Family group choreo (8–10 pax)', '3 rehearsal sessions', '1 performance on Sangeet night', 'Costume consultation'] },
+      { name: 'Showtime',  label: '₹65,000', selected: true, features: ['2 group performances', 'Bride/groom solo option', '5 rehearsal sessions', 'Live music coordination', 'Stage entry choreography'] },
+      { name: 'Spektakle', label: '₹80,000', features: ['3 full group acts', 'Flash mob sequence', '7 rehearsal sessions', 'LED prop coordination', 'Full event MC + choreography'] },
+    ],
+    reviews: [
+      { name: 'Divya Menon',    rating: 5, text: 'Nrityanjali rehearsed with our chaotic family group and somehow produced a stunning performance. Tears of joy from every guest.' },
+      { name: 'Tarun Pillai',   rating: 5, text: 'The flash mob entrance at the Sangeet had every single guest on their feet. Absolutely spectacular. Will recommend forever.' },
+    ],
+  },
+  ch2: {
+    bio: 'Step & Celebrate is a boutique Sangeet choreography studio specialising in fun, accessible routines for all ages. They are known for turning reluctant dads and aunties into star performers.',
+    contact: { phone: '+91 97600 44120', email: 'hello@stepandcelebrate.in', website: 'stepandcelebrate.in' },
+    galleryColors: ['#4A8060', '#285C3C', '#88C0A0', '#143C20', '#C0E8D0'],
+    packages: [
+      { name: 'Fun Steps',  label: '₹25,000', features: ['1 family group routine (6–8 pax)', '3 sessions over 2 days', 'Easy beginner choreography', 'Bollywood hits setlist'] },
+      { name: 'Showstopper', label: '₹42,000', selected: true, features: ['2 group acts', '5 rehearsal sessions', 'Kids + elders included', 'Props coordination', 'All-ages friendly'] },
+      { name: 'Grand Finale', label: '₹55,000', features: ['3 acts + surprise element', '7 sessions', 'Costume colour coordination', 'MC guidance on Sangeet night', 'Video reel of performance'] },
+    ],
+    reviews: [
+      { name: 'Shweta Agarwal', rating: 5, text: 'My 65-year-old mother-in-law danced brilliantly because of Step & Celebrate. The routines were fun, manageable, and absolutely adorable.' },
+      { name: 'Kiran Desai',    rating: 4, text: 'Great team, very patient with a big mixed-age family group. The final performance was a massive hit.' },
+    ],
+  },
+  // ── Invitation Designer / Stationery ─────────────────────────────────────────
+  in1: {
+    bio: 'Paper & Petals Studio creates bespoke luxury wedding invitations that set the tone for your celebration. Handmade paper, foil printing, floral inlays, and custom illustration for each bride.',
+    contact: { phone: '+91 98600 77234', email: 'create@paperandpetals.in', website: 'paperandpetals.in' },
+    galleryColors: ['#E0C8A0', '#B09060', '#F8ECD8', '#806040', '#FFF0D8'],
+    packages: [
+      { name: 'Classic',    label: '₹15,000', features: ['50 invitation sets', 'Envelope + card', 'Foil printing', 'RSVP card', '2 design revisions'] },
+      { name: 'Signature',  label: '₹28,000', selected: true, features: ['100 invitation sets', 'Box enclosure', 'Gold foil + emboss', 'Custom illustration (mandap/couple)', 'Digital version included', '4 design revisions'] },
+      { name: 'Heirloom',   label: '₹42,000', features: ['150 invitation sets', 'Handmade paper', 'Custom hand-drawn portrait', 'Wax seal + ribbon', 'Gift tag set', 'WhatsApp digital e-invite suite'] },
+    ],
+    reviews: [
+      { name: 'Anaya Sharma',  rating: 5, text: 'Our invitations were so beautiful that guests framed them! The custom mandap illustration was an exact replica of our venue. Flawless work.' },
+      { name: 'Rina Kapoor',   rating: 5, text: 'Paper & Petals exceeded every expectation. The foil printing quality is exceptional — these are truly heirlooms.' },
+    ],
+  },
+  in2: {
+    bio: 'Shagun Prints is Delhi\'s most loved wedding stationery house, trusted for vibrant, rich-coloured Indian wedding invitations delivered across India within 10 working days.',
+    contact: { phone: '+91 99100 55678', email: 'orders@shagunprints.in', website: 'shagunprints.in' },
+    galleryColors: ['#C04030', '#881818', '#E88070', '#500808', '#F8C0B0'],
+    packages: [
+      { name: 'Vibrant',    label: '₹8,000',  features: ['50 cards', 'Full-colour digital print', 'Envelope included', 'Standard 2-day dispatch'] },
+      { name: 'Festive',    label: '₹15,000', selected: true, features: ['100 cards', 'Premium matt lamination', 'Pocket folder enclosure', 'Inserts (4 cards)', 'RSVP + map card'] },
+      { name: 'Grand',      label: '₹25,000', features: ['150 cards', 'Duplex board premium', 'Gold foil optional', 'Multi-fold booklet format', 'Digital WhatsApp suite free'] },
+    ],
+    reviews: [
+      { name: 'Komal Jain',  rating: 5, text: 'Fast, affordable, and gorgeous. Shagun Prints delivered 100 invitations in 8 days and every single one was perfect.' },
+      { name: 'Neetu Singh', rating: 4, text: 'Great quality for the price. The pocket folder with 4 inserts looked premium. Very happy with the overall result.' },
+    ],
+  },
+  in3: {
+    bio: 'Ivory & Gold Designs specialises in contemporary minimalist invitation suites with a luxury feel. Each suite is carefully curated with premium materials and thoughtful typography.',
+    contact: { phone: '+91 98801 33456', email: 'studio@ivoryandgold.in', website: 'ivoryandgold.in' },
+    galleryColors: ['#D4C890', '#9A8848', '#F0E8C0', '#605018', '#FFF8E0'],
+    packages: [
+      { name: 'Minimal',    label: '₹20,000', features: ['75 invitation sets', 'Letterpress or foil', 'Vellum overlay option', 'Neutral palette', '3 design revisions'] },
+      { name: 'Curated',    label: '₹35,000', selected: true, features: ['100 sets', 'Duplex card + vellum wrap', 'Wax seal', 'Gold/silver foil', 'Custom monogram', 'Digital suite included'] },
+      { name: 'Atelier',    label: '₹50,000', features: ['150 sets', 'Handmade cotton paper', 'Blind emboss + foil', 'Acrylic details', 'Personalised couple illustration', 'Full digital stationery suite'] },
+    ],
+    reviews: [
+      { name: 'Tia Malhotra',  rating: 5, text: 'Ivory & Gold made our minimalist dream come to life. The vellum overlay and wax seal were exactly the elegant touch we wanted.' },
+      { name: 'Kabir Mehta',   rating: 5, text: 'Beautifully crafted, arrived well-packaged, and ahead of schedule. The custom monogram was a hit with every guest.' },
     ],
   },
 }

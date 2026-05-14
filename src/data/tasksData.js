@@ -137,6 +137,17 @@ export const initialTasks = [
     assignees: ['groom_dad'],
   },
   {
+    id: 't17',
+    title: 'Finalize wedding decorator',
+    category: 'venue',
+    priority: 'high',
+    dueDate: '2026-09-17',
+    done: false,
+    description: 'Shortlist and confirm the wedding decorator for all ceremonies. Review portfolio, decor style alignment, and get final quote before booking.',
+    location: null,
+    assignees: [],
+  },
+  {
     id: 't8',
     title: 'Confirm Baraat route with Taj Coromandel',
     category: 'venue',

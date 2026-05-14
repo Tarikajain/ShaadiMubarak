@@ -17,11 +17,11 @@ export default function VendorChip({ vendor }) {
       }}
     >
       <span className="rounded-full flex-shrink-0" style={{ width: '6px', height: '6px', background: colors.dot }} />
-      <span className="font-outfit text-[11px] font-medium" style={{ color: 'rgba(24,19,10,0.75)', whiteSpace: 'nowrap' }}>
+      <span className="font-work-sans text-[11px] font-medium" style={{ color: 'rgba(24,19,10,0.75)', whiteSpace: 'nowrap' }}>
         {vendor.name}
       </span>
       {vendor.alert && (
-        <span className="rounded-full font-outfit" style={{ background: 'rgba(196,80,30,0.15)', color: '#7A0F46', padding: '1px 5px', fontSize: '9px', fontWeight: 600 }}>
+        <span className="rounded-full font-work-sans" style={{ background: 'rgba(196,80,30,0.15)', color: '#7A0F46', padding: '1px 5px', fontSize: '9px', fontWeight: 600 }}>
           !
         </span>
       )}

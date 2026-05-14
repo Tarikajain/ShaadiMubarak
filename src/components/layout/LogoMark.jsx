@@ -4,8 +4,10 @@
 export default function LogoMark({ light = false, width = 34, height = 24 }) {
   const main = light ? '#FFFFFF' : '#600C38'
   const detail = light ? 'rgba(122,15,70,0.70)' : '#FFFFFF'
+  const circleBorder = light ? '1px solid rgba(255,255,255,0.35)' : '1px solid rgba(96,12,56,0.22)'
 
   return (
+    <div style={{ width: 44, height: 44, borderRadius: '50%', border: circleBorder, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
     <svg
       width={width}
       height={height}
@@ -34,5 +36,6 @@ export default function LogoMark({ light = false, width = 34, height = 24 }) {
       {/* Centre body highlight */}
       <path d="M28.092 6.5C27.9777 6.60796 27.8636 6.7105 27.7487 6.81835C25.5594 8.6423 24.6914 11.8989 25.7028 14.6381C25.7506 14.7875 25.803 14.9391 25.86 15.0928C25.8829 15.1551 25.9296 15.2049 25.9905 15.231C26.0514 15.2572 26.1217 15.2574 26.1849 15.2321C26.2482 15.2068 26.2989 15.1582 26.325 15.0972C26.3511 15.0363 26.3505 14.968 26.3242 14.9072C26.3242 14.9072 26.3242 14.9072 26.3242 14.9072C26.2622 14.7632 26.2046 14.6213 26.1512 14.4814C25.058 11.9293 25.6802 8.79174 27.7663 6.83614C27.8752 6.72253 27.9835 6.61389 28.092 6.5Z" fill={detail} />
     </svg>
+    </div>
   )
 }

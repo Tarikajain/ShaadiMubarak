@@ -6,7 +6,7 @@ export default function StatusBar({ light = false }) {
 
   return (
     <div className="flex items-center justify-between px-5 pt-3 pb-1">
-      <span className="font-outfit text-[12px] font-medium" style={{ color: textColor }}>
+      <span className="font-work-sans text-[12px] font-medium" style={{ color: textColor }}>
         {time}
       </span>
       <div className="flex items-center gap-1.5" style={{ color: iconColor }}>

@@ -4,13 +4,15 @@ import {
   UserPlus, Check, X, Clock, Users, Upload, Sheet, Link2, ChevronDown,
   CheckCircle2, RefreshCw, Phone, MessageSquare, MessageCircle, BookUser,
   Info, Globe, Mail, Shirt, Gift, Heart, Sparkles, ExternalLink, ChevronRight,
-  Palette, Wand2, Zap, Search,
+  Palette, Wand2, Zap, Search, ArrowLeft,
 } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
 import LogoMark from '../components/layout/LogoMark'
 import { guests as mockGuests, wedding } from '../data/mockData'
+import { VIBES, DEFAULT_VIBE } from '../data/vibesData'
+import { getWeddingProfile } from '../utils/profileUtils'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } }
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.25, 0.1, 0.25, 1] } } }
@@ -28,7 +30,7 @@ function RsvpBadge({ status }) {
   const cfg = rsvpConfig[status]
   const Icon = cfg.icon
   return (
-    <span className="inline-flex items-center gap-1 font-outfit"
+    <span className="inline-flex items-center gap-1 font-work-sans"
       style={{ fontSize: '10px', fontWeight: 600, color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}`, padding: '3px 9px', borderRadius: '99px', letterSpacing: '0.04em', flexShrink: 0 }}>
       <Icon size={9} strokeWidth={2.5} />
       {cfg.label}
@@ -39,11 +41,11 @@ function RsvpBadge({ status }) {
 function InitialAvatar({ name, side, size = 36 }) {
   const initial = name.charAt(0).toUpperCase()
   const bg   = side === 'bride' ? 'rgba(200,151,58,0.12)' : 'rgba(26,20,16,0.07)'
-  const color = side === 'bride' ? '#A07020' : 'rgba(26,20,16,0.45)'
+  const color = side === 'bride' ? '#A07020' : 'rgba(26,20,16,0.62)'
   return (
     <div className="rounded-full flex items-center justify-center flex-shrink-0"
       style={{ width: size, height: size, background: bg, border: `1px solid ${side === 'bride' ? 'rgba(200,151,58,0.25)' : 'rgba(0,0,0,0.08)'}` }}>
-      <span className="font-outfit" style={{ fontSize: size * 0.36, fontWeight: 600, color }}>{initial}</span>
+      <span className="font-work-sans" style={{ fontSize: size * 0.36, fontWeight: 600, color }}>{initial}</span>
     </div>
   )
 }
@@ -65,7 +67,7 @@ function GuestActionDrawer({ guest, onClose, coupleNames, weddingDate, weddingVe
   return (
     <>
       <motion.div key="guest-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 55 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
       <motion.div key="guest-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 40px' }}>
@@ -73,10 +75,10 @@ function GuestActionDrawer({ guest, onClose, coupleNames, weddingDate, weddingVe
         <div className="flex items-center gap-3" style={{ marginBottom: '24px' }}>
           <InitialAvatar name={guest.name} side={guest.side} size={48} />
           <div className="flex-1 min-w-0">
-            <p className="font-outfit" style={{ fontSize: '16px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px' }}>{guest.name}</p>
+            <p className="font-work-sans" style={{ fontSize: '16px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px' }}>{guest.name}</p>
             <div className="flex items-center gap-2">
               <RsvpBadge status={guest.rsvp} />
-              <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.35)' }}>{guest.side === 'bride' ? "Bride's side" : "Groom's side"}</span>
+              <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.50)' }}>{guest.side === 'bride' ? "Bride's side" : "Groom's side"}</span>
             </div>
           </div>
         </div>
@@ -85,14 +87,14 @@ function GuestActionDrawer({ guest, onClose, coupleNames, weddingDate, weddingVe
             {actions.map(a => {
               const Icon = a.icon
               return (
-                <button key={a.label} onClick={a.onTap} className="flex items-center gap-3 w-full font-outfit"
+                <button key={a.label} onClick={a.onTap} className="flex items-center gap-3 w-full font-work-sans"
                   style={{ padding: '14px 16px', borderRadius: '14px', background: a.bg, border: `1px solid ${a.border}`, cursor: 'pointer', textAlign: 'left' }}>
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.7)', border: `1px solid ${a.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Icon size={16} color={a.color} strokeWidth={1.8} />
                   </div>
                   <div>
                     <p style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>{a.label}</p>
-                    <p style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '1px 0 0' }}>{a.sub}</p>
+                    <p style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '1px 0 0' }}>{a.sub}</p>
                   </div>
                 </button>
               )
@@ -102,12 +104,12 @@ function GuestActionDrawer({ guest, onClose, coupleNames, weddingDate, weddingVe
           <div className="flex flex-col gap-3">
             <div className="flex items-start gap-2" style={{ background: 'rgba(200,151,58,0.07)', border: '1px solid rgba(200,151,58,0.25)', borderRadius: '12px', padding: '12px 14px' }}>
               <Info size={14} color="#A07020" style={{ flexShrink: 0, marginTop: 1 }} />
-              <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.5 }}>
+              <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.5 }}>
                 No phone number for <strong style={{ fontWeight: 500, color: '#1A1410' }}>{guest.name}</strong>.{hasEmail && <span> Email: <strong style={{ fontWeight: 400 }}>{guest.contact}</strong></span>}
               </p>
             </div>
             <button onClick={() => window.open(`https://wa.me/?text=${waAskMsg}`, '_blank')}
-              className="w-full flex items-center justify-center gap-2 font-outfit"
+              className="w-full flex items-center justify-center gap-2 font-work-sans"
               style={{ background: 'rgba(18,140,126,0.1)', border: '1px solid rgba(18,140,126,0.28)', color: '#128C7E', fontSize: '14px', fontWeight: 500, padding: '14px', borderRadius: '14px', cursor: 'pointer' }}>
               <MessageCircle size={16} strokeWidth={1.8} />Ask on WhatsApp
             </button>
@@ -129,11 +131,11 @@ function ContactsBanner({ onConnect, onDismiss, status }) {
           <BookUser size={13} color="#7A0F46" strokeWidth={1.8} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Connect your contacts</p>
-          <p className="font-outfit truncate" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: 0 }}>Auto-fill phone numbers from your phone</p>
+          <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Connect your contacts</p>
+          <p className="font-work-sans truncate" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>Auto-fill phone numbers from your phone</p>
         </div>
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          <button onClick={onConnect} className="font-outfit"
+          <button onClick={onConnect} className="font-work-sans"
             style={{ padding: '6px 11px', borderRadius: '8px', background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', border: 'none', fontSize: '11px', fontWeight: 500, color: '#FFFBF5', cursor: 'pointer', whiteSpace: 'nowrap' }}>
             Allow
           </button>
@@ -181,25 +183,25 @@ function ImportModal({ onClose, onImport }) {
   }
   return (
     <>
-      <motion.div key="imp-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 55 }} />
+      <motion.div key="imp-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
       <motion.div key="imp-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 36px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
-        <p className="font-cormorant italic" style={{ fontSize: '24px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Import guest list</p>
-        <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 22px' }}>Upload a CSV or Excel file. Columns: Name, Contact, RSVP Status</p>
+        <p className="font-cormorant italic" style={{ fontSize: '24px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Import guest list</p>
+        <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px' }}>Upload a CSV or Excel file. Columns: Name, Contact, RSVP Status</p>
         <div onDragOver={e => { e.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)}
           onDrop={e => { e.preventDefault(); setDragging(false); processFile(e.dataTransfer.files[0]) }}
           onClick={() => fileRef.current?.click()}
           style={{ border: `2px dashed ${dragging ? '#7A0F46' : 'rgba(0,0,0,0.12)'}`, borderRadius: '16px', padding: '32px 20px', textAlign: 'center', cursor: 'pointer', background: dragging ? 'rgba(122,15,70,0.04)' : 'transparent', transition: 'all 0.18s ease', marginBottom: '14px' }}>
           <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" style={{ display: 'none' }} onChange={e => processFile(e.target.files[0])} />
           <AnimatePresence mode="wait">
-            {status === null && (<motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}><Upload size={20} color="#7A0F46" /></div><p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px' }}>Drop your file here</p><p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>or tap to browse · CSV, XLSX, XLS</p></motion.div>)}
-            {status === 'parsing' && (<motion.div key="parsing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} style={{ width: 36, height: 36, margin: '0 auto 12px' }}><RefreshCw size={36} color="#7A0F46" /></motion.div><p className="font-outfit" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: 0 }}>Reading file…</p></motion.div>)}
-            {status === 'done' && (<motion.div key="done" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><CheckCircle2 size={40} color="#2D6025" style={{ margin: '0 auto 10px', display: 'block' }} /><p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#2D6025', margin: '0 0 2px' }}>{count} guests imported</p></motion.div>)}
-            {status === 'error' && (<motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#B03A10', margin: 0 }}>Unsupported file — use CSV or Excel</p></motion.div>)}
+            {status === null && (<motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}><Upload size={20} color="#7A0F46" /></div><p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px' }}>Drop your file here</p><p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>or tap to browse · CSV, XLSX, XLS</p></motion.div>)}
+            {status === 'parsing' && (<motion.div key="parsing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} style={{ width: 36, height: 36, margin: '0 auto 12px' }}><RefreshCw size={36} color="#7A0F46" /></motion.div><p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: 0 }}>Reading file…</p></motion.div>)}
+            {status === 'done' && (<motion.div key="done" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><CheckCircle2 size={40} color="#2D6025" style={{ margin: '0 auto 10px', display: 'block' }} /><p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#2D6025', margin: '0 0 2px' }}>{count} guests imported</p></motion.div>)}
+            {status === 'error' && (<motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#B03A10', margin: 0 }}>Unsupported file — use CSV or Excel</p></motion.div>)}
           </AnimatePresence>
         </div>
-        <p className="font-outfit text-center" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.35)', margin: 0 }}>Need a template?{' '}<button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: 500, color: '#7A0F46', padding: 0 }}>Download CSV sample ↓</button></p>
+        <p className="font-work-sans text-center" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: 0 }}>Need a template?{' '}<button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: 500, color: '#7A0F46', padding: 0 }}>Download CSV sample ↓</button></p>
       </motion.div>
     </>
   )
@@ -217,22 +219,22 @@ function GoogleSheetsModal({ onClose, onConnect, connected, lastSync }) {
   }
   return (
     <>
-      <motion.div key="gs-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 55 }} />
+      <motion.div key="gs-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
       <motion.div key="gs-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 36px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: '16px' }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(52,168,83,0.1)', border: '1px solid rgba(52,168,83,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Sheet size={20} color="#34A853" /></div>
-          <div><p className="font-outfit" style={{ fontSize: '14px', fontWeight: 600, color: '#1A1410', margin: 0 }}>Google Sheets</p><p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Live sync — guests added instantly</p></div>
+          <div><p className="font-work-sans" style={{ fontSize: '14px', fontWeight: 600, color: '#1A1410', margin: 0 }}>Google Sheets</p><p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Live sync — guests added instantly</p></div>
         </div>
         {connected ? (
-          <><div style={{ background: 'rgba(45,96,37,0.06)', border: '1px solid rgba(45,96,37,0.18)', borderRadius: '14px', padding: '14px 16px', marginBottom: '16px' }}><div className="flex items-center gap-2"><div style={{ width: 7, height: 7, borderRadius: '50%', background: '#2D6025', flexShrink: 0 }} /><span className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#2D6025' }}>Connected</span><span className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.35)', marginLeft: 'auto' }}>Synced {lastSync}</span></div></div>
-          <div className="flex gap-2"><button onClick={() => { setSyncing(true); setTimeout(() => setSyncing(false), 1500) }} className="flex items-center justify-center gap-2 font-outfit flex-1" style={{ background: 'rgba(52,168,83,0.08)', border: '1px solid rgba(52,168,83,0.22)', color: '#34A853', fontSize: '13px', fontWeight: 500, padding: '13px', borderRadius: '12px', cursor: 'pointer' }}><motion.div animate={syncing ? { rotate: 360 } : {}} transition={{ duration: 0.8, repeat: syncing ? Infinity : 0, ease: 'linear' }}><RefreshCw size={14} /></motion.div>{syncing ? 'Syncing…' : 'Sync now'}</button><button onClick={onClose} className="font-outfit flex-1" style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '13px', fontWeight: 500, padding: '13px', borderRadius: '12px', border: 'none', cursor: 'pointer' }}>Done</button></div></>
+          <><div style={{ background: 'rgba(45,96,37,0.06)', border: '1px solid rgba(45,96,37,0.18)', borderRadius: '14px', padding: '14px 16px', marginBottom: '16px' }}><div className="flex items-center gap-2"><div style={{ width: 7, height: 7, borderRadius: '50%', background: '#2D6025', flexShrink: 0 }} /><span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#2D6025' }}>Connected</span><span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', marginLeft: 'auto' }}>Synced {lastSync}</span></div></div>
+          <div className="flex gap-2"><button onClick={() => { setSyncing(true); setTimeout(() => setSyncing(false), 1500) }} className="flex items-center justify-center gap-2 font-work-sans flex-1" style={{ background: 'rgba(52,168,83,0.08)', border: '1px solid rgba(52,168,83,0.22)', color: '#34A853', fontSize: '13px', fontWeight: 500, padding: '13px', borderRadius: '12px', cursor: 'pointer' }}><motion.div animate={syncing ? { rotate: 360 } : {}} transition={{ duration: 0.8, repeat: syncing ? Infinity : 0, ease: 'linear' }}><RefreshCw size={14} /></motion.div>{syncing ? 'Syncing…' : 'Sync now'}</button><button onClick={onClose} className="font-work-sans flex-1" style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '13px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '13px', borderRadius: '12px', border: 'none', cursor: 'pointer' }}>Done</button></div></>
         ) : (
-          <><p className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.6)', margin: '0 0 10px' }}>Paste your Google Sheet link</p>
-          <div className="glass-input flex items-center gap-2" style={{ padding: '12px 14px', marginBottom: '10px' }}><Link2 size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} /><input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://docs.google.com/spreadsheets/…" style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} /></div>
-          <button onClick={handleConnect} disabled={!url.trim() || connecting} className="w-full font-outfit flex items-center justify-center gap-2"
-            style={{ background: url.trim() && !connecting ? 'linear-gradient(135deg, #34A853, #2D8A46)' : 'rgba(0,0,0,0.06)', color: url.trim() && !connecting ? '#FFFFFF' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: url.trim() && !connecting ? 'pointer' : 'not-allowed', transition: 'all 0.18s ease' }}>
+          <><p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.6)', margin: '0 0 10px' }}>Paste your Google Sheet link</p>
+          <div className="glass-input flex items-center gap-2" style={{ padding: '12px 14px', marginBottom: '10px' }}><Link2 size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} /><input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://docs.google.com/spreadsheets/…" style={{ fontSize: '12px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} /></div>
+          <button onClick={handleConnect} disabled={!url.trim() || connecting} className="w-full font-work-sans flex items-center justify-center gap-2"
+            style={{ background: url.trim() && !connecting ? 'linear-gradient(135deg, #34A853, #2D8A46)' : 'rgba(0,0,0,0.06)', color: url.trim() && !connecting ? '#FFFFFF' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: url.trim() && !connecting ? 'pointer' : 'not-allowed', transition: 'all 0.18s ease' }}>
             {connecting ? (<><motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}><RefreshCw size={15} /></motion.div>Connecting…</>) : (<><Sheet size={15} />Connect Google Sheets</>)}
           </button></>
         )}
@@ -246,10 +248,26 @@ function GoogleSheetsModal({ onClose, onConnect, connected, lastSync }) {
 // ════════════════════════════════════════════════════════════════
 
 const WEBSITE_TEMPLATES = [
-  { id: 'bloom',   name: 'Bloom',   gradient: 'linear-gradient(135deg, #F0D5E5, #CDA0C0)', accent: '#7A0F46' },
-  { id: 'golden',  name: 'Golden',  gradient: 'linear-gradient(135deg, #F5E8C8, #C8973A)', accent: '#8B6010' },
-  { id: 'verdant', name: 'Verdant', gradient: 'linear-gradient(135deg, #D4EDD8, #3D8B52)', accent: '#2D6025' },
-  { id: 'minimal', name: 'Minimal', gradient: 'linear-gradient(135deg, #F5F5F0, #C8C4BC)', accent: '#4A4540' },
+  {
+    id: 'meera',  name: 'Meera',  style: 'Traditional · Red & Gold',
+    image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=400&h=260&q=75',
+    accent: '#7A0F46', accentBg: 'rgba(122,15,70,0.08)',
+  },
+  {
+    id: 'zara',   name: 'Zara',   style: 'Modern · Blush & Ivory',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&h=260&q=75',
+    accent: '#C45A80', accentBg: 'rgba(196,90,128,0.08)',
+  },
+  {
+    id: 'priya',  name: 'Priya',  style: 'Garden · Sage & White',
+    image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=400&h=260&q=75',
+    accent: '#2D6025', accentBg: 'rgba(45,96,37,0.08)',
+  },
+  {
+    id: 'ananya', name: 'Ananya', style: 'Royal · Navy & Gold',
+    image: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=400&h=260&q=75',
+    accent: '#1A3A6B', accentBg: 'rgba(26,58,107,0.08)',
+  },
 ]
 
 const INVITE_TEMPLATES = [
@@ -258,31 +276,503 @@ const INVITE_TEMPLATES = [
   { id: 'classic', name: 'Classic', gradient: 'linear-gradient(135deg, #2D2010, #6B4C28)', accent: '#6B4C28' },
 ]
 
+// ─── Website live-preview mockup ─────────────────────────────────
+function WebsitePreviewMock({ templateId }) {
+  const t = WEBSITE_TEMPLATES.find(t => t.id === templateId) || WEBSITE_TEMPLATES[0]
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#fff', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Mock browser chrome */}
+      <div style={{ height: 26, background: '#f0eeec', borderBottom: '1px solid rgba(0,0,0,0.07)', display: 'flex', alignItems: 'center', padding: '0 10px', gap: 5, flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#FF5F57' }} />
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#FEBC2E' }} />
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#28C840' }} />
+        </div>
+        <div style={{ flex: 1, height: 14, borderRadius: 4, background: 'rgba(0,0,0,0.08)', marginLeft: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 7.5, color: 'rgba(0,0,0,0.38)', fontFamily: 'Inter, sans-serif', letterSpacing: '0.02em' }}>ananya-rahul.wedding</span>
+        </div>
+      </div>
+      {/* Website nav */}
+      <div style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', borderBottom: '1px solid rgba(0,0,0,0.06)', flexShrink: 0 }}>
+        <span style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 13, fontWeight: 600, color: t.accent, letterSpacing: '0.02em' }}>A &amp; R</span>
+        <div style={{ display: 'flex', gap: 14 }}>
+          {['Story', 'Events', 'Photos', 'RSVP'].map(n => (
+            <span key={n} style={{ fontSize: 8, fontFamily: 'Inter, sans-serif', color: 'rgba(0,0,0,0.42)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>{n}</span>
+          ))}
+        </div>
+      </div>
+      {/* Hero */}
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'background-image 0.4s ease' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.62) 100%)' }} />
+        {/* Couple names */}
+        <div style={{ position: 'absolute', top: '28%', left: 0, right: 0, textAlign: 'center', padding: '0 20px' }}>
+          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 32, fontWeight: 500, color: '#fff', margin: '0 0 6px', lineHeight: 1.1, letterSpacing: '-0.01em' }}>Ananya &amp; Rahul</p>
+          <div style={{ width: 36, height: 1, background: 'rgba(255,255,255,0.5)', margin: '0 auto 10px' }} />
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.82)', letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>December 19, 2026 · Udaipur</p>
+        </div>
+        {/* Countdown */}
+        <div style={{ position: 'absolute', bottom: 20, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 24 }}>
+          {[['218', 'Days'], ['14', 'Hrs'], ['32', 'Min']].map(([n, l]) => (
+            <div key={l} style={{ textAlign: 'center' }}>
+              <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 26, fontWeight: 600, color: '#fff', margin: 0, lineHeight: 1 }}>{n}</p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 7.5, color: 'rgba(255,255,255,0.65)', margin: '3px 0 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{l}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Below-fold teaser */}
+      <div style={{ flexShrink: 0, padding: '12px 20px 10px', textAlign: 'center', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 9.5, color: 'rgba(26,20,16,0.45)', margin: 0, lineHeight: 1.55 }}>
+          Join us as we begin our forever — Dec 19 at The Leela, Udaipur
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ─── Full-screen Wedding Website Setup ───────────────────────────
+function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig = null }) {
+  const [mode, setMode] = useState(null) // null | 'template' | 'custom'
+  const [selectedTemplate, setSelectedTemplate] = useState(
+    initialConfig?.template || WEBSITE_TEMPLATES[0].id
+  )
+  const [customUrl, setCustomUrl] = useState(initialConfig?.url || '')
+  const [connected, setConnected] = useState(!!initialConfig?.url)
+  const carouselRef = useRef(null)
+
+  // Hero image: use the profile vibe image (or default)
+  const _profile = getWeddingProfile()
+  const _vibe = VIBES.find(v => v.id === _profile?.vibe) || DEFAULT_VIBE
+  const heroImage = _vibe.img
+
+  // ── Active site view (website already configured) ──────────────
+  if (initialConfig) {
+    return (
+      <motion.div key="ws-active"
+        initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 32 }}
+        transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
+        style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 200, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <StatusBar />
+        {/* Header */}
+        <div style={{ flexShrink: 0, borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '10px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button onClick={onClose}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '99px', padding: '6px 12px 6px 8px', cursor: 'pointer' }}>
+            <ChevronRight size={14} color="rgba(26,20,16,0.65)" strokeWidth={2} style={{ transform: 'rotate(180deg)' }} />
+            <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: 'rgba(26,20,16,0.65)' }}>Guests</span>
+          </button>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2D6025', display: 'inline-block' }} />
+            <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: '#2D6025' }}>
+              {initialConfig.mode === 'template' ? 'Live' : 'Connected'}
+            </span>
+          </span>
+        </div>
+        {/* Preview — fills all available space */}
+        <div style={{ flex: 1, overflow: 'hidden' }}>
+          {initialConfig.mode === 'template' ? (
+            <WebsitePreviewMock templateId={initialConfig.template || WEBSITE_TEMPLATES[0].id} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '32px 28px' }}>
+              <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(45,96,37,0.08)', border: '1px solid rgba(45,96,37,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Link2 size={22} color="#2D6025" strokeWidth={1.6} />
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <p className="font-cormorant italic" style={{ fontSize: '24px', fontWeight: 500, color: '#1A1410', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Your site is connected</p>
+                <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: 0, lineHeight: 1.6 }}>{initialConfig.url}</p>
+              </div>
+              <button onClick={onOpenAgent} className="font-work-sans"
+                style={{ marginTop: 8, padding: '10px 20px', borderRadius: '99px', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.2)', fontSize: '12px', fontWeight: 500, color: '#7A0F46', cursor: 'pointer' }}>
+                Ask Mubarak to update it →
+              </button>
+            </div>
+          )}
+        </div>
+        {/* Edit button */}
+        <div style={{ flexShrink: 0, padding: '12px 20px 32px', borderTop: '1px solid rgba(0,0,0,0.06)', background: '#FFFBF5', display: 'flex', gap: 9 }}>
+          <button
+            onClick={() => { onSave(null); onClose() }}
+            className="font-work-sans"
+            style={{ flex: 1, padding: '13px', borderRadius: '14px', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.09)', fontSize: '13px', fontWeight: 500, color: 'rgba(26,20,16,0.6)', cursor: 'pointer' }}>
+            Change setup
+          </button>
+          <button
+            onClick={() => { onClose(); setTimeout(() => onOpenAgent?.('What would you like to change on your wedding website?'), 320) }}
+            className="font-montserrat"
+            style={{ flex: 2, padding: '13px', borderRadius: '14px', background: 'linear-gradient(135deg, #C4501E, #A03A12)', boxShadow: '0 6px 20px rgba(196,80,30,0.28)', fontSize: '12px', fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Edit with Mubarak
+          </button>
+        </div>
+        <BottomNav />
+      </motion.div>
+    )
+  }
+
+  const handleTemplateSelect = (id) => setSelectedTemplate(id)
+
+  const handlePersonalise = () => {
+    onSave({ mode: 'template', template: selectedTemplate })
+    onClose()
+    if (onOpenAgent) setTimeout(onOpenAgent, 280)
+  }
+
+  const handleConnect = () => {
+    if (!customUrl.trim()) return
+    setConnected(true)
+    onSave({ mode: 'custom', url: customUrl })
+  }
+
+  const handleAskMubarak = () => {
+    onClose()
+    if (onOpenAgent) setTimeout(onOpenAgent, 280)
+  }
+
+  return (
+    <motion.div key="ws-screen"
+      initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 32 }}
+      transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
+      style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 200, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+      {/* Status bar */}
+      <StatusBar />
+
+      {/* Header — only shown when a mode is active (template / custom) */}
+      {mode && (
+        <div style={{ flexShrink: 0, borderBottom: '1px solid rgba(0,0,0,0.06)', background: '#FFFBF5', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button onClick={onClose}
+            style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '99px', padding: '7px 14px 7px 10px', cursor: 'pointer' }}>
+            <ChevronRight size={14} color="rgba(26,20,16,0.55)" strokeWidth={2} style={{ transform: 'rotate(180deg)' }} />
+            <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.55)' }}>Guests</span>
+            <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.30)' }}>·</span>
+            <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 600, color: '#1A1410' }}>Wedding Website</span>
+          </button>
+          <button onClick={() => setMode(null)} className="font-work-sans"
+            style={{ fontSize: '11px', fontWeight: 500, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.2)', padding: '5px 11px', borderRadius: '99px', cursor: 'pointer' }}>
+            Change
+          </button>
+        </div>
+      )}
+
+      {/* ── NULL state: choose mode ── */}
+      <AnimatePresence mode="wait">
+        {mode === null && (
+          <motion.div key="null-state" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            {/* Preview hero — fixed height, back pill floats inside like vendor detail */}
+            <div style={{ flex: '0 0 52%', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${heroImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(26,20,16,0.88) 100%)' }} />
+              {/* Back pill — vendor-detail style, floats over hero */}
+              <button onClick={onClose}
+                style={{ position: 'absolute', top: 12, left: 16, display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(26,20,16,0.50)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: '99px', padding: '6px 12px 6px 8px', cursor: 'pointer', zIndex: 2 }}>
+                <ChevronRight size={14} color="#FFFBF5" strokeWidth={2} style={{ transform: 'rotate(180deg)' }} />
+                <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#FFFBF5' }}>Guests</span>
+              </button>
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px 28px 32px', textAlign: 'center' }}>
+                <p className="font-cormorant italic" style={{ fontSize: '34px', fontWeight: 500, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.01em', lineHeight: 1.1 }}>Ananya &amp; Rahul</p>
+                <div style={{ width: 32, height: 1, background: 'rgba(255,255,255,0.45)', margin: '0 auto 10px' }} />
+                <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(255,255,255,0.70)', letterSpacing: '0.14em', textTransform: 'uppercase', margin: 0 }}>December 19, 2026 · Udaipur</p>
+              </div>
+            </div>
+            {/* Mode choice tiles — horizontal, equal weight */}
+            <div style={{ flex: 1, padding: '16px 20px 28px', background: '#FFFBF5', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', textAlign: 'center', margin: '0 0 12px' }}>How would you like to set up your website?</p>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <motion.button onClick={() => setMode('template')} whileTap={{ scale: 0.97 }}
+                  className="font-work-sans"
+                  style={{ flex: 1, borderRadius: '16px', background: 'rgba(0,0,0,0.025)', border: '1px solid rgba(0,0,0,0.09)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '18px 12px' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Palette size={15} color="rgba(26,20,16,0.65)" strokeWidth={1.6} />
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', lineHeight: 1.25 }}>Build from a template</p>
+                    <p style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', margin: 0, lineHeight: 1.4 }}>Pick a style, Mubarak fills in your details</p>
+                  </div>
+                </motion.button>
+                <motion.button onClick={() => setMode('custom')} whileTap={{ scale: 0.97 }}
+                  className="font-work-sans"
+                  style={{ flex: 1, borderRadius: '16px', background: 'rgba(0,0,0,0.025)', border: '1px solid rgba(0,0,0,0.09)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '18px 12px' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Link2 size={15} color="rgba(26,20,16,0.65)" strokeWidth={1.6} />
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', lineHeight: 1.25 }}>Connect your own site</p>
+                    <p style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', margin: 0, lineHeight: 1.4 }}>Paste a URL — AI still updates it</p>
+                  </div>
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── TEMPLATE mode ── */}
+        {mode === 'template' && (
+          <motion.div key="template-mode" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+            {/* Live website preview — fills remaining space above carousel panel */}
+            <div style={{ flex: 1, padding: '12px 16px 8px', position: 'relative', minHeight: 0 }}>
+              <AnimatePresence mode="wait">
+                <motion.div key={selectedTemplate} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  style={{ width: '100%', height: '100%', borderRadius: 14, overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.14)', border: '1px solid rgba(0,0,0,0.07)' }}>
+                  <WebsitePreviewMock templateId={selectedTemplate} />
+                </motion.div>
+              </AnimatePresence>
+              {/* Preview badge */}
+              <div style={{ position: 'absolute', bottom: 18, left: '50%', transform: 'translateX(-50%)', background: 'rgba(26,20,16,0.62)', backdropFilter: 'blur(6px)', borderRadius: 99, padding: '4px 11px', pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+                <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 500, color: 'rgba(255,255,255,0.85)' }}>Preview only · edits via Mubarak</span>
+              </div>
+            </div>
+
+            {/* Template carousel + CTA — fixed panel, never scrolls, always visible above BottomNav */}
+            <div style={{ flexShrink: 0, background: '#FFFBF5', borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: 12, paddingBottom: 16 }}>
+              {/* Templates label */}
+              <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.45)', letterSpacing: '0.09em', textTransform: 'uppercase', margin: '0 0 9px', paddingLeft: 16 }}>Templates</p>
+              {/* Carousel — spacer children give reliable left/right indent in WebKit (padding-start gets swallowed) */}
+              <div ref={carouselRef}
+                style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, scrollSnapType: 'x mandatory', msOverflowStyle: 'none', scrollbarWidth: 'none' }} className="no-scrollbar">
+                {/* 6px spacer + 10px gap = 16px left indent */}
+                <div style={{ flexShrink: 0, width: 6 }} />
+                  {WEBSITE_TEMPLATES.map(t => {
+                    const isActive = selectedTemplate === t.id
+                    return (
+                      <motion.button key={t.id} onClick={() => handleTemplateSelect(t.id)} whileTap={{ scale: 0.96 }}
+                        style={{ flexShrink: 0, width: 110, borderRadius: 12, overflow: 'hidden', border: isActive ? `2.5px solid ${t.accent}` : '2px solid transparent', cursor: 'pointer', padding: 0, background: 'none', scrollSnapAlign: 'start', boxShadow: isActive ? `0 4px 14px ${t.accentBg}` : '0 1px 6px rgba(0,0,0,0.08)' }}>
+                        <div style={{ height: 68, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+                          {isActive && (
+                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 26 }}
+                              style={{ position: 'absolute', top: 6, right: 6, width: 18, height: 18, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.3)' }}>
+                              <Check size={10} color="#fff" strokeWidth={2.5} />
+                            </motion.div>
+                          )}
+                        </div>
+                        <div style={{ padding: '7px 9px 9px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                          <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: isActive ? 600 : 500, color: isActive ? t.accent : '#1A1410', margin: '0 0 1px' }}>{t.name}</p>
+                          <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.style}</p>
+                        </div>
+                      </motion.button>
+                    )
+                  })}
+                {/* 6px right spacer mirrors left spacer */}
+                <div style={{ flexShrink: 0, width: 6 }} />
+              </div>
+
+              {/* Personalise CTA */}
+              <div style={{ padding: '12px 16px 0' }}>
+                <motion.button onClick={handlePersonalise} whileTap={{ scale: 0.97 }}
+                  className="w-full flex items-center justify-center gap-2"
+                  style={{ padding: '15px', borderRadius: '14px', background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+                  <Wand2 size={15} />
+                  Personalise with Mubarak →
+                </motion.button>
+              </div>
+            </div>
+
+            {/* BottomNav anchors the AgentBar pill at its correct position */}
+            <BottomNav />
+          </motion.div>
+        )}
+
+        {/* ── CUSTOM / Connect URL mode ── */}
+        {mode === 'custom' && (
+          <motion.div key="custom-mode" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ flex: 1, overflowY: 'auto', padding: '28px 20px 40px' }}>
+            {/* Icon header */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
+                <Globe size={28} color="#7A0F46" strokeWidth={1.5} />
+              </div>
+              <p className="font-cormorant italic" style={{ fontSize: '24px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Connect your website</p>
+              <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.55)', margin: 0, textAlign: 'center', lineHeight: 1.55 }}>
+                Paste your wedding website URL below. Mubarak can still push date, venue and RSVP updates directly to it.
+              </p>
+            </div>
+
+            {/* URL input */}
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.45)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>Your website URL</p>
+            <div className="glass-input flex items-center gap-2" style={{ padding: '13px 16px', marginBottom: 10 }}>
+              <Link2 size={15} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
+              <input value={customUrl} onChange={e => { setCustomUrl(e.target.value); setConnected(false) }}
+                placeholder="https://ananya-rahul.wedding"
+                style={{ fontSize: '13px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
+            </div>
+
+            {/* AI sync note */}
+            <div style={{ background: 'rgba(122,15,70,0.04)', border: '1px solid rgba(122,15,70,0.14)', borderRadius: 12, padding: '12px 14px', marginBottom: 24 }}>
+              <div className="flex items-start gap-2">
+                <Zap size={13} color="#7A0F46" style={{ flexShrink: 0, marginTop: 1 }} />
+                <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.6 }}>
+                  Mubarak can push event detail updates — date, time, venue — to your connected website via our integration API.
+                </p>
+              </div>
+            </div>
+
+            {/* Connect button */}
+            {!connected ? (
+              <motion.button onClick={handleConnect} whileTap={{ scale: 0.97 }}
+                disabled={!customUrl.trim()}
+                className="w-full font-montserrat flex items-center justify-center gap-2"
+                style={{ padding: '15px', borderRadius: '14px', background: customUrl.trim() ? 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)' : 'rgba(0,0,0,0.07)', color: customUrl.trim() ? '#FFFBF5' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', border: 'none', cursor: customUrl.trim() ? 'pointer' : 'default', boxShadow: customUrl.trim() ? '0 6px 20px rgba(122,15,70,0.28)' : 'none', marginBottom: 12 }}>
+                <Globe size={15} />
+                Connect website →
+              </motion.button>
+            ) : (
+              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+                <div style={{ background: 'rgba(45,96,37,0.07)', border: '1px solid rgba(45,96,37,0.2)', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <Check size={15} color="#2D6025" strokeWidth={2.5} />
+                  <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>Website connected successfully</span>
+                </div>
+                <motion.button onClick={handleAskMubarak} whileTap={{ scale: 0.97 }}
+                  className="w-full font-montserrat flex items-center justify-center gap-2"
+                  style={{ padding: '15px', borderRadius: '14px', background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+                  <Wand2 size={15} />
+                  Ask Mubarak to update details →
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bottom nav — same as every screen */}
+      <BottomNav />
+    </motion.div>
+  )
+}
+
+// ─── Template Picker Sheet (drill-down) ──────────────────────────
+function TemplatePickerSheet({ onClose, onSelect, onOpenAgent }) {
+  const [selected, setSelected] = useState(null)
+  const [launching, setLaunching] = useState(false)
+
+  const handlePersonalise = () => {
+    setLaunching(true)
+    setTimeout(() => {
+      onSelect(selected)
+      onClose()
+      if (onOpenAgent) onOpenAgent()
+    }, 700)
+  }
+
+  return (
+    <>
+      <motion.div key="tpl-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 0.45 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,1)', zIndex: 70 }} />
+      <motion.div key="tpl-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 360, damping: 34 }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 75, maxHeight: '90%', overflowY: 'auto', paddingBottom: 40 }}>
+        {/* Handle */}
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '20px auto 0' }} />
+
+        {/* Header */}
+        <div style={{ padding: '18px 20px 0' }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
+            <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>
+              Choose a template
+            </p>
+            <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+              <X size={14} color="rgba(26,20,16,0.5)" strokeWidth={2} />
+            </button>
+          </div>
+          <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.55)', margin: '0 0 20px', lineHeight: 1.5 }}>
+            Pick a style — Mubarak will personalise it with your details.
+          </p>
+        </div>
+
+        {/* Template cards grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 20px', marginBottom: 20 }}>
+          {WEBSITE_TEMPLATES.map(t => {
+            const isSelected = selected === t.id
+            return (
+              <motion.button key={t.id} onClick={() => setSelected(t.id)} whileTap={{ scale: 0.97 }}
+                style={{ borderRadius: 16, overflow: 'hidden', border: isSelected ? `2px solid ${t.accent}` : '2px solid transparent', cursor: 'pointer', background: 'none', padding: 0, position: 'relative', boxShadow: isSelected ? `0 4px 18px ${t.accentBg}` : '0 1px 8px rgba(0,0,0,0.06)', transition: 'box-shadow 0.2s' }}>
+                {/* Image */}
+                <div style={{ height: 130, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%)' }} />
+                  {/* Selected checkmark */}
+                  {isSelected && (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 480, damping: 28 }}
+                      style={{ position: 'absolute', top: 8, right: 8, width: 22, height: 22, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}>
+                      <Check size={12} color="#FFFFFF" strokeWidth={2.5} />
+                    </motion.div>
+                  )}
+                </div>
+                {/* Label */}
+                <div style={{ padding: '10px 12px 12px', background: '#FFFFFF', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                  <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: '0 0 2px' }}>{t.name}</p>
+                  <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.52)', margin: 0 }}>{t.style}</p>
+                </div>
+              </motion.button>
+            )
+          })}
+        </div>
+
+        {/* CTA */}
+        <div style={{ padding: '0 20px' }}>
+          <AnimatePresence>
+            {selected && (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}>
+                <div style={{ background: 'rgba(122,15,70,0.05)', border: '1px solid rgba(122,15,70,0.14)', borderRadius: 12, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Sparkles size={13} color="#7A0F46" />
+                  <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.5 }}>
+                    Mubarak will fill in your names, dates and venue automatically.
+                  </p>
+                </div>
+                <motion.button onClick={handlePersonalise} whileTap={{ scale: 0.97 }}
+                  className="w-full flex items-center justify-center gap-2 font-montserrat"
+                  style={{ padding: '15px', borderRadius: '14px', background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+                  <Wand2 size={15} />
+                  {launching ? 'Opening Mubarak…' : 'Personalise with Mubarak →'}
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {!selected && (
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.40)', textAlign: 'center', margin: 0 }}>
+              Select a template above to continue
+            </p>
+          )}
+        </div>
+      </motion.div>
+    </>
+  )
+}
+
 // ─── Website / Invite Setup Sheet ────────────────────────────────
 // ─── Asset tile config ────────────────────────────────────────────
 const CORE_ASSETS = [
   { id: 'website',  label: 'Wedding Website',  icon: Globe,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)', iconBorder: 'rgba(122,15,70,0.20)',
     image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&h=220&q=75' },
   { id: 'invites',  label: 'Digital Invites',  icon: Mail,   color: '#1A3A6B', iconBg: 'rgba(26,58,107,0.10)',  iconBorder: 'rgba(26,58,107,0.20)',
-    image: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=400&h=220&q=75' },
+    image: '/images/invites.jpg', bgPosition: 'center 30%' },
   { id: 'registry', label: 'Gift Registry',    icon: Gift,   color: '#2D6025', iconBg: 'rgba(45,96,37,0.10)',   iconBorder: 'rgba(45,96,37,0.20)',
-    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=400&h=220&q=75' },
+    image: '/images/registry.jpg', bgPosition: 'center 40%' },
   { id: 'wardrobe', label: 'Wardrobe Planner', icon: Shirt,  color: '#7A0F46', iconBg: 'rgba(122,15,70,0.10)',  iconBorder: 'rgba(122,15,70,0.20)',
-    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=400&h=220&q=75' },
+    image: '/images/wardrobe.jpg', bgPosition: 'center 20%' },
   { id: 'favors',   label: 'Guest Favors',     icon: Heart,  color: '#A07020', iconBg: 'rgba(160,112,32,0.10)', iconBorder: 'rgba(160,112,32,0.22)',
-    image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=400&h=220&q=75' },
+    image: '/images/favors.jpg', bgPosition: 'center center' },
 ]
 
-function AssetSetupSheet({ type, onClose, onSave }) {
+function AssetSetupSheet({ type, onClose, onSave, onOpenAgent }) {
   const [mode, setMode] = useState(null) // 'template' | 'custom'
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [customUrl, setCustomUrl] = useState('')
   const [saving, setSaving] = useState(false)
-  const templates = type === 'website' ? WEBSITE_TEMPLATES : INVITE_TEMPLATES
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false)
   const label = type === 'website' ? 'Wedding Website' : 'Digital Invites'
 
+  const handleModeSelect = (modeId) => {
+    setMode(modeId)
+    if (modeId === 'template' && type === 'website') {
+      // For website: open the rich template picker drill-down
+      setShowTemplatePicker(true)
+    }
+  }
+
   const handleSave = () => {
-    if (mode === 'template' && !selectedTemplate) return
     if (mode === 'custom' && !customUrl.trim()) return
     setSaving(true)
     setTimeout(() => {
@@ -294,36 +784,78 @@ function AssetSetupSheet({ type, onClose, onSave }) {
   return (
     <>
       <motion.div key="asset-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 55 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
       <motion.div key="asset-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 40px', maxHeight: '85%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
-        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Set up {label}</p>
-        <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 20px' }}>Choose how you want to manage your {type === 'website' ? 'wedding website' : 'digital invites'}.</p>
+        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Set up {label}</p>
+        <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 20px' }}>Choose how you want to manage your {type === 'website' ? 'wedding website' : 'digital invites'}.</p>
 
         {/* Mode toggle */}
         <div className="flex gap-2" style={{ marginBottom: '20px' }}>
-          {[{ id: 'template', label: '✦ Create with templates', desc: 'In-app, instant setup' }, { id: 'custom', label: '🔗 Connect your own', desc: type === 'website' ? 'Existing website URL' : 'Existing invite link' }].map(m => (
-            <button key={m.id} onClick={() => setMode(m.id)} className="flex-1 flex flex-col font-outfit"
+          {[
+            { id: 'template', label: '✦ Create with templates', desc: 'In-app, instant setup' },
+            { id: 'custom',   label: '🔗 Connect your own',     desc: type === 'website' ? 'Existing website URL' : 'Existing invite link' },
+          ].map(m => (
+            <button key={m.id} onClick={() => handleModeSelect(m.id)} className="flex-1 flex flex-col font-work-sans"
               style={{ padding: '12px 12px', borderRadius: '14px', textAlign: 'left', cursor: 'pointer', border: mode === m.id ? '1.5px solid rgba(122,15,70,0.5)' : '1px solid rgba(0,0,0,0.09)', background: mode === m.id ? 'rgba(122,15,70,0.05)' : 'rgba(0,0,0,0.02)' }}>
               <span style={{ fontSize: '12px', fontWeight: 500, color: mode === m.id ? '#7A0F46' : '#1A1410' }}>{m.label}</span>
-              <span style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', marginTop: '2px' }}>{m.desc}</span>
+              <span style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', marginTop: '2px' }}>{m.desc}</span>
             </button>
           ))}
         </div>
 
         <AnimatePresence mode="wait">
-          {mode === 'template' && (
-            <motion.div key="templates" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 10px' }}>Choose a template</p>
+          {/* For website template mode: show a selected template summary (after picker) or prompt to browse */}
+          {mode === 'template' && type === 'website' && (
+            <motion.div key="tpl-summary" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              {selectedTemplate ? (() => {
+                const t = WEBSITE_TEMPLATES.find(t => t.id === selectedTemplate)
+                return (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ borderRadius: 14, overflow: 'hidden', border: `1.5px solid ${t.accent}`, marginBottom: 10 }}>
+                      <div style={{ height: 90, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                      <div style={{ padding: '10px 12px', background: '#FFFFFF', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: '0 0 1px' }}>{t.name}</p>
+                          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.52)', margin: 0 }}>{t.style}</p>
+                        </div>
+                        <button onClick={() => setShowTemplatePicker(true)} className="font-work-sans"
+                          style={{ fontSize: '11px', fontWeight: 500, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.2)', padding: '5px 10px', borderRadius: '99px', cursor: 'pointer' }}>
+                          Change
+                        </button>
+                      </div>
+                    </div>
+                    <motion.button onClick={handleSave} whileTap={{ scale: 0.97 }}
+                      className="w-full font-montserrat flex items-center justify-center gap-2"
+                      style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+                      {saving ? 'Saving…' : 'Launch website →'}
+                    </motion.button>
+                  </div>
+                )
+              })() : (
+                <motion.button onClick={() => setShowTemplatePicker(true)} whileTap={{ scale: 0.97 }}
+                  className="w-full font-work-sans flex items-center justify-center gap-2"
+                  style={{ padding: '15px', borderRadius: '14px', background: 'rgba(122,15,70,0.07)', border: '1.5px dashed rgba(122,15,70,0.30)', color: '#7A0F46', fontSize: '13px', fontWeight: 500, cursor: 'pointer', marginBottom: 20 }}>
+                  <Palette size={14} />
+                  Browse templates →
+                </motion.button>
+              )}
+            </motion.div>
+          )}
+
+          {/* For invites template mode: inline simple picker (unchanged) */}
+          {mode === 'template' && type !== 'website' && (
+            <motion.div key="invite-templates" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 10px' }}>Choose a template</p>
               <div className="grid grid-cols-2 gap-3" style={{ marginBottom: '20px' }}>
-                {templates.map(t => (
+                {INVITE_TEMPLATES.map(t => (
                   <button key={t.id} onClick={() => setSelectedTemplate(t.id)}
                     style={{ borderRadius: '14px', overflow: 'hidden', border: selectedTemplate === t.id ? `2px solid ${t.accent}` : '2px solid transparent', cursor: 'pointer', background: 'none', padding: 0, position: 'relative' }}>
                     <div style={{ height: '80px', background: t.gradient }} />
                     <div style={{ padding: '8px 10px', background: '#FFFBF5', borderTop: '1px solid rgba(0,0,0,0.07)' }}>
-                      <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: '#1A1410' }}>{t.name}</span>
+                      <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: '#1A1410' }}>{t.name}</span>
                     </div>
                     {selectedTemplate === t.id && (
                       <div style={{ position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -333,38 +865,56 @@ function AssetSetupSheet({ type, onClose, onSave }) {
                   </button>
                 ))}
               </div>
+              {selectedTemplate && (
+                <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={handleSave}
+                  disabled={saving}
+                  className="w-full font-montserrat flex items-center justify-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}
+                  whileTap={{ scale: 0.97 }}>
+                  {saving ? 'Saving…' : 'Activate invites →'}
+                </motion.button>
+              )}
             </motion.div>
           )}
+
           {mode === 'custom' && (
             <motion.div key="custom" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>{type === 'website' ? 'Your website URL' : 'Your invite link'}</p>
+              <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>{type === 'website' ? 'Your website URL' : 'Your invite link'}</p>
               <div className="glass-input flex items-center gap-2" style={{ padding: '12px 14px', marginBottom: '8px' }}>
                 <Link2 size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
                 <input value={customUrl} onChange={e => setCustomUrl(e.target.value)} placeholder={type === 'website' ? 'https://ananya-rahul.wedding' : 'https://invite.example.com/ananya-rahul'}
-                  style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+                  style={{ fontSize: '12px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
               </div>
               <div style={{ background: 'rgba(122,15,70,0.04)', border: '1px solid rgba(122,15,70,0.15)', borderRadius: '12px', padding: '12px 14px', marginBottom: '20px' }}>
                 <div className="flex items-start gap-2">
                   <Zap size={13} color="#7A0F46" style={{ flexShrink: 0, marginTop: 1 }} />
-                  <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.55 }}>
+                  <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.55 }}>
                     AI can still push event detail updates (date, time, venue) to your connected {type === 'website' ? 'website' : 'invite'} via our integration API.
                   </p>
                 </div>
               </div>
+              <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={handleSave}
+                disabled={saving || !customUrl.trim()}
+                className="w-full font-montserrat flex items-center justify-center gap-2"
+                style={{ background: customUrl.trim() ? 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)' : 'rgba(0,0,0,0.07)', color: customUrl.trim() ? '#FFFBF5' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: customUrl.trim() ? 'pointer' : 'default', boxShadow: customUrl.trim() ? '0 6px 20px rgba(122,15,70,0.28)' : 'none' }}
+                whileTap={{ scale: customUrl.trim() ? 0.97 : 1 }}>
+                {saving ? 'Saving…' : type === 'website' ? 'Connect website →' : 'Connect invites →'}
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {mode && (
-          <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={handleSave}
-            disabled={saving || (mode === 'template' && !selectedTemplate) || (mode === 'custom' && !customUrl.trim())}
-            className="w-full font-outfit flex items-center justify-center gap-2"
-            style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}
-            whileTap={{ scale: 0.97 }}>
-            {saving ? 'Saving…' : type === 'website' ? 'Launch website →' : 'Activate invites →'}
-          </motion.button>
-        )}
       </motion.div>
+
+      {/* Template picker drill-down — stacked above this sheet */}
+      <AnimatePresence>
+        {showTemplatePicker && (
+          <TemplatePickerSheet
+            onClose={() => setShowTemplatePicker(false)}
+            onSelect={(tplId) => setSelectedTemplate(tplId)}
+            onOpenAgent={onOpenAgent}
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }
@@ -376,11 +926,11 @@ function AiSyncPanel({ entityName, onSync, syncing }) {
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-start gap-2 flex-1">
           <Sparkles size={13} color="#7A0F46" style={{ flexShrink: 0, marginTop: 1 }} />
-          <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.5 }}>
+          <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', margin: 0, lineHeight: 1.5 }}>
             Event details changed? Sync your {entityName} with the latest date, time &amp; venue.
           </p>
         </div>
-        <motion.button onClick={onSync} whileTap={{ scale: 0.95 }} className="font-outfit flex-shrink-0"
+        <motion.button onClick={onSync} whileTap={{ scale: 0.95 }} className="font-work-sans flex-shrink-0"
           style={{ fontSize: '10px', fontWeight: 600, color: '#7A0F46', background: 'rgba(122,15,70,0.09)', border: '1px solid rgba(122,15,70,0.22)', padding: '6px 11px', borderRadius: '99px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <motion.div animate={syncing ? { rotate: 360 } : {}} transition={{ duration: 0.8, repeat: syncing ? Infinity : 0, ease: 'linear' }}>
             <Wand2 size={10} />
@@ -408,27 +958,27 @@ function WebsiteCard({ config, onSetup }) {
             <Globe size={16} color="#7A0F46" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Wedding Website</p>
-            <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
+            <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Wedding Website</p>
+            <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
           </div>
         </div>
         {isActive ? (
-          <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.09)', border: '1px solid rgba(45,96,37,0.22)', padding: '3px 8px', borderRadius: '99px' }}>
+          <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.09)', border: '1px solid rgba(45,96,37,0.22)', padding: '3px 8px', borderRadius: '99px' }}>
             {isConnected ? 'Connected' : 'Live'}
           </span>
         ) : (
-          <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)', padding: '3px 8px', borderRadius: '99px' }}>Not set up</span>
+          <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)', padding: '3px 8px', borderRadius: '99px' }}>Not set up</span>
         )}
       </div>
 
       {isActive ? (
         <>
           <div className="flex gap-2" style={{ marginBottom: '10px' }}>
-            <button className="flex-1 font-outfit flex items-center justify-center gap-1.5"
+            <button className="flex-1 font-work-sans flex items-center justify-center gap-1.5"
               style={{ padding: '9px', borderRadius: '10px', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.2)', fontSize: '11px', fontWeight: 500, color: '#7A0F46', cursor: 'pointer' }}>
               <ExternalLink size={11} />Preview
             </button>
-            <button onClick={onSetup} className="flex-1 font-outfit"
+            <button onClick={onSetup} className="flex-1 font-work-sans"
               style={{ padding: '9px', borderRadius: '10px', background: 'none', border: '1px solid rgba(0,0,0,0.09)', fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.5)', cursor: 'pointer' }}>
               Change
             </button>
@@ -436,8 +986,8 @@ function WebsiteCard({ config, onSetup }) {
           <AiSyncPanel entityName="website" onSync={handleSync} syncing={syncing} />
         </>
       ) : (
-        <button onClick={onSetup} className="w-full font-outfit flex items-center justify-center gap-2"
-          style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '13px', fontWeight: 500, padding: '12px', borderRadius: '12px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(122,15,70,0.25)' }}>
+        <button onClick={onSetup} className="w-full font-work-sans flex items-center justify-center gap-2"
+          style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '13px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '12px', borderRadius: '12px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(122,15,70,0.25)' }}>
           <Palette size={13} />Set up your website
         </button>
       )}
@@ -458,27 +1008,27 @@ function InviteCard({ config, onSetup }) {
             <Mail size={16} color="#1A3A6B" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Digital Invites</p>
-            <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
+            <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Digital Invites</p>
+            <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
           </div>
         </div>
         {isActive ? (
-          <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.09)', border: '1px solid rgba(45,96,37,0.22)', padding: '3px 8px', borderRadius: '99px' }}>Active</span>
+          <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.09)', border: '1px solid rgba(45,96,37,0.22)', padding: '3px 8px', borderRadius: '99px' }}>Active</span>
         ) : (
-          <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)', padding: '3px 8px', borderRadius: '99px' }}>Not set up</span>
+          <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)', padding: '3px 8px', borderRadius: '99px' }}>Not set up</span>
         )}
       </div>
       {isActive ? (
         <>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.5)' }}>Sent to {Math.floor(mockGuests.length * 0.7)} guests</span>
-            <button onClick={onSetup} className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: '#7A0F46', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Manage →</button>
+            <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.5)' }}>Sent to {Math.floor(mockGuests.length * 0.7)} guests</span>
+            <button onClick={onSetup} className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: '#7A0F46', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Manage →</button>
           </div>
           <AiSyncPanel entityName="invites" onSync={handleSync} syncing={syncing} />
         </>
       ) : (
-        <button onClick={onSetup} className="w-full font-outfit flex items-center justify-center gap-2"
-          style={{ background: 'linear-gradient(135deg, #1A3A6B 0%, #0D2050 100%)', color: '#FFFBF5', fontSize: '13px', fontWeight: 500, padding: '12px', borderRadius: '12px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(26,58,107,0.22)' }}>
+        <button onClick={onSetup} className="w-full font-work-sans flex items-center justify-center gap-2"
+          style={{ background: 'linear-gradient(135deg, #1A3A6B 0%, #0D2050 100%)', color: '#FFFBF5', fontSize: '13px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '12px', borderRadius: '12px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(26,58,107,0.22)' }}>
           <Mail size={13} />Create invites
         </button>
       )}
@@ -496,20 +1046,20 @@ function GiftRegistryCard() {
           <Gift size={16} color="#2D6025" strokeWidth={1.8} />
         </div>
         <div className="flex-1">
-          <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Gift Registry</p>
-          <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
+          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Gift Registry</p>
+          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
         </div>
-        {saved && <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.09)', border: '1px solid rgba(45,96,37,0.22)', padding: '3px 8px', borderRadius: '99px' }}>Linked</span>}
+        {saved && <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.09)', border: '1px solid rgba(45,96,37,0.22)', padding: '3px 8px', borderRadius: '99px' }}>Linked</span>}
       </div>
       <div className="glass-input flex items-center gap-2" style={{ padding: '10px 12px', marginBottom: '8px' }}>
         <Link2 size={13} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
         <input value={url} onChange={e => { setUrl(e.target.value); setSaved(false) }} placeholder="amazon.in/registry/… or any registry link"
-          style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+          style={{ fontSize: '12px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
         {url.trim() && (
-          <button onClick={() => setSaved(true)} className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.1)', border: '1px solid rgba(45,96,37,0.22)', padding: '4px 8px', borderRadius: '8px', cursor: 'pointer', flexShrink: 0 }}>Save</button>
+          <button onClick={() => setSaved(true)} className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.1)', border: '1px solid rgba(45,96,37,0.22)', padding: '4px 8px', borderRadius: '8px', cursor: 'pointer', flexShrink: 0 }}>Save</button>
         )}
       </div>
-      <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: 0 }}>Shared in your wedding website and digital invites</p>
+      <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', margin: 0 }}>Shared in your wedding website and digital invites</p>
     </div>
   )
 }
@@ -524,24 +1074,24 @@ function WardrobeCard() {
           <Shirt size={16} color="#7A0F46" strokeWidth={1.8} />
         </div>
         <div className="flex-1">
-          <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Wardrobe Planner</p>
-          <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>
+          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Wardrobe Planner</p>
+          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>
             Core family only
           </p>
         </div>
-        <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 500, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', padding: '3px 8px', borderRadius: '99px' }}>{planned}/{ceremonies.length}</span>
+        <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 500, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', padding: '3px 8px', borderRadius: '99px' }}>{planned}/{ceremonies.length}</span>
       </div>
       <div className="flex flex-col gap-1.5">
         {ceremonies.map((c, i) => (
           <div key={c} className="flex items-center justify-between">
-            <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.6)' }}>{c}</span>
-            <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 400, color: i < planned ? '#2D6025' : 'rgba(200,151,58,0.9)', background: i < planned ? 'rgba(45,96,37,0.07)' : 'rgba(200,151,58,0.08)', border: `1px solid ${i < planned ? 'rgba(45,96,37,0.2)' : 'rgba(200,151,58,0.25)'}`, padding: '2px 8px', borderRadius: '99px' }}>
+            <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.6)' }}>{c}</span>
+            <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: i < planned ? '#2D6025' : 'rgba(200,151,58,0.9)', background: i < planned ? 'rgba(45,96,37,0.07)' : 'rgba(200,151,58,0.08)', border: `1px solid ${i < planned ? 'rgba(45,96,37,0.2)' : 'rgba(200,151,58,0.25)'}`, padding: '2px 8px', borderRadius: '99px' }}>
               {i < planned ? 'Planned' : 'Pending'}
             </span>
           </div>
         ))}
       </div>
-      <button className="w-full font-outfit" style={{ marginTop: '12px', padding: '10px', borderRadius: '10px', background: 'rgba(122,15,70,0.06)', border: '1px solid rgba(122,15,70,0.18)', fontSize: '12px', fontWeight: 500, color: '#7A0F46', cursor: 'pointer' }}>
+      <button className="w-full font-work-sans" style={{ marginTop: '12px', padding: '10px', borderRadius: '10px', background: 'rgba(122,15,70,0.06)', border: '1px solid rgba(122,15,70,0.18)', fontSize: '12px', fontWeight: 500, color: '#7A0F46', cursor: 'pointer' }}>
         Plan outfits →
       </button>
     </div>
@@ -558,10 +1108,10 @@ function FavorsCard() {
           <Heart size={16} color="#A07020" strokeWidth={1.8} />
         </div>
         <div className="flex-1">
-          <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Guest Favors</p>
-          <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Core family coordination</p>
+          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Guest Favors</p>
+          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Core family coordination</p>
         </div>
-        <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 500, color: '#A07020', background: 'rgba(200,151,58,0.09)', border: '1px solid rgba(200,151,58,0.25)', padding: '3px 8px', borderRadius: '99px' }}>{doneCount}/{items.length} ready</span>
+        <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 500, color: '#A07020', background: 'rgba(200,151,58,0.09)', border: '1px solid rgba(200,151,58,0.25)', padding: '3px 8px', borderRadius: '99px' }}>{doneCount}/{items.length} ready</span>
       </div>
       <div className="flex flex-col gap-1.5">
         {items.map(item => (
@@ -569,8 +1119,8 @@ function FavorsCard() {
             <div style={{ width: 16, height: 16, borderRadius: '50%', flexShrink: 0, background: item.done ? '#2D6025' : 'transparent', border: `1.5px solid ${item.done ? '#2D6025' : 'rgba(0,0,0,0.18)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {item.done && <Check size={9} color="#FFFFFF" strokeWidth={2.5} />}
             </div>
-            <span className="font-outfit flex-1" style={{ fontSize: '11px', fontWeight: 300, color: item.done ? 'rgba(26,20,16,0.45)' : '#1A1410', textDecoration: item.done ? 'line-through' : 'none' }}>{item.name}</span>
-            <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.35)' }}>×{item.qty}</span>
+            <span className="font-work-sans flex-1" style={{ fontSize: '11px', fontWeight: 400, color: item.done ? 'rgba(26,20,16,0.62)' : '#1A1410', textDecoration: item.done ? 'line-through' : 'none' }}>{item.name}</span>
+            <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.50)' }}>×{item.qty}</span>
           </div>
         ))}
       </div>
@@ -610,7 +1160,7 @@ function FavorsSheet({ onClose }) {
   return (
     <>
       <motion.div key="favors-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
       <motion.div key="favors-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px', maxHeight: '82%', overflowY: 'auto' }}>
@@ -620,16 +1170,16 @@ function FavorsSheet({ onClose }) {
             <Heart size={18} color="#A07020" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Guest Favors</p>
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests · customize per type below</p>
+            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 500, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Guest Favors</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests · customize per type below</p>
           </div>
         </div>
 
         {/* Guest type filter */}
-        <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>Show favors for</p>
+        <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>Show favors for</p>
         <div className="flex gap-2 flex-wrap" style={{ marginBottom: 16 }}>
           {GUEST_TYPES.map(t => (
-            <button key={t} onClick={() => setActiveType(t)} className="font-outfit"
+            <button key={t} onClick={() => setActiveType(t)} className="font-work-sans"
               style={{ fontSize: '11px', fontWeight: 500, padding: '6px 12px', borderRadius: '99px', cursor: 'pointer', border: activeType === t ? '1px solid rgba(160,112,32,0.5)' : '1px solid rgba(0,0,0,0.09)', background: activeType === t ? 'rgba(160,112,32,0.10)' : 'rgba(0,0,0,0.02)', color: activeType === t ? '#A07020' : 'rgba(26,20,16,0.5)' }}>
               {t}
             </button>
@@ -642,14 +1192,14 @@ function FavorsSheet({ onClose }) {
             <div key={item.name} className="glass-card" style={{ padding: '12px 14px' }}>
               <div className="flex items-start justify-between gap-2" style={{ marginBottom: activeType === 'All guests' ? 8 : 0 }}>
                 <div>
-                  <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 2px' }}>{item.name}</p>
-                  <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: 0 }}>Qty: {item.qty}</p>
+                  <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 2px' }}>{item.name}</p>
+                  <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', margin: 0 }}>Qty: {item.qty}</p>
                 </div>
               </div>
               {activeType === 'All guests' && (
                 <div className="flex flex-wrap gap-1.5">
                   {GUEST_TYPES.filter(t => t !== 'All guests').map(t => (
-                    <button key={t} onClick={() => toggleType(item, t)} className="font-outfit"
+                    <button key={t} onClick={() => toggleType(item, t)} className="font-work-sans"
                       style={{ fontSize: '10px', fontWeight: 500, padding: '3px 9px', borderRadius: '99px', cursor: 'pointer', border: item.types.includes(t) ? '1px solid rgba(160,112,32,0.45)' : '1px solid rgba(0,0,0,0.09)', background: item.types.includes(t) ? 'rgba(160,112,32,0.09)' : 'transparent', color: item.types.includes(t) ? '#A07020' : 'rgba(26,20,16,0.4)' }}>
                       {item.types.includes(t) ? '✓ ' : ''}{t}
                     </button>
@@ -661,15 +1211,15 @@ function FavorsSheet({ onClose }) {
         </div>
 
         {/* Add favor */}
-        <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>Add favor</p>
+        <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>Add favor</p>
         <div className="flex gap-2">
           <div className="glass-input flex-1 flex items-center" style={{ padding: '9px 12px' }}>
             <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Favor name" onKeyDown={e => e.key === 'Enter' && addItem()}
-              style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+              style={{ fontSize: '12px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
           </div>
           <div className="glass-input flex items-center" style={{ padding: '9px 12px', width: 72 }}>
             <input value={newQty} onChange={e => setNewQty(e.target.value)} placeholder="Qty" type="number"
-              style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+              style={{ fontSize: '12px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
           </div>
           <button onClick={addItem} style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(160,112,32,0.10)', border: '1px solid rgba(160,112,32,0.28)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Check size={14} color="#A07020" strokeWidth={2.5} />
@@ -686,7 +1236,7 @@ function WardrobeSheet({ onClose }) {
   return (
     <>
       <motion.div key="wd-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
       <motion.div key="wd-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px', maxHeight: '80%', overflowY: 'auto' }}>
@@ -696,21 +1246,21 @@ function WardrobeSheet({ onClose }) {
             <Shirt size={18} color="#7A0F46" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Wardrobe Planner</p>
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Plan outfits per ceremony for the family</p>
+            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 500, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Wardrobe Planner</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Plan outfits per ceremony for the family</p>
           </div>
         </div>
         <div className="flex flex-col gap-2">
           {ceremonies.map((c, i) => (
             <div key={c} className="glass-card flex items-center justify-between" style={{ padding: '12px 14px' }}>
-              <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 300, color: '#1A1410' }}>{c}</span>
-              <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 500, color: i < planned ? '#2D6025' : '#A07020', background: i < planned ? 'rgba(45,96,37,0.08)' : 'rgba(200,151,58,0.09)', border: `1px solid ${i < planned ? 'rgba(45,96,37,0.22)' : 'rgba(200,151,58,0.28)'}`, padding: '3px 9px', borderRadius: '99px' }}>
+              <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410' }}>{c}</span>
+              <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 500, color: i < planned ? '#2D6025' : '#A07020', background: i < planned ? 'rgba(45,96,37,0.08)' : 'rgba(200,151,58,0.09)', border: `1px solid ${i < planned ? 'rgba(45,96,37,0.22)' : 'rgba(200,151,58,0.28)'}`, padding: '3px 9px', borderRadius: '99px' }}>
                 {i < planned ? 'Planned' : 'Pending'}
               </span>
             </div>
           ))}
         </div>
-        <button className="w-full font-outfit" style={{ marginTop: 16, padding: '14px', borderRadius: '14px', background: 'linear-gradient(135deg,#7A0F46,#5C0B35)', color: '#FFFBF5', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(122,15,70,0.25)' }}>
+        <button className="w-full font-work-sans" style={{ marginTop: 16, padding: '14px', borderRadius: '14px', background: 'linear-gradient(135deg,#7A0F46,#5C0B35)', color: '#FFFBF5', fontSize: '13px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(122,15,70,0.25)' }}>
           Plan outfits →
         </button>
       </motion.div>
@@ -725,7 +1275,7 @@ function RegistrySheet({ onClose }) {
   return (
     <>
       <motion.div key="rg-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
       <motion.div key="rg-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px' }}>
@@ -735,25 +1285,25 @@ function RegistrySheet({ onClose }) {
             <Gift size={18} color="#2D6025" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 300, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Gift Registry</p>
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Shared via website &amp; digital invites</p>
+            <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 500, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Gift Registry</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Shared via website &amp; digital invites</p>
           </div>
         </div>
         <div className="glass-input flex items-center gap-2" style={{ padding: '12px 14px', marginBottom: 10 }}>
           <Link2 size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
           <input value={url} onChange={e => { setUrl(e.target.value); setSaved(false) }} placeholder="amazon.in/registry/… or any registry link"
-            style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+            style={{ fontSize: '12px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
         </div>
         {url.trim() && !saved && (
-          <button onClick={() => setSaved(true)} className="w-full font-outfit"
-            style={{ padding: '13px', borderRadius: '13px', background: 'linear-gradient(135deg,#2D6025,#1e4419)', color: '#FFFBF5', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(45,96,37,0.25)' }}>
+          <button onClick={() => setSaved(true)} className="w-full font-work-sans"
+            style={{ padding: '13px', borderRadius: '13px', background: 'linear-gradient(135deg,#2D6025,#1e4419)', color: '#FFFBF5', fontSize: '13px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(45,96,37,0.25)' }}>
             Save registry link →
           </button>
         )}
         {saved && (
           <div style={{ background: 'rgba(45,96,37,0.07)', border: '1px solid rgba(45,96,37,0.2)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Check size={14} color="#2D6025" strokeWidth={2.5} />
-            <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>Registry linked — guests will see this on your website &amp; invite</span>
+            <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>Registry linked — guests will see this on your website &amp; invite</span>
           </div>
         )}
       </motion.div>
@@ -767,27 +1317,27 @@ function CustomAssetSheet({ onClose, onSave }) {
   return (
     <>
       <motion.div key="ca-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
       <motion.div key="ca-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
-        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Add custom asset</p>
-        <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 20px' }}>Track anything else you're managing for your guests.</p>
-        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.07em', textTransform: 'uppercase', margin: '0 0 7px' }}>Asset name</p>
+        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Add custom asset</p>
+        <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 20px' }}>Track anything else you're managing for your guests.</p>
+        <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.07em', textTransform: 'uppercase', margin: '0 0 7px' }}>Asset name</p>
         <div className="glass-input flex items-center" style={{ padding: '12px 14px', marginBottom: 14 }}>
           <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Shuttle coordination, Hotel blocks…"
-            style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+            style={{ fontSize: '13px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
         </div>
-        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.07em', textTransform: 'uppercase', margin: '0 0 7px' }}>Note (optional)</p>
+        <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.4)', letterSpacing: '0.07em', textTransform: 'uppercase', margin: '0 0 7px' }}>Note (optional)</p>
         <div className="glass-input flex items-center" style={{ padding: '12px 14px', marginBottom: 20 }}>
           <input value={note} onChange={e => setNote(e.target.value)} placeholder="Brief description"
-            style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+            style={{ fontSize: '13px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
         </div>
         <button onClick={() => { if (name.trim()) { onSave({ name: name.trim(), note }); onClose() } }}
           disabled={!name.trim()}
-          className="w-full font-outfit"
-          style={{ padding: '15px', borderRadius: '14px', background: name.trim() ? 'linear-gradient(135deg,#7A0F46,#5C0B35)' : 'rgba(0,0,0,0.07)', color: name.trim() ? '#FFFBF5' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 500, border: 'none', cursor: name.trim() ? 'pointer' : 'default', boxShadow: name.trim() ? '0 6px 20px rgba(122,15,70,0.28)' : 'none' }}>
+          className="w-full font-work-sans"
+          style={{ padding: '15px', borderRadius: '14px', background: name.trim() ? 'linear-gradient(135deg,#7A0F46,#5C0B35)' : 'rgba(0,0,0,0.07)', color: name.trim() ? '#FFFBF5' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', border: 'none', cursor: name.trim() ? 'pointer' : 'default', boxShadow: name.trim() ? '0 6px 20px rgba(122,15,70,0.28)' : 'none' }}>
           Add asset →
         </button>
       </motion.div>
@@ -796,10 +1346,9 @@ function CustomAssetSheet({ onClose, onSave }) {
 }
 
 // ─── Full Guest Assets Tab ────────────────────────────────────────
-function GuestAssets() {
-  const [websiteConfig, setWebsiteConfig]   = useState(null)
+function GuestAssets({ onOpenAgent, onOpenWebsite, websiteConfig }) {
   const [inviteConfig, setInviteConfig]     = useState(null)
-  const [openSheet, setOpenSheet]           = useState(null) // 'website'|'invites'|'registry'|'wardrobe'|'favors'|'custom'
+  const [openSheet, setOpenSheet]           = useState(null) // 'invites'|'registry'|'wardrobe'|'favors'|'custom'
   const [customAssets, setCustomAssets]     = useState([])
 
   const getStatus = (id) => {
@@ -815,9 +1364,9 @@ function GuestAssets() {
 
   return (
     <>
-      <motion.div initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.22 }}>
+      <motion.div initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.22 }}>
 
-        <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 12px' }}>For all guests</p>
+        <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 12px' }}>For all guests</p>
 
         {/* 2-column tile grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
@@ -825,33 +1374,21 @@ function GuestAssets() {
             const Icon = asset.icon
             const status = getStatus(asset.id)
             return (
-              <motion.button key={asset.id} onClick={() => setOpenSheet(asset.id)}
+              <motion.button key={asset.id} onClick={() => asset.id === 'website' ? onOpenWebsite() : setOpenSheet(asset.id)}
                 whileTap={{ scale: 0.97 }}
-                style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 16, padding: 0, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}>
-                {/* Cover image */}
-                <div style={{ position: 'relative', height: 110, overflow: 'hidden' }}>
-                  <img src={asset.image} alt={asset.label}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
-                  />
-                  {/* Fallback gradient */}
-                  <div style={{ display: 'none', position: 'absolute', inset: 0, background: `linear-gradient(145deg,${asset.iconBg},transparent)`, alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon size={32} color={asset.color} strokeWidth={1.5} />
-                  </div>
-                  {/* Status badge over image */}
-                  {status && (
-                    <span className="font-outfit" style={{ position: 'absolute', top: 8, right: 8, fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(255,255,255,0.92)', border: '1px solid rgba(45,96,37,0.28)', padding: '2px 7px', borderRadius: '99px' }}>{status}</span>
-                  )}
-                </div>
-                {/* Label area */}
-                <div style={{ padding: '10px 12px 13px', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 8, background: asset.iconBg, border: `1px solid ${asset.iconBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Icon size={13} color={asset.color} strokeWidth={1.8} />
-                  </div>
-                  <div style={{ minWidth: 0 }}>
-                    <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{asset.label}</p>
-                    <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: 0 }}>{status ? 'Tap to manage' : 'Not set up'}</p>
-                  </div>
+                style={{ position: 'relative', height: 150, borderRadius: 16, overflow: 'hidden', cursor: 'pointer', padding: 0, border: 'none', display: 'block' }}>
+                {/* Full-bleed image */}
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${asset.image})`, backgroundSize: 'cover', backgroundPosition: asset.bgPosition || 'center' }} />
+                {/* Gradient overlay */}
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.04) 20%, rgba(0,0,0,0.72) 100%)' }} />
+                {/* Status badge */}
+                {status && (
+                  <span className="font-work-sans" style={{ position: 'absolute', top: 9, right: 9, fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(255,255,255,0.92)', border: '1px solid rgba(45,96,37,0.28)', padding: '2px 7px', borderRadius: '99px' }}>{status}</span>
+                )}
+                {/* Label at bottom */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px 12px 13px', textAlign: 'left' }}>
+                  <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF', margin: '0 0 1px', lineHeight: 1.25, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{asset.label}</p>
+                  <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(255,255,255,0.62)', margin: 0 }}>{status ? 'Tap to manage' : 'Not set up'}</p>
                 </div>
               </motion.button>
             )
@@ -861,9 +1398,9 @@ function GuestAssets() {
           <motion.button onClick={() => setOpenSheet('custom')} whileTap={{ scale: 0.97 }}
             style={{ background: 'transparent', border: '1.5px dashed rgba(122,15,70,0.25)', borderRadius: 16, padding: '22px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 130 }}>
             <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: 22, lineHeight: 1, color: '#7A0F46', fontWeight: 300 }}>+</span>
+              <span style={{ fontSize: 22, lineHeight: 1, color: '#7A0F46', fontWeight: 400 }}>+</span>
             </div>
-            <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: '#7A0F46', margin: 0, textAlign: 'center' }}>Add custom</p>
+            <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: '#7A0F46', margin: 0, textAlign: 'center' }}>Add custom</p>
           </motion.button>
         </div>
 
@@ -872,14 +1409,12 @@ function GuestAssets() {
 
       {/* Sheets */}
       <AnimatePresence>
-        {(openSheet === 'website' || openSheet === 'invites') && (
+        {openSheet === 'invites' && (
           <AssetSetupSheet
-            type={openSheet === 'website' ? 'website' : 'invite'}
+            type="invite"
             onClose={() => setOpenSheet(null)}
-            onSave={(cfg) => {
-              if (openSheet === 'website') setWebsiteConfig(cfg)
-              else setInviteConfig(cfg)
-            }}
+            onSave={(cfg) => setInviteConfig(cfg)}
+            onOpenAgent={onOpenAgent}
           />
         )}
         {openSheet === 'registry' && <RegistrySheet onClose={() => setOpenSheet(null)} />}
@@ -894,8 +1429,10 @@ function GuestAssets() {
 // ════════════════════════════════════════════════════════════════
 // ─── MAIN SCREEN ────────────────────────────────────────────────
 // ════════════════════════════════════════════════════════════════
-export default function GuestsScreen() {
+export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsProp, onOpenAgent }) {
   const [mainTab, setMainTab]             = useState('list') // 'list' | 'assets'
+  const [showWebsiteSetup, setShowWebsiteSetup] = useState(false)
+  const [websiteConfig, setWebsiteConfig]       = useState(null)
   const [filter, setFilter]               = useState('All')
   const [sideFilter, setSideFilter]       = useState('All') // 'All' | 'bride' | 'groom'
   const [search, setSearch]               = useState('')
@@ -903,7 +1440,10 @@ export default function GuestsScreen() {
   const [showRsvpDrop, setShowRsvpDrop]   = useState(false)
   const [showSideDrop, setShowSideDrop]   = useState(false)
   const [showUploadDrop, setShowUploadDrop] = useState(false)
-  const [guestList, setGuestList]         = useState(mockGuests)
+  // Use external state if provided (from AgentBar mutations), otherwise fall back to local
+  const [localGuestList, setLocalGuestList] = useState(() => guestsProp && guestsProp.length > 0 ? guestsProp : mockGuests)
+  const guestList    = guestsProp     ?? localGuestList
+  const setGuestList = setGuestsProp  ?? setLocalGuestList
   const [selectedGuest, setSelectedGuest] = useState(null)
   const [showImport, setShowImport]       = useState(false)
   const [showGoogleSheets, setShowGoogleSheets] = useState(false)
@@ -972,8 +1512,8 @@ export default function GuestsScreen() {
               <LogoMark />
               <NavIcons />
             </div>
-            <h1 className="font-cormorant italic text-center" style={{ fontSize: '36px', color: '#1A1410', fontWeight: 300, lineHeight: 1.05, margin: '0 0 2px', letterSpacing: '-0.02em' }}>Guests</h1>
-            <p className="font-outfit text-center" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>
+            <h1 className="font-cormorant italic text-center" style={{ fontSize: '36px', color: '#1A1410', fontWeight: 500, lineHeight: 1.05, margin: '0 0 2px', letterSpacing: '-0.02em' }}>Guests</h1>
+            <p className="font-work-sans text-center" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>
               {guestList.length} invited · {guestList.filter(g => g.rsvp === 'confirmed').length} confirmed
             </p>
           </motion.div>
@@ -982,8 +1522,8 @@ export default function GuestsScreen() {
           <motion.div variants={item} className="relative flex" style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '12px', padding: '3px' }}>
             {[{ id: 'list', label: 'Guest List' }, { id: 'assets', label: 'Guest Assets' }].map(t => (
               <button key={t.id} onClick={() => setMainTab(t.id)}
-                className="relative flex-1 font-outfit"
-                style={{ fontSize: '13px', fontWeight: 500, color: mainTab === t.id ? '#1A1410' : 'rgba(26,20,16,0.42)', padding: '9px 0', border: 'none', background: 'none', cursor: 'pointer', borderRadius: '10px', zIndex: 1 }}>
+                className="relative flex-1 font-work-sans"
+                style={{ fontSize: '13px', fontWeight: 500, color: mainTab === t.id ? '#1A1410' : 'rgba(26,20,16,0.58)', padding: '9px 0', border: 'none', background: 'none', cursor: 'pointer', borderRadius: '10px', zIndex: 1 }}>
                 {mainTab === t.id && (
                   <motion.div layoutId="guests-main-tab" transition={spring}
                     style={{ position: 'absolute', inset: 0, borderRadius: '10px', background: '#FFFBF5', boxShadow: '0 1px 4px rgba(0,0,0,0.1)', zIndex: -1 }} />
@@ -1026,17 +1566,17 @@ export default function GuestsScreen() {
                           value={search}
                           onChange={e => setSearch(e.target.value)}
                           placeholder="Search…"
-                          style={{ fontSize: '12px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif', minWidth: 0 }}
+                          style={{ fontSize: '12px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif', minWidth: 0 }}
                         />
                         {/* Single X: clears text if present, collapses search if empty */}
                         <button
                           onClick={() => search ? setSearch('') : (setSearchOpen(false))}
                           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
-                          <X size={12} color="rgba(26,20,16,0.35)" />
+                          <X size={12} color="rgba(26,20,16,0.50)" />
                         </button>
                       </>
                     ) : (
-                      <Search size={14} color="rgba(26,20,16,0.45)" />
+                      <Search size={14} color="rgba(26,20,16,0.62)" />
                     )}
                   </motion.div>
 
@@ -1046,7 +1586,7 @@ export default function GuestsScreen() {
                   {/* RSVP status dropdown */}
                   <div className="relative flex-1" style={{ minWidth: 0 }}>
                     <button onClick={() => { setShowRsvpDrop(v => !v); setShowSideDrop(false); setShowUploadDrop(false) }}
-                      className="w-full flex items-center justify-between gap-1.5 font-outfit"
+                      className="w-full flex items-center justify-between gap-1.5 font-work-sans"
                       style={{ fontSize: '11px', fontWeight: 500, padding: '8px 12px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.18s ease',
                         border: filter !== 'All' ? '1px solid rgba(122,15,70,0.4)' : '1px solid rgba(0,0,0,0.09)',
                         background: filter !== 'All' ? 'rgba(122,15,70,0.07)' : 'rgba(0,0,0,0.02)',
@@ -1068,7 +1608,7 @@ export default function GuestsScreen() {
                               { label: 'Declined',  count: declined.length },
                             ].map(({ label, count }) => (
                               <button key={label} onClick={() => { setFilter(label); setShowRsvpDrop(false) }}
-                                className="w-full flex items-center justify-between font-outfit"
+                                className="w-full flex items-center justify-between font-work-sans"
                                 style={{ padding: '10px 14px', background: filter === label ? 'rgba(122,15,70,0.06)' : 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                 <span style={{ fontSize: '12px', fontWeight: filter === label ? 500 : 300, color: filter === label ? '#7A0F46' : '#1A1410' }}>{label === 'All' ? 'All statuses' : label}</span>
                                 <span style={{ fontSize: '10px', fontWeight: 600, color: filter === label ? '#7A0F46' : 'rgba(26,20,16,0.3)', background: filter === label ? 'rgba(122,15,70,0.1)' : 'rgba(0,0,0,0.05)', padding: '1px 7px', borderRadius: '99px' }}>{count}</span>
@@ -1083,7 +1623,7 @@ export default function GuestsScreen() {
                   {/* Side dropdown */}
                   <div className="relative flex-1" style={{ minWidth: 0 }}>
                     <button onClick={() => { setShowSideDrop(v => !v); setShowRsvpDrop(false); setShowUploadDrop(false) }}
-                      className="w-full flex items-center justify-between gap-1.5 font-outfit"
+                      className="w-full flex items-center justify-between gap-1.5 font-work-sans"
                       style={{ fontSize: '11px', fontWeight: 500, padding: '8px 12px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.18s ease',
                         border: sideFilter !== 'All' ? '1px solid rgba(122,15,70,0.4)' : '1px solid rgba(0,0,0,0.09)',
                         background: sideFilter !== 'All' ? 'rgba(122,15,70,0.07)' : 'rgba(0,0,0,0.02)',
@@ -1106,7 +1646,7 @@ export default function GuestsScreen() {
                               { key: 'groom', label: `${wedding.couple.groom}'s side`, count: guestList.filter(g => g.side === 'groom').length },
                             ].map(({ key, label, count }) => (
                               <button key={key} onClick={() => { setSideFilter(key); setFilter('All'); setShowSideDrop(false) }}
-                                className="w-full flex items-center justify-between font-outfit"
+                                className="w-full flex items-center justify-between font-work-sans"
                                 style={{ padding: '10px 14px', background: sideFilter === key ? 'rgba(122,15,70,0.06)' : 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                 <span style={{ fontSize: '12px', fontWeight: sideFilter === key ? 500 : 300, color: sideFilter === key ? '#7A0F46' : '#1A1410' }}>{label}</span>
                                 <span style={{ fontSize: '10px', fontWeight: 600, color: sideFilter === key ? '#7A0F46' : 'rgba(26,20,16,0.3)', background: sideFilter === key ? 'rgba(122,15,70,0.1)' : 'rgba(0,0,0,0.05)', padding: '1px 7px', borderRadius: '99px' }}>{count}</span>
@@ -1122,7 +1662,7 @@ export default function GuestsScreen() {
                   <div className="relative">
                     <button onClick={() => { setShowUploadDrop(v => !v); setShowRsvpDrop(false); setShowSideDrop(false) }}
                       style={{ width: 36, height: 36, borderRadius: '10px', border: showUploadDrop ? '1px solid rgba(122,15,70,0.4)' : '1px solid rgba(0,0,0,0.09)', background: showUploadDrop ? 'rgba(122,15,70,0.07)' : 'rgba(0,0,0,0.02)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.18s ease' }}>
-                      <Upload size={14} color={showUploadDrop ? '#7A0F46' : 'rgba(26,20,16,0.45)'} />
+                      <Upload size={14} color={showUploadDrop ? '#7A0F46' : 'rgba(26,20,16,0.62)'} />
                     </button>
                     <AnimatePresence>
                       {showUploadDrop && (
@@ -1131,25 +1671,25 @@ export default function GuestsScreen() {
                           <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.14 }}
                             style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, width: '168px', background: '#FFFBF5', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', zIndex: 21, overflow: 'hidden' }}>
                             <button onClick={() => { setShowImport(true); setShowUploadDrop(false) }}
-                              className="w-full flex items-center gap-2.5 font-outfit"
+                              className="w-full flex items-center gap-2.5 font-work-sans"
                               style={{ padding: '11px 14px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                               <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                 <Upload size={12} color="#7A0F46" />
                               </div>
                               <div>
-                                <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Import file</p>
-                                <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>CSV or Excel</p>
+                                <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Import file</p>
+                                <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>CSV or Excel</p>
                               </div>
                             </button>
                             <button onClick={() => { setShowGoogleSheets(true); setShowUploadDrop(false) }}
-                              className="w-full flex items-center gap-2.5 font-outfit"
+                              className="w-full flex items-center gap-2.5 font-work-sans"
                               style={{ padding: '11px 14px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
                               <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(52,168,83,0.1)', border: '1px solid rgba(52,168,83,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                 <Sheet size={12} color="#34A853" />
                               </div>
                               <div>
-                                <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Google Sheets</p>
-                                <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: googleConnected ? '#34A853' : 'rgba(26,20,16,0.4)', margin: 0 }}>{googleConnected ? `Synced ${lastSync}` : 'Live sync'}</p>
+                                <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Google Sheets</p>
+                                <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: googleConnected ? '#34A853' : 'rgba(26,20,16,0.4)', margin: 0 }}>{googleConnected ? `Synced ${lastSync}` : 'Live sync'}</p>
                               </div>
                             </button>
                           </motion.div>
@@ -1173,7 +1713,7 @@ export default function GuestsScreen() {
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                       style={{ background: 'rgba(45,96,37,0.08)', border: '1px solid rgba(45,96,37,0.2)', borderRadius: '12px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <CheckCircle2 size={14} color="#2D6025" style={{ flexShrink: 0 }} />
-                      <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>{importBanner}</span>
+                      <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: '#2D6025' }}>{importBanner}</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1182,10 +1722,10 @@ export default function GuestsScreen() {
                 {pending.length > 0 && (
                   <div className="glass-alert flex items-center gap-3" style={{ padding: '13px 16px' }}>
                     <Clock size={14} color="#B03A10" style={{ flexShrink: 0 }} />
-                    <p className="font-outfit flex-1" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.75)', margin: 0 }}>
+                    <p className="font-work-sans flex-1" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.75)', margin: 0 }}>
                       <span style={{ color: '#B03A10', fontWeight: 600 }}>{pending.length} guests</span> haven't responded yet
                     </p>
-                    <button className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: '#B03A10', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(196,80,30,0.22)', padding: '4px 10px', borderRadius: '99px', cursor: 'pointer', flexShrink: 0 }}>Nudge all</button>
+                    <button className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: '#B03A10', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(196,80,30,0.22)', padding: '4px 10px', borderRadius: '99px', cursor: 'pointer', flexShrink: 0 }}>Nudge all</button>
                   </div>
                 )}
 
@@ -1201,11 +1741,11 @@ export default function GuestsScreen() {
                           <motion.div key={side} layout className="flex flex-col gap-2">
                             {/* Section header */}
                             <div className="flex items-center gap-3" style={{ marginTop: side === 'groom' ? '6px' : '0' }}>
-                              <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.16em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                              <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.16em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                                 {sideLabel}
                               </span>
                               <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.07)' }} />
-                              <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.28)', letterSpacing: '0.04em' }}>{sideGuests.length}</span>
+                              <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.28)', letterSpacing: '0.04em' }}>{sideGuests.length}</span>
                             </div>
                             {/* Guests */}
                             {sideGuests.map(guest => (
@@ -1215,8 +1755,8 @@ export default function GuestsScreen() {
                                 style={{ padding: '13px 16px', cursor: 'pointer', border: 'none' }} whileTap={{ scale: 0.985 }}>
                                 <InitialAvatar name={guest.name} side={guest.side} />
                                 <div className="flex flex-col flex-1 min-w-0">
-                                  <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{guest.name}</span>
-                                  <span className="font-outfit truncate" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', marginTop: '1px' }}>
+                                  <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{guest.name}</span>
+                                  <span className="font-work-sans truncate" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', marginTop: '1px' }}>
                                     {guest.contact ? (guest.contactSource === 'contacts' ? `📱 ${guest.contact}` : guest.contact) : <span style={{ color: 'rgba(200,151,58,0.8)', fontWeight: 400 }}>No contact info</span>}
                                   </span>
                                 </div>
@@ -1234,8 +1774,8 @@ export default function GuestsScreen() {
                           style={{ padding: '13px 16px', cursor: 'pointer', border: 'none' }} whileTap={{ scale: 0.985 }}>
                           <InitialAvatar name={guest.name} side={guest.side} />
                           <div className="flex flex-col flex-1 min-w-0">
-                            <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{guest.name}</span>
-                            <span className="font-outfit truncate" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', marginTop: '1px' }}>
+                            <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{guest.name}</span>
+                            <span className="font-work-sans truncate" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', marginTop: '1px' }}>
                               {guest.contact ? (guest.contactSource === 'contacts' ? `📱 ${guest.contact}` : guest.contact) : <span style={{ color: 'rgba(200,151,58,0.8)', fontWeight: 400 }}>No contact info</span>}
                             </span>
                           </div>
@@ -1247,8 +1787,8 @@ export default function GuestsScreen() {
                 </div>
 
                 {/* Invite CTA */}
-                <button className="w-full flex items-center justify-center gap-2 font-outfit"
-                  style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+                <button className="w-full flex items-center justify-center gap-2 font-work-sans"
+                  style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
                   <UserPlus size={15} />Invite guests
                 </button>
 
@@ -1257,7 +1797,11 @@ export default function GuestsScreen() {
             )}
 
             {/* ─── GUEST ASSETS TAB ───────────────────────────────── */}
-            {mainTab === 'assets' && <GuestAssets key="assets" />}
+            {mainTab === 'assets' && (
+              <motion.div key="assets" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
+                <GuestAssets onOpenAgent={onOpenAgent} onOpenWebsite={() => setShowWebsiteSetup(true)} websiteConfig={websiteConfig} />
+              </motion.div>
+            )}
 
           </AnimatePresence>
         </motion.div>
@@ -1274,6 +1818,14 @@ export default function GuestsScreen() {
         {showImport && <ImportModal onClose={() => setShowImport(false)} onImport={handleImport} />}
         {showGoogleSheets && (
           <GoogleSheetsModal onClose={() => setShowGoogleSheets(false)} onConnect={handleGoogleConnect} connected={googleConnected} lastSync={lastSync} />
+        )}
+        {showWebsiteSetup && (
+          <WeddingWebsiteSetupScreen
+            onClose={() => setShowWebsiteSetup(false)}
+            onSave={(cfg) => setWebsiteConfig(cfg)}
+            onOpenAgent={onOpenAgent}
+            initialConfig={websiteConfig}
+          />
         )}
       </AnimatePresence>
     </div>

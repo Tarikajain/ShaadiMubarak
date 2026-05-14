@@ -20,7 +20,7 @@ function Sheet({ onClose, children }) {
     <>
       <motion.div key="backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.35)', zIndex: 55 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
       <motion.div key="sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={sheetSpring}
         style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 44px', maxHeight: '88%', overflowY: 'auto' }}>
@@ -59,14 +59,14 @@ function PersonalDetailsSheet({ onClose }) {
 
   return (
     <Sheet onClose={onClose}>
-      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Personal details</p>
-      <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 22px' }}>Your account information</p>
+      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Personal details</p>
+      <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px' }}>Your account information</p>
 
       {/* Avatar */}
       <div className="flex flex-col items-center" style={{ marginBottom: 24 }}>
         <div style={{ position: 'relative', width: 72, height: 72 }}>
           <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(122,15,70,0.3)' }}>
-            <span className="font-cormorant italic" style={{ fontSize: '28px', color: '#FFF', fontWeight: 300 }}>{wedding.couple.bride[0]}</span>
+            <span className="font-cormorant italic" style={{ fontSize: '28px', color: '#FFF', fontWeight: 400 }}>{wedding.couple.bride[0]}</span>
           </div>
           <button style={{ position: 'absolute', bottom: 0, right: 0, width: 26, height: 26, borderRadius: '50%', background: '#FFFBF5', border: '2px solid #FFFBF5', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', cursor: 'pointer' }}>
             <Camera size={12} color="rgba(26,20,16,0.6)" />
@@ -81,19 +81,19 @@ function PersonalDetailsSheet({ onClose }) {
           { icon: Phone, label: 'Phone',      value: phone, onChange: setPhone, type: 'tel' },
         ].map(({ icon: Icon, label, value, onChange, type }) => (
           <div key={label}>
-            <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 6px 2px' }}>{label}</p>
+            <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 6px 2px' }}>{label}</p>
             <div className="glass-input flex items-center gap-2" style={{ padding: '12px 14px' }}>
               <Icon size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
               <input type={type} value={value} onChange={e => onChange(e.target.value)}
-                style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+                style={{ fontSize: '13px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
             </div>
           </div>
         ))}
       </div>
 
       <motion.button onClick={handleSave}
-        className="w-full font-outfit flex items-center justify-center gap-2"
-        style={{ background: saved ? 'rgba(45,96,37,0.9)' : 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', transition: 'background 0.2s ease' }}
+        className="w-full font-work-sans flex items-center justify-center gap-2"
+        style={{ background: saved ? 'rgba(45,96,37,0.9)' : 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', transition: 'background 0.2s ease' }}
         whileTap={{ scale: 0.97 }}>
         {saved ? <><Check size={15} />Saved</> : 'Save changes'}
       </motion.button>
@@ -117,20 +117,20 @@ function SecuritySheet({ onClose }) {
 
   return (
     <Sheet onClose={onClose}>
-      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Privacy &amp; security</p>
-      <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 22px' }}>Keep your account secure</p>
+      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Privacy &amp; security</p>
+      <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px' }}>Keep your account secure</p>
 
       {/* 2FA */}
       <div className="glass-card flex items-center justify-between gap-3" style={{ padding: '16px 18px', marginBottom: 16 }}>
         <div>
-          <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>Two-factor authentication</p>
-          <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: 0 }}>Extra layer of security on sign-in</p>
+          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>Two-factor authentication</p>
+          <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>Extra layer of security on sign-in</p>
         </div>
         <Toggle value={twoFA} onChange={setTwoFA} />
       </div>
 
       {/* Password */}
-      <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 10px 2px' }}>Change password</p>
+      <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 10px 2px' }}>Change password</p>
       <div className="flex flex-col gap-3" style={{ marginBottom: 20 }}>
         {[
           { label: 'Current password', value: currentPass, onChange: setCurrentPass },
@@ -139,7 +139,7 @@ function SecuritySheet({ onClose }) {
           <div key={label} className="glass-input flex items-center gap-2" style={{ padding: '12px 14px' }}>
             <Lock size={14} color="rgba(26,20,16,0.28)" style={{ flexShrink: 0 }} />
             <input type={showPass ? 'text' : 'password'} placeholder={label} value={value} onChange={e => onChange(e.target.value)}
-              style={{ fontSize: '13px', fontWeight: 300, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Outfit, sans-serif' }} />
+              style={{ fontSize: '13px', fontWeight: 400, width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410', fontFamily: 'Inter, sans-serif' }} />
             <button onClick={() => setShowPass(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
               {showPass ? <EyeOff size={14} color="rgba(26,20,16,0.3)" /> : <Eye size={14} color="rgba(26,20,16,0.3)" />}
             </button>
@@ -148,8 +148,8 @@ function SecuritySheet({ onClose }) {
       </div>
 
       <button onClick={handleSave} disabled={!currentPass || !newPass}
-        className="w-full font-outfit flex items-center justify-center gap-2"
-        style={{ background: saved ? 'rgba(45,96,37,0.9)' : (currentPass && newPass) ? 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)' : 'rgba(0,0,0,0.06)', color: (currentPass && newPass) || saved ? '#FFFBF5' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: (currentPass && newPass) ? 'pointer' : 'not-allowed', transition: 'all 0.2s ease' }}>
+        className="w-full font-work-sans flex items-center justify-center gap-2"
+        style={{ background: saved ? 'rgba(45,96,37,0.9)' : (currentPass && newPass) ? 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)' : 'rgba(0,0,0,0.06)', color: (currentPass && newPass) || saved ? '#FFFBF5' : 'rgba(26,20,16,0.3)', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: (currentPass && newPass) ? 'pointer' : 'not-allowed', transition: 'all 0.2s ease' }}>
         {saved ? <><Check size={15} />Password updated</> : 'Update password'}
       </button>
     </Sheet>
@@ -194,32 +194,32 @@ function NotificationsSheet({ onClose }) {
 
   return (
     <Sheet onClose={onClose}>
-      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Notifications</p>
-      <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 22px' }}>Choose what to hear about</p>
+      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Notifications</p>
+      <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px' }}>Choose what to hear about</p>
 
       {/* Push notifications master toggle */}
       <div className="glass-card flex items-center justify-between gap-3"
         style={{ padding: '14px 16px', marginBottom: 16, border: pushEnabled ? '1px solid rgba(122,15,70,0.2)' : '1px solid rgba(0,0,0,0.07)', background: pushEnabled ? 'rgba(122,15,70,0.03)' : undefined }}>
         <div className="flex items-center gap-3">
           <div style={{ width: 32, height: 32, borderRadius: '9px', background: pushEnabled ? 'rgba(122,15,70,0.1)' : 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Bell size={14} color={pushEnabled ? '#7A0F46' : 'rgba(26,20,16,0.35)'} />
+            <Bell size={14} color={pushEnabled ? '#7A0F46' : 'rgba(26,20,16,0.50)'} />
           </div>
           <div>
-            <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>Push notifications</p>
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{pushEnabled ? 'Alerts delivered to your device' : 'Tap to enable device alerts'}</p>
+            <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>Push notifications</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{pushEnabled ? 'Alerts delivered to your device' : 'Tap to enable device alerts'}</p>
           </div>
         </div>
         <Toggle value={pushEnabled} onChange={handlePushToggle} />
       </div>
 
-      <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 10px 2px' }}>Alert types</p>
+      <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 10px 2px' }}>Alert types</p>
       <div className="flex flex-col gap-px" style={{ marginBottom: 24 }}>
         {rows.map((row, i) => (
           <div key={row.key} className="glass-card flex items-center justify-between gap-3"
             style={{ padding: '14px 16px', borderRadius: i === 0 ? '14px 14px 4px 4px' : i === rows.length - 1 ? '4px 4px 14px 14px' : '4px', opacity: row.locked ? 0.7 : 1 }}>
             <div>
-              <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 1px' }}>{row.label}</p>
-              <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{row.sub}</p>
+              <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 1px' }}>{row.label}</p>
+              <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{row.sub}</p>
             </div>
             {row.locked
               ? <Toggle value={true} onChange={() => {}} />
@@ -230,8 +230,8 @@ function NotificationsSheet({ onClose }) {
       </div>
 
       <button onClick={handleSave}
-        className="w-full font-outfit flex items-center justify-center gap-2"
-        style={{ background: saved ? 'rgba(45,96,37,0.9)' : 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', transition: 'background 0.2s ease' }}>
+        className="w-full font-work-sans flex items-center justify-center gap-2"
+        style={{ background: saved ? 'rgba(45,96,37,0.9)' : 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', transition: 'background 0.2s ease' }}>
         {saved ? <><Check size={15} />Saved</> : 'Save preferences'}
       </button>
     </Sheet>
@@ -252,14 +252,14 @@ function HelpSheet({ onClose }) {
 
   return (
     <Sheet onClose={onClose}>
-      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Help &amp; FAQ</p>
-      <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: '0 0 22px' }}>Common questions &amp; support</p>
+      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Help &amp; FAQ</p>
+      <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px' }}>Common questions &amp; support</p>
 
       <div className="flex flex-col gap-px" style={{ marginBottom: 24 }}>
         {FAQS.map((faq, i) => (
           <div key={i} style={{ borderRadius: i === 0 ? '14px 14px 4px 4px' : i === FAQS.length - 1 ? '4px 4px 14px 14px' : '4px', background: '#FFFBF5', border: '1px solid rgba(0,0,0,0.07)', overflow: 'hidden' }}>
             <button onClick={() => setOpen(open === i ? null : i)}
-              className="w-full flex items-center justify-between gap-3 font-outfit"
+              className="w-full flex items-center justify-between gap-3 font-work-sans"
               style={{ padding: '14px 16px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
               <span style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', flex: 1 }}>{faq.q}</span>
               <motion.div animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: 0.2 }}>
@@ -270,7 +270,7 @@ function HelpSheet({ onClose }) {
               {open === i && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
                   style={{ overflow: 'hidden' }}>
-                  <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.6)', margin: 0, padding: '0 16px 14px', lineHeight: 1.6 }}>{faq.a}</p>
+                  <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.6)', margin: 0, padding: '0 16px 14px', lineHeight: 1.6 }}>{faq.a}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -279,11 +279,11 @@ function HelpSheet({ onClose }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <button className="w-full flex items-center justify-center gap-2 font-outfit"
+        <button className="w-full flex items-center justify-center gap-2 font-work-sans"
           style={{ background: 'rgba(122,15,70,0.06)', border: '1px solid rgba(122,15,70,0.2)', color: '#7A0F46', fontSize: '13px', fontWeight: 500, padding: '13px', borderRadius: '12px', cursor: 'pointer' }}>
           <MessageCircle size={14} />Chat with support
         </button>
-        <button className="w-full flex items-center justify-center gap-2 font-outfit"
+        <button className="w-full flex items-center justify-center gap-2 font-work-sans"
           style={{ background: 'none', border: '1px solid rgba(0,0,0,0.09)', color: 'rgba(26,20,16,0.55)', fontSize: '13px', fontWeight: 400, padding: '13px', borderRadius: '12px', cursor: 'pointer' }}>
           <FileText size={14} />View documentation <ExternalLink size={11} />
         </button>
@@ -300,19 +300,19 @@ function SignOutSheet({ onClose, onSignOut }) {
         <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           <LogOut size={22} color="#7A0F46" strokeWidth={1.8} />
         </div>
-        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 300, color: '#1A1410', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Sign out?</p>
-        <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 300, color: 'rgba(26,20,16,0.5)', margin: '0 0 28px', lineHeight: 1.6 }}>
+        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 8px', letterSpacing: '-0.02em', textAlign: 'center' }}>Sign out?</p>
+        <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: 'rgba(26,20,16,0.5)', margin: '0 0 28px', lineHeight: 1.6 }}>
           You'll need to sign back in to access your wedding workspace.
         </p>
         <div className="flex flex-col gap-2 w-full">
           <button onClick={onSignOut}
-            className="w-full font-outfit flex items-center justify-center gap-2"
-            style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+            className="w-full font-work-sans flex items-center justify-center gap-2"
+            style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
             <LogOut size={15} />Sign out
           </button>
           <button onClick={onClose}
-            className="w-full font-outfit"
-            style={{ background: 'none', border: 'none', color: 'rgba(26,20,16,0.45)', fontSize: '13px', fontWeight: 300, padding: '12px', cursor: 'pointer' }}>
+            className="w-full font-work-sans"
+            style={{ background: 'none', border: 'none', color: 'rgba(26,20,16,0.62)', fontSize: '13px', fontWeight: 400, padding: '12px', cursor: 'pointer' }}>
             Cancel
           </button>
         </div>
@@ -359,29 +359,29 @@ export default function ProfileScreen({ onSignOut }) {
             <button onClick={() => navigate('/')} style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <ArrowLeft size={15} color="rgba(26,20,16,0.6)" />
             </button>
-            <h1 className="font-outfit" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: '18px', fontWeight: 500, color: '#1A1410', margin: 0, whiteSpace: 'nowrap' }}>Profile</h1>
+            <h1 className="font-work-sans" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: '18px', fontWeight: 500, color: '#1A1410', margin: 0, whiteSpace: 'nowrap' }}>Profile</h1>
           </motion.div>
 
           {/* Avatar + name */}
           <motion.div variants={item} className="glass-card flex items-center gap-4" style={{ padding: '20px' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 16px rgba(122,15,70,0.30)' }}>
-              <span className="font-cormorant italic" style={{ fontSize: '22px', color: '#FFF', fontWeight: 300 }}>{wedding.couple.bride[0]}</span>
+              <span className="font-cormorant italic" style={{ fontSize: '22px', color: '#FFF', fontWeight: 400 }}>{wedding.couple.bride[0]}</span>
             </div>
             <div>
-              <p className="font-outfit" style={{ fontSize: '16px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>{wedding.couple.bride} Sharma</p>
-              <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: 0 }}>tarika.jain@gmail.com</p>
+              <p className="font-work-sans" style={{ fontSize: '16px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>{wedding.couple.bride} Sharma</p>
+              <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>tarika.jain@gmail.com</p>
             </div>
           </motion.div>
 
           {/* Wedding summary card */}
           <motion.div variants={item} className="glass-card" style={{ padding: '16px 18px' }}>
-            <p className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.14em', margin: '0 0 12px' }}>YOUR WEDDING</p>
+            <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.14em', margin: '0 0 12px' }}>YOUR WEDDING</p>
             <div className="flex items-center gap-3">
               <div style={{ flex: 1 }}>
-                <p className="font-cormorant italic" style={{ fontSize: '20px', fontWeight: 300, color: '#1A1410', margin: '0 0 2px', letterSpacing: '-0.01em' }}>{wedding.couple.bride} &amp; {wedding.couple.groom}</p>
-                <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: 0 }}>{wedding.venue} · {wedding.date}</p>
+                <p className="font-cormorant italic" style={{ fontSize: '20px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', letterSpacing: '-0.01em' }}>{wedding.couple.bride} &amp; {wedding.couple.groom}</p>
+                <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>{wedding.venue} · {wedding.date}</p>
               </div>
-              <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, border: '1px solid rgba(122,15,70,0.30)', color: '#7A0F46', padding: '4px 12px', borderRadius: '99px', background: 'rgba(122,15,70,0.07)', flexShrink: 0 }}>
+              <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, border: '1px solid rgba(122,15,70,0.30)', color: '#7A0F46', padding: '4px 12px', borderRadius: '99px', background: 'rgba(122,15,70,0.07)', flexShrink: 0 }}>
                 {wedding.daysAway}d
               </span>
             </div>
@@ -390,7 +390,7 @@ export default function ProfileScreen({ onSignOut }) {
           {/* Settings rows */}
           {settingsSections.map(section => (
             <motion.div key={section.title} variants={item} className="flex flex-col gap-px">
-              <p className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.14em', margin: '0 0 8px 2px' }}>{section.title}</p>
+              <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.14em', margin: '0 0 8px 2px' }}>{section.title}</p>
               {section.rows.map((row, i) => {
                 const Icon = row.icon
                 return (
@@ -401,8 +401,8 @@ export default function ProfileScreen({ onSignOut }) {
                       <Icon size={15} color="rgba(26,20,16,0.55)" strokeWidth={1.8} />
                     </div>
                     <div className="flex-1">
-                      <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 1px' }}>{row.label}</p>
-                      <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{row.sub}</p>
+                      <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 1px' }}>{row.label}</p>
+                      <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{row.sub}</p>
                     </div>
                     <ChevronRight size={15} color="rgba(26,20,16,0.28)" />
                   </button>
@@ -414,7 +414,7 @@ export default function ProfileScreen({ onSignOut }) {
           {/* Sign out */}
           <motion.div variants={item}>
             <button onClick={() => setActiveSheet('signout')}
-              className="glass-card w-full flex items-center justify-center gap-2 font-outfit"
+              className="glass-card w-full flex items-center justify-center gap-2 font-work-sans"
               style={{ padding: '14px', border: '1px solid rgba(122,15,70,0.2)', cursor: 'pointer', background: 'rgba(122,15,70,0.04)' }}>
               <LogOut size={15} color="#7A0F46" strokeWidth={1.8} />
               <span style={{ fontSize: '13px', fontWeight: 400, color: '#7A0F46' }}>Sign out</span>

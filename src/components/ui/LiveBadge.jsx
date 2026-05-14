@@ -1,7 +1,7 @@
 export default function LiveBadge() {
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full font-outfit"
+      className="inline-flex items-center gap-1.5 rounded-full font-work-sans"
       style={{
         background: 'rgba(196,80,30,0.10)',
         border: '0.5px solid rgba(196,80,30,0.4)',

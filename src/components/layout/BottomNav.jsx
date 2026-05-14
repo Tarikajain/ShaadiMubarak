@@ -1,13 +1,13 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Home, Store, Users, Wallet, CheckSquare } from 'lucide-react'
+import { Home, Store, Users, Sparkles, CheckSquare } from 'lucide-react'
 
 const tabs = [
-  { label: 'Today',   icon: Home,        path: '/' },
-  { label: 'Guests',  icon: Users,       path: '/guests' },
-  { label: 'Tasks',   icon: CheckSquare, path: '/tasks' },
-  { label: 'Vendors', icon: Store,       path: '/vendors' },
-  { label: 'Budget',  icon: Wallet,      path: '/budget' },
+  { label: 'Today',      icon: Home,        path: '/' },
+  { label: 'Ceremonies', icon: Sparkles,    path: '/ceremonies' },
+  { label: 'Tasks',      icon: CheckSquare, path: '/tasks' },
+  { label: 'Guests',     icon: Users,       path: '/guests' },
+  { label: 'Vendors',    icon: Store,       path: '/vendors' },
 ]
 
 const spring = { type: 'spring', stiffness: 480, damping: 28 }
@@ -49,7 +49,7 @@ export default function BottomNav() {
               />
             </motion.div>
             <span
-              className="font-outfit"
+              className="font-work-sans"
               style={{
                 fontSize: '9px',
                 fontWeight: active ? 600 : 400,

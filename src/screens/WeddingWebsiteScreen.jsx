@@ -61,7 +61,7 @@ export default function WeddingWebsiteScreen() {
               <ArrowLeft size={15} color="rgba(26,20,16,0.6)" />
             </button>
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
-              <h1 className="font-cormorant italic" style={{ fontSize: '26px', color: '#1A1410', fontWeight: 300, margin: 0, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>Wedding Website</h1>
+              <h1 className="font-cormorant italic" style={{ fontSize: '26px', color: '#1A1410', fontWeight: 500, margin: 0, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>Wedding Website</h1>
             </div>
           </motion.div>
 
@@ -71,18 +71,18 @@ export default function WeddingWebsiteScreen() {
               <div className="rounded-full flex items-center justify-center mb-4" style={{ width: '36px', height: '36px', background: activeTheme.accent + '22', border: `1px solid ${activeTheme.accent}44` }}>
                 <Globe size={15} color={activeTheme.accent} />
               </div>
-              <p className="font-cormorant italic" style={{ fontSize: '22px', color: '#1A1410', fontWeight: 300, margin: '0 0 4px', letterSpacing: '-0.01em' }}>
+              <p className="font-cormorant italic" style={{ fontSize: '22px', color: '#1A1410', fontWeight: 400, margin: '0 0 4px', letterSpacing: '-0.01em', textAlign: 'center' }}>
                 {wedding.couple.bride} &amp; {wedding.couple.groom}
               </p>
-              <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.5)', margin: 0 }}>{wedding.date} · {wedding.venue}</p>
+              <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.5)', margin: 0 }}>{wedding.date} · {wedding.venue}</p>
               <div className="flex gap-3 mt-4">
-                <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 500, color: activeTheme.accent, background: activeTheme.accent + '18', border: `1px solid ${activeTheme.accent}33`, padding: '3px 10px', borderRadius: '99px' }}>RSVP Now</span>
-                <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)', padding: '3px 10px', borderRadius: '99px' }}>Our Story</span>
+                <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 500, color: activeTheme.accent, background: activeTheme.accent + '18', border: `1px solid ${activeTheme.accent}33`, padding: '3px 10px', borderRadius: '99px' }}>RSVP Now</span>
+                <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)', padding: '3px 10px', borderRadius: '99px' }}>Our Story</span>
               </div>
             </div>
             <div style={{ borderTop: `1px solid ${activeTheme.accent}22`, background: 'rgba(255,255,255,0.5)', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.4)' }}>{weddingWebsite.url}</span>
-              <button onClick={handleCopy} className="flex items-center gap-1.5 font-outfit"
+              <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)' }}>{weddingWebsite.url}</span>
+              <button onClick={handleCopy} className="flex items-center gap-1.5 font-work-sans"
                 style={{ fontSize: '10px', fontWeight: 500, color: copied ? '#2D6025' : activeTheme.accent, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 <AnimatePresence mode="wait">
                   {copied
@@ -97,10 +97,10 @@ export default function WeddingWebsiteScreen() {
           {/* Publish toggle + stats */}
           <motion.div variants={item} className="glass-card flex items-center gap-4" style={{ padding: '16px 18px', border: published ? '1px solid rgba(45,96,37,0.22)' : '1px solid rgba(0,0,0,0.06)' }}>
             <div className="flex flex-col flex-1">
-              <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>
+              <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>
                 {published ? 'Live' : 'Draft'}
               </span>
-              <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.42)', marginTop: '1px' }}>
+              <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.58)', marginTop: '1px' }}>
                 {published ? `Updated ${weddingWebsite.lastUpdated}` : 'Not visible to guests yet'}
               </span>
             </div>
@@ -117,8 +117,8 @@ export default function WeddingWebsiteScreen() {
                 <div key={s.label} className="glass-card flex items-center gap-3" style={{ padding: '14px 14px' }}>
                   <s.icon size={15} color="#A07020" style={{ flexShrink: 0 }} />
                   <div className="flex flex-col">
-                    <span className="font-outfit" style={{ fontSize: '18px', fontWeight: 600, color: '#1A1410', lineHeight: 1 }}>{s.value}</span>
-                    <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', marginTop: '2px' }}>{s.label}</span>
+                    <span className="font-work-sans" style={{ fontSize: '18px', fontWeight: 600, color: '#1A1410', lineHeight: 1 }}>{s.value}</span>
+                    <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', marginTop: '2px' }}>{s.label}</span>
                   </div>
                 </div>
               ))}
@@ -127,7 +127,7 @@ export default function WeddingWebsiteScreen() {
 
           {/* Theme picker */}
           <motion.div variants={item} className="flex flex-col gap-3">
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>Theme</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>Theme</p>
             <div className="flex gap-2">
               {THEMES.map(t => (
                 <button key={t.id} onClick={() => setTheme(t.id)}
@@ -141,7 +141,7 @@ export default function WeddingWebsiteScreen() {
                       </div>
                     )}
                   </div>
-                  <span className="font-outfit" style={{ fontSize: '10px', fontWeight: theme === t.id ? 500 : 300, color: theme === t.id ? '#1A1410' : 'rgba(26,20,16,0.45)' }}>{t.label}</span>
+                  <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: theme === t.id ? 500 : 300, color: theme === t.id ? '#1A1410' : 'rgba(26,20,16,0.62)' }}>{t.label}</span>
                 </button>
               ))}
             </div>
@@ -149,7 +149,7 @@ export default function WeddingWebsiteScreen() {
 
           {/* Sections */}
           <motion.div variants={item} className="flex flex-col gap-2">
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>Sections</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>Sections</p>
             {sections.map((sec, i) => (
               <motion.div key={sec.id}
                 initial={{ opacity: 0, y: 6 }}
@@ -157,7 +157,7 @@ export default function WeddingWebsiteScreen() {
                 transition={{ delay: 0.5 + i * 0.05, duration: 0.35 }}
                 className="glass-card flex items-center gap-3"
                 style={{ padding: '13px 16px' }}>
-                <span className="font-outfit flex-1" style={{ fontSize: '13px', fontWeight: 400, color: sec.enabled ? '#1A1410' : 'rgba(26,20,16,0.38)' }}>{sec.label}</span>
+                <span className="font-work-sans flex-1" style={{ fontSize: '13px', fontWeight: 400, color: sec.enabled ? '#1A1410' : 'rgba(26,20,16,0.54)' }}>{sec.label}</span>
                 <Toggle enabled={sec.enabled} onChange={() => toggleSection(sec.id)} />
               </motion.div>
             ))}
@@ -165,8 +165,8 @@ export default function WeddingWebsiteScreen() {
 
           {/* Share CTA */}
           <motion.div variants={item}>
-            <button onClick={handleCopy} className="w-full flex items-center justify-center gap-2 font-outfit"
-              style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFFFF', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
+            <button onClick={handleCopy} className="w-full flex items-center justify-center gap-2 font-work-sans"
+              style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFFFF', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)' }}>
               <Globe size={15} />
               Share website with guests
             </button>

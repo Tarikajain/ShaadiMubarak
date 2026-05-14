@@ -52,8 +52,8 @@ export default function BudgetScreen() {
               <LogoMark />
               <NavIcons />
             </div>
-            <h1 className="font-cormorant italic text-center" style={{ fontSize: '36px', color: '#1A1410', fontWeight: 300, lineHeight: 1.05, margin: '0 0 2px', letterSpacing: '-0.02em' }}>Budget</h1>
-            <p className="font-outfit text-center" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: '2px 0 0' }}>
+            <h1 className="font-cormorant italic text-center" style={{ fontSize: '36px', color: '#1A1410', fontWeight: 500, lineHeight: 1.05, margin: '0 0 2px', letterSpacing: '-0.02em' }}>Budget</h1>
+            <p className="font-work-sans text-center" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: '2px 0 0' }}>
               {pct}% of total budget used
             </p>
           </motion.div>
@@ -63,19 +63,19 @@ export default function BudgetScreen() {
             <div className="relative flex items-center justify-center" style={{ width: '136px', height: '136px' }}>
               <BudgetRing pct={pct} />
               <div className="flex flex-col items-center" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span className="font-outfit" style={{ fontSize: '22px', fontWeight: 600, color: '#1A1410', lineHeight: 1 }}>{fmt(spent)}</span>
-                <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', marginTop: '3px' }}>of {fmt(total)}</span>
+                <span className="font-work-sans" style={{ fontSize: '22px', fontWeight: 600, color: '#1A1410', lineHeight: 1 }}>{fmt(spent)}</span>
+                <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', marginTop: '3px' }}>of {fmt(total)}</span>
               </div>
             </div>
             <div className="flex gap-8 mt-5">
               <div className="flex flex-col items-center">
-                <span className="font-outfit" style={{ fontSize: '16px', fontWeight: 600, color: '#2D6025' }}>{fmt(remaining)}</span>
-                <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', marginTop: '2px' }}>remaining</span>
+                <span className="font-work-sans" style={{ fontSize: '16px', fontWeight: 600, color: '#2D6025' }}>{fmt(remaining)}</span>
+                <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', marginTop: '2px' }}>remaining</span>
               </div>
               <div style={{ width: '1px', background: 'rgba(0,0,0,0.07)' }} />
               <div className="flex flex-col items-center">
-                <span className="font-outfit" style={{ fontSize: '16px', fontWeight: 600, color: '#A07020' }}>{fmt(dueSoon.reduce((a, c) => a + c.dueAmount, 0))}</span>
-                <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', marginTop: '2px' }}>due soon</span>
+                <span className="font-work-sans" style={{ fontSize: '16px', fontWeight: 600, color: '#A07020' }}>{fmt(dueSoon.reduce((a, c) => a + c.dueAmount, 0))}</span>
+                <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', marginTop: '2px' }}>due soon</span>
               </div>
             </div>
           </motion.div>
@@ -84,7 +84,7 @@ export default function BudgetScreen() {
           {dueSoon.length > 0 && (
             <motion.div variants={item} className="glass-alert flex items-center gap-3" style={{ padding: '13px 16px' }}>
               <AlertCircle size={14} color="#B03A10" style={{ flexShrink: 0 }} />
-              <p className="font-outfit flex-1" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.75)', margin: 0 }}>
+              <p className="font-work-sans flex-1" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.75)', margin: 0 }}>
                 <span style={{ color: '#B03A10', fontWeight: 600 }}>{dueSoon.length} payments</span> due before the wedding
               </p>
             </motion.div>
@@ -92,7 +92,7 @@ export default function BudgetScreen() {
 
           {/* Category breakdown */}
           <motion.div variants={item} className="flex flex-col gap-3">
-            <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>Breakdown</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>Breakdown</p>
             {categories.map((cat, i) => {
               const catPct = Math.min((cat.spent / cat.budgeted) * 100, 100)
               const isPaid = cat.dueAmount === 0
@@ -105,15 +105,15 @@ export default function BudgetScreen() {
                   className="glass-card"
                   style={{ padding: '14px 16px', border: isOver ? '1px solid rgba(122,15,70,0.25)' : isPaid ? '1px solid rgba(45,96,37,0.18)' : '1px solid rgba(0,0,0,0.06)' }}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{cat.name}</span>
+                    <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{cat.name}</span>
                     <div className="flex items-center gap-2">
                       {isPaid ? (
                         <CheckCircle2 size={13} color="#2D6025" />
                       ) : cat.dueDate ? (
-                        <span className="font-outfit" style={{ fontSize: '10px', fontWeight: 400, color: '#A07020' }}>Due {cat.dueDate}</span>
+                        <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: '#A07020' }}>Due {cat.dueDate}</span>
                       ) : null}
-                      <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 500, color: isOver ? '#B03A10' : '#1A1410' }}>
-                        {fmt(cat.spent)}<span style={{ fontWeight: 300, color: 'rgba(26,20,16,0.35)' }}>/{fmt(cat.budgeted)}</span>
+                      <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: isOver ? '#B03A10' : '#1A1410' }}>
+                        {fmt(cat.spent)}<span style={{ fontWeight: 400, color: 'rgba(26,20,16,0.50)' }}>/{fmt(cat.budgeted)}</span>
                       </span>
                     </div>
                   </div>
@@ -126,7 +126,7 @@ export default function BudgetScreen() {
                     />
                   </div>
                   {cat.dueAmount > 0 && (
-                    <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.42)', margin: '6px 0 0' }}>
+                    <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.58)', margin: '6px 0 0' }}>
                       {fmt(cat.dueAmount)} outstanding
                     </p>
                   )}

@@ -39,7 +39,7 @@ const notifications = [
   },
   {
     id: 5, group: 'YESTERDAY',
-    icon: Clock, iconColor: 'rgba(26,20,16,0.45)', iconBg: 'rgba(0,0,0,0.05)',
+    icon: Clock, iconColor: 'rgba(26,20,16,0.62)', iconBg: 'rgba(0,0,0,0.05)',
     title: 'Rhythm DJ Services pending',
     body: 'No response to last follow-up. Consider sending another.',
     time: '1d ago', unread: false,
@@ -83,15 +83,15 @@ export default function NotificationsScreen() {
               <ArrowLeft size={15} color="rgba(26,20,16,0.6)" />
             </button>
             <div className="flex items-center gap-2" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-              <h1 className="font-outfit" style={{ fontSize: '18px', fontWeight: 500, color: '#1A1410', margin: 0, whiteSpace: 'nowrap' }}>Notifications</h1>
+              <h1 className="font-work-sans" style={{ fontSize: '18px', fontWeight: 500, color: '#1A1410', margin: 0, whiteSpace: 'nowrap' }}>Notifications</h1>
               {unreadCount > 0 && (
-                <span className="font-outfit" style={{ fontSize: '11px', fontWeight: 600, background: '#7A0F46', color: '#FFFFFF', padding: '2px 7px', borderRadius: '99px' }}>
+                <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 600, background: '#7A0F46', color: '#FFFFFF', padding: '2px 7px', borderRadius: '99px' }}>
                   {unreadCount}
                 </span>
               )}
             </div>
             {unreadCount > 0 && (
-              <button onClick={markAllRead} className="font-outfit" style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 400, color: '#A07020', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
+              <button onClick={markAllRead} className="font-work-sans" style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 400, color: '#A07020', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
                 Mark all read
               </button>
             )}
@@ -109,12 +109,12 @@ export default function NotificationsScreen() {
                   <Bell size={16} color="#7A0F46" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>Stay ahead of every moment</p>
-                  <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.5)', margin: 0 }}>Enable push alerts for vendor updates &amp; crisis warnings</p>
+                  <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>Stay ahead of every moment</p>
+                  <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.5)', margin: 0 }}>Enable push alerts for vendor updates &amp; crisis warnings</p>
                 </div>
                 <button
                   onClick={handleEnableNotifs}
-                  className="font-outfit flex-shrink-0"
+                  className="font-work-sans flex-shrink-0"
                   style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFBF5', fontSize: '11px', fontWeight: 500, padding: '8px 13px', borderRadius: '10px', border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(122,15,70,0.25)', whiteSpace: 'nowrap' }}
                 >
                   Enable
@@ -129,7 +129,7 @@ export default function NotificationsScreen() {
             return (
               <div key={group}>
                 <motion.div variants={item} className="flex items-center justify-between px-5 mb-3">
-                  <span className="font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.35)', letterSpacing: '0.14em' }}>{group}</span>
+                  <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.14em' }}>{group}</span>
                 </motion.div>
 
                 <div className="flex flex-col gap-px px-5 mb-5">
@@ -153,10 +153,10 @@ export default function NotificationsScreen() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-0.5">
-                            <p className="font-outfit" style={{ fontSize: '13px', fontWeight: notif.unread ? 500 : 400, color: '#1A1410', margin: 0, lineHeight: 1.3 }}>{notif.title}</p>
-                            <span className="font-outfit flex-shrink-0" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.35)' }}>{notif.time}</span>
+                            <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: notif.unread ? 500 : 400, color: '#1A1410', margin: 0, lineHeight: 1.3 }}>{notif.title}</p>
+                            <span className="font-work-sans flex-shrink-0" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.50)' }}>{notif.time}</span>
                           </div>
-                          <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.52)', margin: 0, lineHeight: 1.5 }}>{notif.body}</p>
+                          <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.52)', margin: 0, lineHeight: 1.5 }}>{notif.body}</p>
                         </div>
                       </motion.div>
                     )

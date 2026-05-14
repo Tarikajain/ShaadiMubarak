@@ -14,7 +14,7 @@ export default function StatusBadge({ status }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full font-outfit ${pulseClass || ''}`}
+      className={`inline-flex items-center gap-1 rounded-full font-work-sans ${pulseClass || ''}`}
       style={{ background: bg, border: `0.5px solid ${border}`, color, padding: '3px 8px', fontSize: '10px', fontWeight: 500, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}
     >
       <Icon size={9} strokeWidth={2.5} />

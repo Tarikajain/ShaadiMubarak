@@ -26,8 +26,8 @@ export default function CrisisScreen() {
               <ArrowLeft size={15} color="rgba(26,20,16,0.6)" />
             </button>
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
-              <p className="font-outfit" style={{ fontSize: '15px', fontWeight: 500, color: '#1A1410', margin: 0, whiteSpace: 'nowrap' }}>Risk detected</p>
-              <p className="font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.38)', margin: '1px 0 0' }}>{crisis.detectedAt}</p>
+              <p className="font-work-sans" style={{ fontSize: '15px', fontWeight: 500, color: '#1A1410', margin: 0, whiteSpace: 'nowrap' }}>Risk detected</p>
+              <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', margin: '1px 0 0' }}>{crisis.detectedAt}</p>
             </div>
           </motion.div>
 
@@ -37,9 +37,9 @@ export default function CrisisScreen() {
               <motion.div key={i} className="flex flex-col items-center w-full" variants={item}>
                 <div className="glass-card flex items-center gap-3 w-full" style={{ padding: '14px 18px' }}>
                   <span className="rounded-full flex-shrink-0" style={{ width: '9px', height: '9px', background: dotColors[step.status], boxShadow: `0 0 6px ${dotColors[step.status]}55` }} />
-                  <span className="font-outfit" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410' }}>{step.label}</span>
+                  <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410' }}>{step.label}</span>
                   {step.status === 'root' && (
-                    <span className="ml-auto font-outfit" style={{ fontSize: '9px', fontWeight: 600, color: '#B03A10', letterSpacing: '0.1em', background: 'rgba(122,15,70,0.08)', padding: '2px 8px', borderRadius: '99px', border: '1px solid rgba(122,15,70,0.18)' }}>
+                    <span className="ml-auto font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: '#B03A10', letterSpacing: '0.1em', background: 'rgba(122,15,70,0.08)', padding: '2px 8px', borderRadius: '99px', border: '1px solid rgba(122,15,70,0.18)' }}>
                       ROOT CAUSE
                     </span>
                   )}
@@ -56,7 +56,7 @@ export default function CrisisScreen() {
 
           {/* Time pressure */}
           <motion.div variants={item} className="text-center">
-            <span className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.42)' }}>{crisis.timeUntil}</span>
+            <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.58)' }}>{crisis.timeUntil}</span>
           </motion.div>
 
           <motion.div variants={item} className="gold-divider" />
@@ -74,20 +74,20 @@ export default function CrisisScreen() {
                   transition: 'all 0.22s ease',
                 }}>
                   {opt.recommended && (
-                    <span className="font-outfit inline-block mb-2" style={{ fontSize: '9px', fontWeight: 600, color: '#A07020', letterSpacing: '0.12em', background: 'rgba(200,151,58,0.1)', padding: '2px 9px', borderRadius: '99px', border: '1px solid rgba(200,151,58,0.25)' }}>
+                    <span className="font-work-sans inline-block mb-2" style={{ fontSize: '9px', fontWeight: 600, color: '#A07020', letterSpacing: '0.12em', background: 'rgba(200,151,58,0.1)', padding: '2px 9px', borderRadius: '99px', border: '1px solid rgba(200,151,58,0.25)' }}>
                       ✦ AI RECOMMENDED
                     </span>
                   )}
                   <div className="flex items-start justify-between gap-3">
-                    <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0, flex: 1 }}>{opt.label}</p>
+                    <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0, flex: 1 }}>{opt.label}</p>
                     {isSelected && (
                       <span className="rounded-full flex-shrink-0 flex items-center justify-center" style={{ width: '20px', height: '20px', background: '#7A0F46' }}>
                         <Check size={11} color="#FFFFFF" strokeWidth={3} />
                       </span>
                     )}
                   </div>
-                  <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.48)', margin: '7px 0 0', lineHeight: 1.5 }}>{opt.detail}</p>
-                  {opt.timeImpact && <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 400, color: '#A07020', margin: '6px 0 0' }}>{opt.timeImpact}</p>}
+                  <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.64)', margin: '7px 0 0', lineHeight: 1.5 }}>{opt.detail}</p>
+                  {opt.timeImpact && <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: '#A07020', margin: '6px 0 0' }}>{opt.timeImpact}</p>}
                 </button>
               )
             })}
@@ -97,7 +97,7 @@ export default function CrisisScreen() {
           <AnimatePresence>
             {selected && !resolved && (
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
-                <button onClick={() => setResolved(true)} className="w-full font-outfit" style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFFFF', fontSize: '14px', fontWeight: 500, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(196,80,30,0.3)' }}>
+                <button onClick={() => setResolved(true)} className="w-full font-work-sans" style={{ background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', color: '#FFFFFF', fontSize: '14px', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.01em', padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(196,80,30,0.3)' }}>
                   Shaadi Mubarak will handle it →
                 </button>
               </motion.div>
@@ -111,13 +111,13 @@ export default function CrisisScreen() {
                 <div className="rounded-full mx-auto mb-4 flex items-center justify-center" style={{ width: '44px', height: '44px', background: 'rgba(61,122,52,0.1)', border: '1px solid rgba(61,122,52,0.3)' }}>
                   <Check size={18} color="#2D6025" strokeWidth={2.5} />
                 </div>
-                <p className="font-outfit" style={{ fontSize: '15px', fontWeight: 500, color: '#1A1410', margin: '0 0 6px' }}>We're handling it</p>
-                <p className="font-outfit" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(26,20,16,0.45)', margin: 0 }}>All affected vendors will be notified automatically</p>
+                <p className="font-work-sans" style={{ fontSize: '15px', fontWeight: 500, color: '#1A1410', margin: '0 0 6px' }}>We're handling it</p>
+                <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>All affected vendors will be notified automatically</p>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {!resolved && <motion.p variants={item} className="text-center font-outfit" style={{ fontSize: '10px', fontWeight: 300, color: 'rgba(26,20,16,0.28)', margin: '0 0 4px' }}>All affected vendors will be notified automatically</motion.p>}
+          {!resolved && <motion.p variants={item} className="text-center font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.28)', margin: '0 0 4px' }}>All affected vendors will be notified automatically</motion.p>}
         </motion.div>
       </div>
       <BottomNav />

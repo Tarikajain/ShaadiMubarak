@@ -45,7 +45,8 @@ Used for icon buttons (notifications, profile avatar) and ghost actions that don
 |-------|-------|-------|
 | `--bg` | `#FFFBF5` | All screen backgrounds (warm ivory) |
 | `--text-primary` | `#1A1410` | All primary body text |
-| `--text-secondary` | `rgba(26, 20, 16, 0.45)` | Subheadings, labels, metadata |
+| `--text-secondary` | `rgba(26, 20, 16, 0.60)` | Body secondary text: subtitles, descriptions, captions below headings. `fontWeight: 400`. |
+| `--text-label` | `rgba(26, 20, 16, 0.45)` | UI labels, form field labels, section meta |
 | `--text-muted` | `rgba(26, 20, 16, 0.35)` | Placeholders, disabled states |
 | `--text-faint` | `rgba(26, 20, 16, 0.20)` | Decorative text, dividers |
 
@@ -70,22 +71,28 @@ Used for icon buttons (notifications, profile avatar) and ghost actions that don
 
 ## Typography
 
-### Fonts
-- **Display / Headers**: `font-cormorant italic` — Cormorant Garamond, weight 300, italic
-- **UI / Body**: `font-outfit` — Outfit, weight 300–600
+### Font Families
+| Role | Family | Tailwind class | Usage |
+|------|--------|----------------|-------|
+| Display / Headings | Cormorant Garamond | `font-cormorant` | App logo, section headings, hero text |
+| Body / UI / Chat | **Inter 400** | `font-work-sans` | All body copy, secondary text, AI chat, labels, metadata, inputs |
+| Primary Buttons | Montserrat | `font-montserrat` | CTA buttons, primary action buttons |
+
+> **Font stack**: `font-work-sans` and `font-outfit` Tailwind classes both resolve to `Inter` (with Work Sans as fallback). All new code must use `font-work-sans`. Inline styles must use `fontFamily: 'Inter, sans-serif'`. Montserrat is reserved for buttons only.
 
 ### Type Scale
-| Level | Size | Font | Weight | Usage |
-|-------|------|------|--------|-------|
-| Hero | 44px | Cormorant italic | 300 | Splash screen, large brand moments |
-| Screen title | 36px | Cormorant italic | 300 | Screen H1 (`Guests`, `Budget`, `Vendors`) |
-| Section header | 22–28px | Cormorant italic | 300 | Sheet headers, modal titles |
-| Card header | 14–16px | Outfit | 600 | Card titles, bold labels |
-| Body | 13px | Outfit | 300–400 | All body copy, descriptions |
-| Caption | 10–11px | Outfit | 300–400 | Metadata, timestamps, helper text |
-| Micro | 9–10px | Outfit | 400–600 | Badges, pills, chip labels |
+| Element | Font | Weight | Style | Notes |
+|---------|------|--------|-------|-------|
+| App Logo | Cormorant | **700** (Bold) | All-Caps | `text-transform: uppercase`, `letter-spacing: 0.12em` |
+| Hero / H1 | Cormorant | **700** (Bold) | Italic | Splash, auth hero |
+| Section Headings | Cormorant | **500** (Medium) | Sentence case | Screen titles, sheet headers, card H2s |
+| Card header | Work Sans | 600 | Sentence case | Card titles, bold labels |
+| Body | Work Sans | **400** (Regular) | Clean | All body copy, descriptions, `line-height: 1.6` |
+| Caption | Work Sans | 400 | Clean | Metadata, timestamps, helper text |
+| Micro | Work Sans | 400–600 | Clean | Badges, pills, chip labels |
+| Primary Buttons | Montserrat | 600 | Uppercase | `text-transform: uppercase`, `letter-spacing: 0.06em` |
 
-Letter spacing: `-0.02em` on Cormorant headings; `0.08–0.14em` on uppercase Outfit labels.
+Letter spacing: `-0.02em` on Cormorant headings; `0.06em` on Montserrat button labels; `0.12em` on all-caps logo.
 
 ---
 

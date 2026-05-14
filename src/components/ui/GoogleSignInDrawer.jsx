@@ -52,8 +52,8 @@ export default function GoogleSignInDrawer({ onSelect, onDismiss }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <GoogleLogo />
             <div>
-              <p className="font-outfit" style={{ fontSize: '14px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Sign in with Google</p>
-              <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Choose an account to continue</p>
+              <p className="font-work-sans" style={{ fontSize: '14px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Sign in with Google</p>
+              <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>Choose an account to continue</p>
             </div>
           </div>
           <button
@@ -88,13 +88,13 @@ export default function GoogleSignInDrawer({ onSelect, onDismiss }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0,
               }}>
-                <span className="font-outfit" style={{ fontSize: '14px', fontWeight: 500, color: '#FFFFFF' }}>
+                <span className="font-work-sans" style={{ fontSize: '14px', fontWeight: 500, color: '#FFFFFF' }}>
                   {account.initials}
                 </span>
               </div>
               <div>
-                <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>{account.name}</p>
-                <p className="font-outfit" style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{account.email}</p>
+                <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>{account.name}</p>
+                <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{account.email}</p>
               </div>
             </motion.button>
           ))}
@@ -112,7 +112,7 @@ export default function GoogleSignInDrawer({ onSelect, onDismiss }) {
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <span style={{ fontSize: '20px', color: 'rgba(26,20,16,0.4)', lineHeight: 1 }}>+</span>
           </div>
-          <p className="font-outfit" style={{ fontSize: '13px', fontWeight: 400, color: 'rgba(26,20,16,0.6)', margin: 0 }}>Use another account</p>
+          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: 'rgba(26,20,16,0.6)', margin: 0 }}>Use another account</p>
         </button>
       </motion.div>
     </>
