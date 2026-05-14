@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, User, Bell, Shield, HelpCircle, LogOut, ChevronRight,
   ChevronDown, Camera, Mail, Phone, Lock, Eye, EyeOff, Check, X,
-  MessageCircle, FileText, ExternalLink, Brain, Smartphone, Trash2,
+  MessageCircle, FileText, ExternalLink, Brain, Smartphone, Trash2, Sparkles,
 } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
@@ -326,6 +326,70 @@ function SignOutSheet({ onClose, onSignOut }) {
   )
 }
 
+// ── API Key Sheet ─────────────────────────────────────────────────
+function ApiKeySheet({ onClose }) {
+  const stored = localStorage.getItem('sm_gemini_key') || ''
+  const envKey = import.meta.env.VITE_GEMINI_KEY || ''
+  const [key, setKey] = useState(stored)
+  const [show, setShow] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  const handleSave = () => {
+    if (key.trim()) localStorage.setItem('sm_gemini_key', key.trim())
+    else localStorage.removeItem('sm_gemini_key')
+    setSaved(true)
+    setTimeout(onClose, 1200)
+  }
+
+  const isActive = envKey || stored
+
+  return (
+    <Sheet onClose={onClose}>
+      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>AI API key</p>
+      <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px', textAlign: 'center' }}>Powers Mubarak's intelligence</p>
+
+      {envKey ? (
+        <div className="glass-card flex items-center gap-3" style={{ padding: '14px 16px', marginBottom: 20, border: '1px solid rgba(45,96,37,0.2)', background: 'rgba(45,96,37,0.04)' }}>
+          <Check size={16} color="#2D6025" />
+          <div>
+            <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#2D6025', margin: '0 0 1px' }}>Key loaded from environment</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', color: 'rgba(26,20,16,0.4)', margin: 0 }}>Set via VITE_GEMINI_KEY in .env.local</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {!stored && (
+            <div className="glass-card flex items-center gap-3" style={{ padding: '14px 16px', marginBottom: 16, border: '1px solid rgba(196,80,30,0.2)', background: 'rgba(196,80,30,0.04)' }}>
+              <p className="font-work-sans" style={{ fontSize: '12px', color: '#C4501E', margin: 0 }}>No key found — Mubarak is using fallback responses. Paste your Gemini API key below.</p>
+            </div>
+          )}
+          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px 2px' }}>Gemini API key</p>
+          <div className="glass-input flex items-center gap-2" style={{ padding: '12px 14px', marginBottom: 8 }}>
+            <input
+              type={show ? 'text' : 'password'}
+              placeholder="AIzaSy..."
+              value={key}
+              onChange={e => setKey(e.target.value)}
+              style={{ fontSize: '13px', fontFamily: 'Inter, sans-serif', width: '100%', background: 'transparent', border: 'none', outline: 'none', color: '#1A1410' }}
+            />
+            <button onClick={() => setShow(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+              {show ? <EyeOff size={14} color="rgba(26,20,16,0.3)" /> : <Eye size={14} color="rgba(26,20,16,0.3)" />}
+            </button>
+          </div>
+          <p className="font-work-sans" style={{ fontSize: '11px', color: 'rgba(26,20,16,0.4)', margin: '0 0 20px 2px' }}>
+            Get a free key at aistudio.google.com → API keys
+          </p>
+          <motion.button onClick={handleSave} whileTap={{ scale: 0.97 }}
+            className="w-full flex items-center justify-center gap-2 font-montserrat"
+            style={{ background: saved ? 'rgba(45,96,37,0.9)' : 'linear-gradient(135deg, #7A0F46, #5C0B35)', color: '#FFFBF5', fontSize: '14px', fontWeight: 600, padding: '15px', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', letterSpacing: '0.01em' }}>
+            {saved ? <><Check size={15} />Saved</> : 'Save key'}
+          </motion.button>
+        </>
+      )}
+    </Sheet>
+  )
+}
+
 // ── Mubarak Memory Sheet ─────────────────────────────────────────
 function MemorySheet({ onClose }) {
   const [enabled, setEnabled]   = useState(isMemoryEnabled)
@@ -518,6 +582,13 @@ export default function ProfileScreen({ onSignOut }) {
           sub: memoryCount > 0 ? `${memoryCount} learned ${memoryCount === 1 ? 'fact' : 'facts'} about your wedding` : 'Remembers your preferences & decisions',
           sheet: 'memory',
         },
+        {
+          icon: Sparkles,
+          label: 'AI API key',
+          sub: (import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('sm_gemini_key')) ? 'Key configured — Mubarak is active' : 'Tap to configure — required for AI responses',
+          sheet: 'apikey',
+          alert: !(import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('sm_gemini_key')),
+        },
       ],
     },
     {
@@ -591,6 +662,7 @@ export default function ProfileScreen({ onSignOut }) {
                       <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: '0 0 1px' }}>{row.label}</p>
                       <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>{row.sub}</p>
                     </div>
+                    {row.alert && <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#C4501E', flexShrink: 0 }} />}
                     <ChevronRight size={15} color="rgba(26,20,16,0.28)" />
                   </button>
                 )
@@ -619,6 +691,7 @@ export default function ProfileScreen({ onSignOut }) {
         {activeSheet === 'security'      && <SecuritySheet        onClose={() => handleSheetClose('security')} />}
         {activeSheet === 'notifications' && <NotificationsSheet   onClose={() => handleSheetClose('notifications')} />}
         {activeSheet === 'memory'        && <MemorySheet          onClose={() => handleSheetClose('memory')} />}
+        {activeSheet === 'apikey'        && <ApiKeySheet          onClose={() => handleSheetClose('apikey')} />}
         {activeSheet === 'widget'        && <WidgetSheet          onClose={() => handleSheetClose('widget')} />}
         {activeSheet === 'help'          && <HelpSheet            onClose={() => handleSheetClose('help')} />}
         {activeSheet === 'signout'       && <SignOutSheet         onClose={() => handleSheetClose('signout')} onSignOut={onSignOut} />}

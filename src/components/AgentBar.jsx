@@ -249,7 +249,8 @@ const DEMO_PHRASES = [
 // ─── Claude LLM integration ───────────────────────────────────────────────────
 
 async function callAgentLLM(message, vendors, tasks, guests, conversationHistory) {
-  const apiKey = import.meta.env.VITE_GEMINI_KEY
+  // Read key from env (local dev) or from localStorage (deployed / manually set)
+  const apiKey = import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('sm_gemini_key')
   if (!apiKey) return null
 
   let profile = {}
