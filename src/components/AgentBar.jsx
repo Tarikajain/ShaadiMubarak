@@ -310,20 +310,34 @@ OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
       body: JSON.stringify({
         system_instruction: { parts: [{ text: systemPrompt }] },
         contents,
-        generationConfig: { maxOutputTokens: 600, temperature: 0.7 },
+        generationConfig: {
+          maxOutputTokens: 800,
+          temperature: 0.7,
+          responseMimeType: 'application/json',  // forces clean JSON output, no markdown wrapping
       }),
     }
   )
 
-  if (!res.ok) return null
+  if (!res.ok) {
+    const errText = await res.text()
+    console.error('[Mubarak] Gemini API error:', res.status, errText)
+    return null
+  }
   const data = await res.json()
   const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || ''
-  // Strip markdown fences if model wraps output
+  if (!raw) {
+    console.error('[Mubarak] Empty response from Gemini:', JSON.stringify(data))
+    return null
+  }
+  // Strip any markdown fences just in case
   const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
   // Find outermost JSON object
   const jsonStart = cleaned.indexOf('{')
   const jsonEnd   = cleaned.lastIndexOf('}')
-  if (jsonStart === -1 || jsonEnd === -1) return null
+  if (jsonStart === -1 || jsonEnd === -1) {
+    console.error('[Mubarak] No JSON found in response:', cleaned)
+    return null
+  }
   const parsed = JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1))
 
   // Persist any new memory facts the model identified
@@ -644,7 +658,9 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
     let response = null
     try {
       response = await callAgentLLM(text, vendors, tasks, guests, history)
-    } catch (_) {}
+    } catch (err) {
+      console.error('[Mubarak] callAgentLLM threw:', err)
+    }
 
     // Fallback to local pattern matching if LLM unavailable or errors
     if (!response || !response.text) {
