@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Sparkles, ChevronDown, ArrowRight } from 'lucide-react'
+import { getMemoryContext, addMemory } from '../utils/memoryUtils'
 
 // ─── Language detection ───────────────────────────────────────────────────────
 
@@ -259,6 +260,8 @@ async function callAgentLLM(message, vendors, tasks, guests, conversationHistory
   const declined  = guests.filter(g => g.rsvp === 'declined').length
   const pendingTasks = tasks.filter(t => !t.done)
 
+  const memoryContext = getMemoryContext()
+
   const systemPrompt = `You are Mubarak — an expert Indian wedding planner AI built into ShaadiMubarak.ai. You are knowledgeable, direct, and act immediately.
 
 WEDDING DATA:
@@ -267,7 +270,7 @@ Date: ${profile.date || 'not set'} | City: ${profile.city || profile.location ||
 Vendors (${vendors.length}): ${vendors.map(v => `${v.name} [${v.category}, ${v.status}]`).join(', ') || 'none booked'}
 Tasks: ${pendingTasks.length} pending${pendingTasks.length ? ' — ' + pendingTasks.slice(0, 5).map(t => t.title).join(', ') : ''}
 Guests: ${guests.length} total · ${confirmed} confirmed · ${pending} pending · ${declined} declined
-
+${memoryContext ? `\nMEMORY (things I've already learned about this couple):\n${memoryContext}\n` : ''}
 COMMANDS (use when the user asks you to take action):
 - vendor_status: { type:"vendor_status", vendorId, newStatus:"confirmed"|"pending"|"at_risk"|"cancelled" }
 - add_task: { type:"add_task", title }
@@ -287,9 +290,10 @@ RULES — follow these strictly:
 6. Match the user's language — English, Hindi, or Hinglish.
 7. Only include "actions" chips when they are genuinely useful (0–2 max). Omit entirely if not helpful.
 8. Only include "command" when the user explicitly asks you to do something.
+9. When the user shares a preference, decision, or important fact about their wedding, add it to "remember" so it's retained for future conversations. Keep facts concise (max 12 words each).
 
 OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
-{"text":"...","command":null,"actions":[]}`
+{"text":"...","command":null,"actions":[],"remember":[]}`
 
   const history = conversationHistory.slice(-10).map(m => ({
     role: m.role === 'user' ? 'user' : 'assistant',
@@ -323,6 +327,14 @@ OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
   const jsonEnd   = cleaned.lastIndexOf('}')
   if (jsonStart === -1 || jsonEnd === -1) return null
   const parsed = JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1))
+
+  // Persist any new memory facts the model identified
+  if (Array.isArray(parsed.remember)) {
+    parsed.remember.forEach(({ fact, category } = {}) => {
+      if (fact) addMemory(fact, category || 'general')
+    })
+  }
+
   return {
     text:    parsed.text    || '',
     command: parsed.command || null,

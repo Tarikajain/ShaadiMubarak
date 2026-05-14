@@ -1,14 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, User, Bell, Shield, HelpCircle, LogOut, ChevronRight,
   ChevronDown, Camera, Mail, Phone, Lock, Eye, EyeOff, Check, X,
-  MessageCircle, FileText, ExternalLink,
+  MessageCircle, FileText, ExternalLink, Brain, Smartphone, Trash2,
 } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import { wedding } from '../data/mockData'
+import {
+  getMemories, deleteMemory, clearMemories,
+  isMemoryEnabled, setMemoryEnabled,
+  MEMORY_CATEGORIES,
+} from '../utils/memoryUtils'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } }
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.25,0.1,0.25,1] } } }
@@ -321,29 +326,211 @@ function SignOutSheet({ onClose, onSignOut }) {
   )
 }
 
+// ── Mubarak Memory Sheet ─────────────────────────────────────────
+function MemorySheet({ onClose }) {
+  const [enabled, setEnabled]   = useState(isMemoryEnabled)
+  const [memories, setMemories] = useState(getMemories)
+  const [confirmClear, setConfirmClear] = useState(false)
+
+  const handleToggle = (val) => {
+    setMemoryEnabled(val)
+    setEnabled(val)
+  }
+
+  const handleDelete = (id) => {
+    deleteMemory(id)
+    setMemories(getMemories())
+  }
+
+  const handleClear = () => {
+    if (!confirmClear) { setConfirmClear(true); return }
+    clearMemories()
+    setMemories([])
+    setConfirmClear(false)
+  }
+
+  return (
+    <Sheet onClose={onClose}>
+      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Mubarak's memory</p>
+      <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px', textAlign: 'center' }}>What Mubarak has learned about your wedding</p>
+
+      {/* Master toggle */}
+      <div className="glass-card flex items-center justify-between gap-3"
+        style={{ padding: '14px 16px', marginBottom: 20, border: enabled ? '1px solid rgba(122,15,70,0.2)' : '1px solid rgba(0,0,0,0.07)', background: enabled ? 'rgba(122,15,70,0.03)' : undefined }}>
+        <div className="flex items-center gap-3">
+          <div style={{ width: 32, height: 32, borderRadius: '9px', background: enabled ? 'rgba(122,15,70,0.1)' : 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Brain size={14} color={enabled ? '#7A0F46' : 'rgba(26,20,16,0.50)'} />
+          </div>
+          <div>
+            <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>Memory learning</p>
+            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>
+              {enabled ? 'Mubarak remembers your preferences' : 'Memory is off — Mubarak forgets between sessions'}
+            </p>
+          </div>
+        </div>
+        <Toggle value={enabled} onChange={handleToggle} />
+      </div>
+
+      {/* Memory list */}
+      {memories.length === 0 ? (
+        <div className="flex flex-col items-center" style={{ padding: '32px 16px', gap: 8 }}>
+          <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(122,15,70,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+            <Brain size={20} color="rgba(122,15,70,0.40)" />
+          </div>
+          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: 'rgba(26,20,16,0.40)', textAlign: 'center', margin: 0 }}>
+            {enabled ? 'No memories yet — start chatting with Mubarak' : 'Enable memory learning to get started'}
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 10px 2px' }}>
+            {memories.length} stored {memories.length === 1 ? 'fact' : 'facts'}
+          </p>
+          <div className="flex flex-col gap-2" style={{ marginBottom: 20 }}>
+            {memories.map(m => {
+              const cat = MEMORY_CATEGORIES[m.category] || MEMORY_CATEGORIES.general
+              return (
+                <div key={m.id} className="flex items-center gap-3"
+                  style={{ padding: '11px 14px', borderRadius: 12, background: '#FFFBF5', border: '1px solid rgba(0,0,0,0.07)' }}>
+                  <span className="font-work-sans"
+                    style={{ fontSize: '10px', fontWeight: 600, color: cat.color, background: cat.bg, padding: '2px 8px', borderRadius: 99, flexShrink: 0, letterSpacing: '0.04em' }}>
+                    {cat.label}
+                  </span>
+                  <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: '#1A1410', margin: 0, flex: 1, lineHeight: 1.4 }}>{m.fact}</p>
+                  <button onClick={() => handleDelete(m.id)}
+                    style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <X size={11} color="rgba(26,20,16,0.40)" strokeWidth={2.5} />
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+
+          <button onClick={handleClear}
+            className="w-full flex items-center justify-center gap-2 font-work-sans"
+            style={{ padding: '13px', borderRadius: 12, border: confirmClear ? '1px solid rgba(196,80,30,0.35)' : '1px solid rgba(0,0,0,0.09)', background: confirmClear ? 'rgba(196,80,30,0.06)' : 'none', color: confirmClear ? '#C4501E' : 'rgba(26,20,16,0.50)', fontSize: '13px', fontWeight: 400, cursor: 'pointer', transition: 'all 0.18s ease' }}>
+            <Trash2 size={13} />
+            {confirmClear ? 'Tap again to confirm — this cannot be undone' : 'Clear all memories'}
+          </button>
+        </>
+      )}
+    </Sheet>
+  )
+}
+
+// ── Home Screen Widget Sheet ──────────────────────────────────────
+function WidgetSheet({ onClose }) {
+  const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent)
+  const isAndroid = /android/i.test(navigator.userAgent)
+  const platform  = isIOS ? 'ios' : isAndroid ? 'android' : 'desktop'
+
+  const iosSteps = [
+    { num: '1', text: 'Open ShaadiMubarak.ai in Safari (not Chrome)' },
+    { num: '2', text: 'Tap the Share icon  at the bottom of the screen' },
+    { num: '3', text: 'Scroll down and tap "Add to Home Screen"' },
+    { num: '4', text: 'Tap "Add" — the app icon will appear on your home screen' },
+  ]
+  const androidSteps = [
+    { num: '1', text: 'Open ShaadiMubarak.ai in Chrome' },
+    { num: '2', text: 'Tap the ⋮ menu in the top-right corner' },
+    { num: '3', text: 'Tap "Add to Home Screen" or "Install app"' },
+    { num: '4', text: 'Tap "Install" — the app icon will appear on your home screen' },
+  ]
+  const steps = platform === 'ios' ? iosSteps : androidSteps
+
+  return (
+    <Sheet onClose={onClose}>
+      <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Home screen widget</p>
+      <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px', textAlign: 'center' }}>Add ShaadiMubarak.ai to your phone</p>
+
+      {/* Widget preview */}
+      <div style={{ borderRadius: 18, background: 'linear-gradient(145deg, #7A0F46 0%, #5C0B35 100%)', padding: '18px 20px 20px', marginBottom: 24, boxShadow: '0 8px 28px rgba(122,15,70,0.28)' }}>
+        <p className="font-cormorant italic" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', margin: '0 0 2px', letterSpacing: '0.02em' }}>ShaadiMubarak.ai</p>
+        <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF', margin: '0 0 10px', letterSpacing: '-0.01em' }}>{wedding.couple.bride} &amp; {wedding.couple.groom}</p>
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-work-sans" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', margin: '0 0 2px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Next ceremony</p>
+            <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#FFFBF5', margin: 0 }}>Mehndi · Dec 17</p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <p className="font-work-sans" style={{ fontSize: '32px', fontWeight: 700, color: '#FFFFFF', margin: 0, lineHeight: 1 }}>{wedding.daysAway}</p>
+            <p className="font-work-sans" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', margin: 0, letterSpacing: '0.06em', textTransform: 'uppercase' }}>days to go</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Platform selector + steps */}
+      {platform === 'desktop' ? (
+        <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 14, padding: '16px 18px' }}>
+          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: 'rgba(26,20,16,0.55)', margin: 0, lineHeight: 1.6, textAlign: 'center' }}>
+            Open ShaadiMubarak.ai on your phone in Safari (iOS) or Chrome (Android) and follow the steps to add it to your home screen.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 10px 2px' }}>
+            {platform === 'ios' ? 'iPhone / iPad' : 'Android'}
+          </p>
+          <div className="flex flex-col gap-2" style={{ marginBottom: 8 }}>
+            {steps.map(step => (
+              <div key={step.num} className="flex items-start gap-3"
+                style={{ padding: '12px 14px', borderRadius: 12, background: '#FFFBF5', border: '1px solid rgba(0,0,0,0.07)' }}>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(122,15,70,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                  <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: '#7A0F46' }}>{step.num}</span>
+                </div>
+                <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: 0, lineHeight: 1.5 }}>{step.text}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </Sheet>
+  )
+}
+
 // ── Main ─────────────────────────────────────────────────────────
 export default function ProfileScreen({ onSignOut }) {
   const navigate = useNavigate()
   const [activeSheet, setActiveSheet] = useState(null)
 
+  const [memoryCount, setMemoryCount] = useState(() => getMemories().length)
+
+  // Refresh memory count when the memory sheet closes
+  const handleSheetClose = (sheet) => {
+    setActiveSheet(null)
+    if (sheet === 'memory') setMemoryCount(getMemories().length)
+  }
+
   const settingsSections = [
     {
       title: 'ACCOUNT',
       rows: [
-        { icon: User,   label: 'Personal details',   sub: 'Name, email, phone',    sheet: 'personal' },
-        { icon: Shield, label: 'Privacy & security', sub: 'Password, 2FA',         sheet: 'security' },
+        { icon: User,   label: 'Personal details',   sub: 'Name, email, phone', sheet: 'personal' },
+        { icon: Shield, label: 'Privacy & security', sub: 'Password, 2FA',      sheet: 'security' },
+      ],
+    },
+    {
+      title: 'MUBARAK AI',
+      rows: [
+        {
+          icon: Brain,
+          label: "Mubarak's memory",
+          sub: memoryCount > 0 ? `${memoryCount} learned ${memoryCount === 1 ? 'fact' : 'facts'} about your wedding` : 'Remembers your preferences & decisions',
+          sheet: 'memory',
+        },
       ],
     },
     {
       title: 'PREFERENCES',
       rows: [
-        { icon: Bell, label: 'Notification settings', sub: 'Alerts, reminders, push', sheet: 'notifications' },
+        { icon: Bell,       label: 'Notifications',        sub: 'Alerts, reminders, push',            sheet: 'notifications' },
+        { icon: Smartphone, label: 'Home screen widget',   sub: 'Add ShaadiMubarak.ai to your phone', sheet: 'widget' },
       ],
     },
     {
       title: 'SUPPORT',
       rows: [
-        { icon: HelpCircle, label: 'Help & FAQ', sub: 'Get in touch with our team', sheet: 'help' },
+        { icon: HelpCircle, label: 'Help & FAQ', sub: 'Common questions & support', sheet: 'help' },
       ],
     },
   ]
@@ -428,11 +615,13 @@ export default function ProfileScreen({ onSignOut }) {
 
       {/* Bottom sheets */}
       <AnimatePresence>
-        {activeSheet === 'personal'      && <PersonalDetailsSheet onClose={() => setActiveSheet(null)} />}
-        {activeSheet === 'security'      && <SecuritySheet        onClose={() => setActiveSheet(null)} />}
-        {activeSheet === 'notifications' && <NotificationsSheet   onClose={() => setActiveSheet(null)} />}
-        {activeSheet === 'help'          && <HelpSheet            onClose={() => setActiveSheet(null)} />}
-        {activeSheet === 'signout'       && <SignOutSheet         onClose={() => setActiveSheet(null)} onSignOut={onSignOut} />}
+        {activeSheet === 'personal'      && <PersonalDetailsSheet onClose={() => handleSheetClose('personal')} />}
+        {activeSheet === 'security'      && <SecuritySheet        onClose={() => handleSheetClose('security')} />}
+        {activeSheet === 'notifications' && <NotificationsSheet   onClose={() => handleSheetClose('notifications')} />}
+        {activeSheet === 'memory'        && <MemorySheet          onClose={() => handleSheetClose('memory')} />}
+        {activeSheet === 'widget'        && <WidgetSheet          onClose={() => handleSheetClose('widget')} />}
+        {activeSheet === 'help'          && <HelpSheet            onClose={() => handleSheetClose('help')} />}
+        {activeSheet === 'signout'       && <SignOutSheet         onClose={() => handleSheetClose('signout')} onSignOut={onSignOut} />}
       </AnimatePresence>
     </div>
   )
