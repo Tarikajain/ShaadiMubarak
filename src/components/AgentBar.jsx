@@ -249,15 +249,15 @@ const DEMO_PHRASES = [
 // ─── Claude LLM integration ───────────────────────────────────────────────────
 
 async function callAgentLLM(message, vendors, tasks, guests, conversationHistory) {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY
+  const apiKey = import.meta.env.VITE_GEMINI_KEY
   if (!apiKey) return null
 
   let profile = {}
   try { profile = JSON.parse(localStorage.getItem('sm_profile') || 'null') || {} } catch (_) {}
 
-  const confirmed = guests.filter(g => g.rsvp === 'confirmed').length
-  const pending   = guests.filter(g => g.rsvp === 'pending').length
-  const declined  = guests.filter(g => g.rsvp === 'declined').length
+  const confirmed    = guests.filter(g => g.rsvp === 'confirmed').length
+  const pending      = guests.filter(g => g.rsvp === 'pending').length
+  const declined     = guests.filter(g => g.rsvp === 'declined').length
   const pendingTasks = tasks.filter(t => !t.done)
 
   const memoryContext = getMemoryContext()
@@ -295,34 +295,32 @@ RULES — follow these strictly:
 OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
 {"text":"...","command":null,"actions":[],"remember":[]}`
 
-  const history = conversationHistory.slice(-10).map(m => ({
-    role: m.role === 'user' ? 'user' : 'assistant',
-    content: m.text,
+  // Gemini uses "model" role (not "assistant") and contents array
+  const contents = conversationHistory.slice(-10).map(m => ({
+    role:  m.role === 'user' ? 'user' : 'model',
+    parts: [{ text: m.text }],
   }))
-  history.push({ role: 'user', content: message })
+  contents.push({ role: 'user', parts: [{ text: message }] })
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-      'anthropic-dangerous-allow-browser': 'true',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5',
-      max_tokens: 600,
-      system: systemPrompt,
-      messages: history,
-    }),
-  })
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: { maxOutputTokens: 600, temperature: 0.7 },
+      }),
+    }
+  )
 
   if (!res.ok) return null
   const data = await res.json()
-  const raw = data.content?.[0]?.text?.trim() || ''
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || ''
   // Strip markdown fences if model wraps output
   const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
-  // Find outermost JSON object (handles any leading/trailing text)
+  // Find outermost JSON object
   const jsonStart = cleaned.indexOf('{')
   const jsonEnd   = cleaned.lastIndexOf('}')
   if (jsonStart === -1 || jsonEnd === -1) return null
