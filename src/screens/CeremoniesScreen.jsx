@@ -588,7 +588,7 @@ export default function CeremoniesScreen({ tasks, vendors, guests }) {
             <CeremonyTile key={c.id} ceremony={c} index={i} onOpen={setSelected} />
           ))}
 
-          <div style={{ height: '80px' }} />
+          <div style={{ height: '140px' }} />
         </div>
       </div>
 

@@ -473,7 +473,7 @@ export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests 
             )}
           </AnimatePresence>
 
-          <div style={{ height: '80px' }} />
+          <div style={{ height: '140px' }} />
         </motion.div>
       </div>
 

@@ -1404,7 +1404,7 @@ function GuestAssets({ onOpenAgent, onOpenWebsite, websiteConfig }) {
           </motion.button>
         </div>
 
-        <div style={{ height: '80px' }} />
+        <div style={{ height: '140px' }} />
       </motion.div>
 
       {/* Sheets */}
@@ -1792,7 +1792,7 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
                   <UserPlus size={15} />Invite guests
                 </button>
 
-                <div style={{ height: '80px' }} />
+                <div style={{ height: '140px' }} />
               </motion.div>
             )}
 

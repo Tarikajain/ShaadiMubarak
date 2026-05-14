@@ -451,6 +451,93 @@ const DEMO_PHRASES = [
   'How much budget is left?',
 ]
 
+// ─── Claude LLM integration ───────────────────────────────────────────────────
+
+async function callAgentLLM(message, vendors, tasks, guests, conversationHistory) {
+  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY
+  if (!apiKey) return null
+
+  let profile = {}
+  try { profile = JSON.parse(localStorage.getItem('sm_profile') || 'null') || {} } catch (_) {}
+
+  const confirmedGuests  = guests.filter(g => g.rsvp === 'confirmed').length
+  const pendingGuests    = guests.filter(g => g.rsvp === 'pending').length
+  const declinedGuests   = guests.filter(g => g.rsvp === 'declined').length
+  const pendingTasks     = tasks.filter(t => !t.done)
+
+  const systemPrompt = `You are Mubarak, a warm and intelligent AI wedding planning assistant embedded in the ShaadiMubarak.ai app.
+
+Wedding Profile:
+- Bride: ${profile.bride || 'Not set'}
+- Groom: ${profile.groom || 'Not set'}
+- Date: ${profile.date || 'Not set'}
+- City: ${profile.city || 'Not set'}
+- Budget: ${profile.budget || 'Not set'}
+- Theme: ${profile.theme || 'Not set'}
+
+Booked Vendors (${vendors.length}):
+${vendors.length > 0 ? vendors.map(v => `  • ${v.name} (${v.category}) — ${v.status}`).join('\n') : '  None booked yet'}
+
+Pending Tasks (${pendingTasks.length}):
+${pendingTasks.slice(0, 8).map(t => `  • ${t.title}`).join('\n') || '  None'}
+
+Guests (${guests.length} total):
+  • ${confirmedGuests} confirmed · ${pendingGuests} pending · ${declinedGuests} declined
+
+Available commands you can execute on the user's behalf:
+  • vendor_status  — update a vendor's status: { type:"vendor_status", name, status:"confirmed"|"pending"|"at-risk"|"cancelled" }
+  • add_task       — add a new task: { type:"add_task", title }
+  • complete_task  — mark a task done: { type:"complete_task", title }
+  • add_guest      — add a guest: { type:"add_guest", name, phone, rsvp:"confirmed"|"pending"|"declined" }
+  • update_wedding — update wedding profile: { type:"update_wedding", bride?, groom?, date?, city?, theme?, budget?, pushWebsite?, notifyGuests? }
+  • send_invites   — send invites to pending guests: { type:"send_invites" }
+
+Rules:
+1. Always respond with valid JSON only (no markdown fences, no extra text).
+2. Format: { "text": "...", "command": {...} or null, "actions": [{"label":"...", "route":"..."} or {"label":"...", "query":"..."}] }
+3. "text" should be warm, concise, and conversational. Use line breaks (\\n) for lists.
+4. When the user asks to update wedding details AND push to website AND notify guests, use update_wedding with pushWebsite:true and notifyGuests:true.
+5. If you cannot execute an action, explain why and suggest alternatives in "text".
+6. You can speak back in English, Hindi, or Hinglish matching the user's language.
+7. Keep "actions" to 2-4 relevant quick-action buttons.`
+
+  // Build message history for API (last 8 turns)
+  const history = conversationHistory.slice(-8).map(m => ({
+    role: m.role === 'user' ? 'user' : 'assistant',
+    content: m.text,
+  }))
+  history.push({ role: 'user', content: message })
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+      'anthropic-dangerous-allow-browser': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: history,
+    }),
+  })
+
+  if (!res.ok) return null
+  const data = await res.json()
+  const raw = data.content?.[0]?.text?.trim() || ''
+  // Strip markdown code fences if present
+  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
+  const parsed = JSON.parse(cleaned)
+  // Normalise: ensure text, command, actions exist
+  return {
+    text: parsed.text || '',
+    command: parsed.command || null,
+    actions: Array.isArray(parsed.actions) ? parsed.actions : [],
+  }
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function AgentBar({ vendors = [], setVendors, tasks = [], setTasks, guests = [], setGuests, forceOpen = false, onForceOpenHandled, forceQuery = null, onForceQueryHandled }) {
@@ -479,8 +566,12 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
   const sendHandlerRef = useRef(null)
   const hasOpenedRef = useRef(false)
   const voiceConvRef = useRef(false) // true when exchange was voice-initiated (enables auto-restart)
+  const messagesRef = useRef([])     // mirror of messages state for use inside callbacks
 
   const profile = loadProfile()
+
+  // Keep messagesRef in sync so sendMessage closure can read latest history without stale closure
+  useEffect(() => { messagesRef.current = messages }, [messages])
 
   // Open AgentBar programmatically (e.g. "Customize with Mubarak" from onboarding)
   useEffect(() => {
@@ -508,7 +599,7 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
       const r = new SR()
       r.continuous = true
       r.interimResults = true
-      r.lang = 'hi-IN' // accepts Hindi + English
+      r.lang = 'en-IN' // en-IN transcribes Hindi speech in Roman/Hinglish (not Devanagari)
 
       const resetAutoStopTimer = () => {
         clearTimeout(autoStopTimerRef.current)
@@ -733,7 +824,7 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
     }
   }, [vendors, tasks, guests, setVendors, setTasks, setGuests])
 
-  const sendMessage = useCallback((text = input.trim()) => {
+  const sendMessage = useCallback(async (text = input.trim()) => {
     if (!text) return
     clearTimeout(autoSendTimerRef.current)
     setLang(detectLanguage(text))
@@ -745,50 +836,60 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
     accumulatedRef.current = ''
     setLoading(true)
 
-    setTimeout(() => {
-      const response = getAgentResponse(text, vendors, tasks, guests)
-      setMessages(m => [...m, { role: 'agent', ...response }])
-      setPendingActions(response.actions || [])
-      if (response.command) setPendingCommand(response.command)
-      setLoading(false)
+    // Snapshot conversation history before the new user message is appended
+    const history = messagesRef.current.slice()
 
-      // TTS for short agent replies
-      if (window.speechSynthesis && response.text.length < 200) {
-        const utt = new SpeechSynthesisUtterance(response.text)
-        utt.lang = 'en-IN'
-        utt.rate = 1.05
-        setIsSpeaking(true)
-        utt.onend = () => {
-          setIsSpeaking(false)
-          // Bidirectional: restart mic automatically if this was a voice conversation
-          if (voiceConvRef.current && !continuousRef.current) {
-            setTimeout(() => {
-              if (!continuousRef.current) {
-                setInput('')
-                setInterimText('')
-                accumulatedRef.current = ''
-                if (srAvailable && recognitionRef.current) {
-                  try {
-                    continuousRef.current = true
-                    setListening(true)
-                    recognitionRef.current.start()
-                    clearTimeout(autoStopTimerRef.current)
-                    autoStopTimerRef.current = setTimeout(() => {
-                      voiceConvRef.current = false
-                      continuousRef.current = false
-                      setListening(false)
-                      try { recognitionRef.current?.stop() } catch (_) {}
-                    }, 30000)
-                  } catch (_) {}
-                }
+    let response = null
+    try {
+      response = await callAgentLLM(text, vendors, tasks, guests, history)
+    } catch (_) {}
+
+    // Fallback to local pattern matching if LLM unavailable or errors
+    if (!response || !response.text) {
+      response = getAgentResponse(text, vendors, tasks, guests)
+    }
+
+    setMessages(m => [...m, { role: 'agent', ...response }])
+    setPendingActions(response.actions || [])
+    if (response.command) setPendingCommand(response.command)
+    setLoading(false)
+
+    // TTS for short agent replies
+    if (window.speechSynthesis && response.text.length < 200) {
+      const utt = new SpeechSynthesisUtterance(response.text)
+      utt.lang = 'en-IN'
+      utt.rate = 1.05
+      setIsSpeaking(true)
+      utt.onend = () => {
+        setIsSpeaking(false)
+        // Bidirectional: restart mic automatically if this was a voice conversation
+        if (voiceConvRef.current && !continuousRef.current) {
+          setTimeout(() => {
+            if (!continuousRef.current) {
+              setInput('')
+              setInterimText('')
+              accumulatedRef.current = ''
+              if (srAvailable && recognitionRef.current) {
+                try {
+                  continuousRef.current = true
+                  setListening(true)
+                  recognitionRef.current.start()
+                  clearTimeout(autoStopTimerRef.current)
+                  autoStopTimerRef.current = setTimeout(() => {
+                    voiceConvRef.current = false
+                    continuousRef.current = false
+                    setListening(false)
+                    try { recognitionRef.current?.stop() } catch (_) {}
+                  }, 30000)
+                } catch (_) {}
               }
-            }, 300)
-          }
+            }
+          }, 300)
         }
-        utt.onerror = () => setIsSpeaking(false)
-        window.speechSynthesis.speak(utt)
       }
-    }, 800 + Math.random() * 400)
+      utt.onerror = () => setIsSpeaking(false)
+      window.speechSynthesis.speak(utt)
+    }
   }, [input, vendors, tasks, guests])
 
   // Keep sendHandlerRef current

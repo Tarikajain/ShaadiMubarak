@@ -469,7 +469,7 @@ export default function VendorScreen({ vendors = [], setVendors }) {
             )}
           </AnimatePresence>
 
-          <div style={{ height: '80px' }} />
+          <div style={{ height: '140px' }} />
         </motion.div>
       </div>
       <BottomNav />

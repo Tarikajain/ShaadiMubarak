@@ -121,16 +121,17 @@ export default function App() {
   }
 
   // Called after successful sign-in
-  const handleSignIn = (rememberMe = false) => {
+  // skipEventDay: true when called from onboarding — never show event-day splash right after setup
+  const handleSignIn = (rememberMe = false, skipEventDay = false) => {
     if (rememberMe) localStorage.setItem('sm_stay_logged_in', '1')
     // Re-seed from profile in case onboarding just completed
     setTasks(getProfileTasks())
     setVendors(getProfileVendors())
     const pg = getProfileGuests(); if (pg.length > 0) setGuests(pg)
-    // Show event-day screen if there's a live ceremony and we haven't dismissed it this session
+    // Show event-day screen only on the actual event day (not right after onboarding)
     const hasLive = ceremonies.some(c => c.status === 'live')
     const dismissed = sessionStorage.getItem('event_day_dismissed')
-    if (hasLive && !dismissed) {
+    if (!skipEventDay && hasLive && !dismissed) {
       setStage('event_day')
     } else {
       setStage('app')
@@ -170,8 +171,8 @@ export default function App() {
           {stage === 'onboard' && (
             <OnboardingScreen
               key="onboard"
-              onComplete={() => handleSignIn(false)}
-              onOpenAgent={() => { handleSignIn(false); setAgentOpen(true) }}
+              onComplete={() => handleSignIn(false, true)}
+              onOpenAgent={() => { handleSignIn(false, true); setAgentOpen(true) }}
             />
           )}
           {stage === 'event_day' && (

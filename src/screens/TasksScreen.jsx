@@ -1002,7 +1002,7 @@ export default function TasksScreen({ tasks, setTasks }) {
           {/* Completed history */}
           <HistorySection tasks={tasks} onToggle={toggleTask} />
 
-          <div style={{ height: '80px' }} />
+          <div style={{ height: '140px' }} />
         </div>
       </div>
 

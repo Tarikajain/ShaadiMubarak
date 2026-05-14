@@ -172,7 +172,7 @@ export default function WeddingWebsiteScreen() {
             </button>
           </motion.div>
 
-          <div style={{ height: '80px' }} />
+          <div style={{ height: '140px' }} />
         </motion.div>
       </div>
       <BottomNav />
