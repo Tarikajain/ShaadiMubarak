@@ -314,6 +314,7 @@ OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
           maxOutputTokens: 800,
           temperature: 0.7,
           responseMimeType: 'application/json',  // forces clean JSON output, no markdown wrapping
+        },
       }),
     }
   )
