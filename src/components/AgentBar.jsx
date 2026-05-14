@@ -321,7 +321,7 @@ OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
       'content-type': 'application/json',
-      'anthropic-dangerous-allow-browser': 'true',
+      'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5',
