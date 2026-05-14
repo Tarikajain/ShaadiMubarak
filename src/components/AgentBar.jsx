@@ -295,12 +295,25 @@ RULES — follow these strictly:
 OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
 {"text":"...","command":null,"actions":[],"remember":[]}`
 
-  // Gemini uses "model" role (not "assistant") and contents array
-  const contents = conversationHistory.slice(-10).map(m => ({
-    role:  m.role === 'user' ? 'user' : 'model',
-    parts: [{ text: m.text }],
-  }))
-  contents.push({ role: 'user', parts: [{ text: message }] })
+  // Gemini requires strict user/model alternation.
+  // Merge any consecutive same-role messages so the history is always valid.
+  const rawHistory = conversationHistory.slice(-10)
+  const contents = []
+  for (const m of rawHistory) {
+    const role = m.role === 'user' ? 'user' : 'model'
+    if (contents.length && contents[contents.length - 1].role === role) {
+      // Merge into previous turn
+      contents[contents.length - 1].parts[0].text += '\n' + m.text
+    } else {
+      contents.push({ role, parts: [{ text: m.text }] })
+    }
+  }
+  // Append new user message, merging if last turn was also user
+  if (contents.length && contents[contents.length - 1].role === 'user') {
+    contents[contents.length - 1].parts[0].text += '\n' + message
+  } else {
+    contents.push({ role: 'user', parts: [{ text: message }] })
+  }
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
