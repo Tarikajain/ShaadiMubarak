@@ -332,24 +332,20 @@ OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
   })
 
   if (!res.ok) {
-    const errText = await res.text()
-    console.error('[Mubarak] Anthropic API error:', res.status, errText)
-    return null
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(`API ${res.status}: ${errData?.error?.message || res.statusText}`)
   }
   const data = await res.json()
   const raw = data.content?.[0]?.text?.trim() || ''
-  if (!raw) {
-    console.error('[Mubarak] Empty response from Anthropic:', JSON.stringify(data))
-    return null
-  }
+  if (!raw) throw new Error('Empty response from API')
   // Strip any markdown fences just in case
   const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
   // Find outermost JSON object
   const jsonStart = cleaned.indexOf('{')
   const jsonEnd   = cleaned.lastIndexOf('}')
   if (jsonStart === -1 || jsonEnd === -1) {
-    console.error('[Mubarak] No JSON found in response:', cleaned)
-    return null
+    // Model returned plain text instead of JSON — wrap it
+    return { text: cleaned, command: null, actions: [] }
   }
   const parsed = JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1))
 
@@ -669,15 +665,21 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
     const history = messagesRef.current.slice()
 
     let response = null
+    let llmError = null
     try {
       response = await callAgentLLM(text, vendors, tasks, guests, history)
     } catch (err) {
+      llmError = err?.message || String(err)
       console.error('[Mubarak] callAgentLLM threw:', err)
     }
 
-    // Fallback to local pattern matching if LLM unavailable or errors
+    // If LLM failed, show the actual error so we can diagnose it
     if (!response || !response.text) {
-      response = getAgentResponse(text, vendors, tasks, guests)
+      if (llmError) {
+        response = { text: `⚠️ ${llmError}`, actions: [] }
+      } else {
+        response = getAgentResponse(text, vendors, tasks, guests)
+      }
     }
 
     setMessages(m => [...m, { role: 'agent', ...response }])
