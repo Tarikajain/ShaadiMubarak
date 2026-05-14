@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Sparkles, ChevronDown, ArrowRight } from 'lucide-react'
 import { getMemoryContext, addMemory } from '../utils/memoryUtils'
+import { ANTHROPIC_KEY } from '../config'
 
 // ─── Language detection ───────────────────────────────────────────────────────
 
@@ -249,8 +250,7 @@ const DEMO_PHRASES = [
 // ─── Claude LLM integration ───────────────────────────────────────────────────
 
 async function callAgentLLM(message, vendors, tasks, guests, conversationHistory) {
-  // Read key from env (local dev) or from localStorage (deployed / manually set)
-  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY || localStorage.getItem('sm_anthropic_key')
+  const apiKey = ANTHROPIC_KEY
   if (!apiKey) return null
 
   let profile = {}

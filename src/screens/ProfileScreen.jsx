@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, User, Bell, Shield, HelpCircle, LogOut, ChevronRight,
   ChevronDown, Camera, Mail, Phone, Lock, Eye, EyeOff, Check, X,
-  MessageCircle, FileText, ExternalLink, Brain, Smartphone, Trash2, Sparkles,
+  MessageCircle, FileText, ExternalLink, Brain, Smartphone, Trash2,
 } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
@@ -582,13 +582,6 @@ export default function ProfileScreen({ onSignOut }) {
           sub: memoryCount > 0 ? `${memoryCount} learned ${memoryCount === 1 ? 'fact' : 'facts'} about your wedding` : 'Remembers your preferences & decisions',
           sheet: 'memory',
         },
-        {
-          icon: Sparkles,
-          label: 'AI API key',
-          sub: (import.meta.env.VITE_ANTHROPIC_KEY || localStorage.getItem('sm_anthropic_key')) ? 'Key configured — Mubarak is active' : 'Tap to configure — required for AI responses',
-          sheet: 'apikey',
-          alert: !(import.meta.env.VITE_ANTHROPIC_KEY || localStorage.getItem('sm_anthropic_key')),
-        },
       ],
     },
     {
@@ -691,7 +684,6 @@ export default function ProfileScreen({ onSignOut }) {
         {activeSheet === 'security'      && <SecuritySheet        onClose={() => handleSheetClose('security')} />}
         {activeSheet === 'notifications' && <NotificationsSheet   onClose={() => handleSheetClose('notifications')} />}
         {activeSheet === 'memory'        && <MemorySheet          onClose={() => handleSheetClose('memory')} />}
-        {activeSheet === 'apikey'        && <ApiKeySheet          onClose={() => handleSheetClose('apikey')} />}
         {activeSheet === 'widget'        && <WidgetSheet          onClose={() => handleSheetClose('widget')} />}
         {activeSheet === 'help'          && <HelpSheet            onClose={() => handleSheetClose('help')} />}
         {activeSheet === 'signout'       && <SignOutSheet         onClose={() => handleSheetClose('signout')} onSignOut={onSignOut} />}
