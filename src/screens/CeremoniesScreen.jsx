@@ -218,13 +218,13 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
       <motion.div key="cd-bd"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.55)', zIndex: 60 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.55)', zIndex: 320 }} />
 
       {/* Sheet */}
       <motion.div key="cd-sh"
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={spring}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 61, maxHeight: '90%', display: 'flex', flexDirection: 'column' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, maxHeight: '90%', display: 'flex', flexDirection: 'column' }}>
 
         {/* Hero image */}
         <div style={{ position: 'relative', height: 160, borderRadius: '22px 22px 0 0', overflow: 'hidden', flexShrink: 0 }}>
@@ -271,18 +271,19 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
                 {ceremony.name} · Step by step
               </p>
               <div style={{ position: 'relative' }}>
-                {/* Vertical line */}
-                <div style={{ position: 'absolute', left: 36, top: 0, bottom: 0, width: 1, background: 'rgba(122,15,70,0.15)' }} />
-                <div className="flex flex-col gap-0">
+                {/* Vertical line — passes through dot centres.
+                    Time col 52px + gap 8px + half-dot 8px = left: 68px */}
+                <div style={{ position: 'absolute', left: 68, top: 6, bottom: 0, width: 1, background: 'rgba(122,15,70,0.18)' }} />
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {(data.timeline || []).map((step, i) => (
-                    <div key={i} className="flex gap-3" style={{ paddingBottom: 20, position: 'relative' }}>
-                      {/* Time */}
-                      <div style={{ width: 52, flexShrink: 0, textAlign: 'right' }}>
+                    <div key={i} style={{ display: 'flex', gap: 8, paddingBottom: 20, alignItems: 'flex-start' }}>
+                      {/* Time label — right-aligned, same top as dot */}
+                      <div style={{ width: 52, flexShrink: 0, textAlign: 'right', paddingTop: 1 }}>
                         <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 500, color: 'rgba(26,20,16,0.42)', lineHeight: 1.3 }}>{step.time}</span>
                       </div>
-                      {/* Dot */}
-                      <div style={{ width: 18, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 2 }}>
-                        <div style={{ width: 9, height: 9, borderRadius: '50%', background: i === 0 ? '#7A0F46' : 'rgba(122,15,70,0.25)', border: '2px solid #7A0F46', flexShrink: 0 }} />
+                      {/* Dot — 16px col, centre = 8px from left → sits exactly on the line at left:68 */}
+                      <div style={{ width: 16, flexShrink: 0, display: 'flex', justifyContent: 'center', paddingTop: 2, position: 'relative', zIndex: 1 }}>
+                        <div style={{ width: 9, height: 9, borderRadius: '50%', background: i === 0 ? '#7A0F46' : '#FFFBF5', border: `2px solid ${i === 0 ? '#7A0F46' : 'rgba(122,15,70,0.55)'}`, flexShrink: 0 }} />
                       </div>
                       {/* Content */}
                       <div style={{ flex: 1, paddingTop: 1 }}>

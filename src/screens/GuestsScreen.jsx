@@ -67,10 +67,10 @@ function GuestActionDrawer({ guest, onClose, coupleNames, weddingDate, weddingVe
   return (
     <>
       <motion.div key="guest-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
       <motion.div key="guest-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 40px' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 40px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: '24px' }}>
           <InitialAvatar name={guest.name} side={guest.side} size={48} />
@@ -183,9 +183,9 @@ function ImportModal({ onClose, onImport }) {
   }
   return (
     <>
-      <motion.div key="imp-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
+      <motion.div key="imp-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
       <motion.div key="imp-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 36px' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 36px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '24px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Import guest list</p>
         <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px' }}>Upload a CSV or Excel file. Columns: Name, Contact, RSVP Status</p>
@@ -219,9 +219,9 @@ function GoogleSheetsModal({ onClose, onConnect, connected, lastSync }) {
   }
   return (
     <>
-      <motion.div key="gs-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
+      <motion.div key="gs-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
       <motion.div key="gs-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 36px' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 36px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: '16px' }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(52,168,83,0.1)', border: '1px solid rgba(52,168,83,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Sheet size={20} color="#34A853" /></div>
@@ -352,7 +352,7 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
       <motion.div key="ws-active"
         initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 32 }}
         transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
-        style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 200, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 320, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <StatusBar />
         {/* Header */}
         <div style={{ flexShrink: 0, borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '10px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -431,7 +431,7 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
     <motion.div key="ws-screen"
       initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 32 }}
       transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
-      style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 200, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 320, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
       {/* Status bar */}
       <StatusBar />
@@ -659,10 +659,10 @@ function TemplatePickerSheet({ onClose, onSelect, onOpenAgent }) {
     <>
       <motion.div key="tpl-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 0.45 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,1)', zIndex: 70 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,1)', zIndex: 320}} />
       <motion.div key="tpl-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 360, damping: 34 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 75, maxHeight: '90%', overflowY: 'auto', paddingBottom: 40 }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, maxHeight: '90%', overflowY: 'auto', paddingBottom: 40 }}>
         {/* Handle */}
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '20px auto 0' }} />
 
@@ -784,10 +784,10 @@ function AssetSetupSheet({ type, onClose, onSave, onOpenAgent }) {
   return (
     <>
       <motion.div key="asset-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
       <motion.div key="asset-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 40px', maxHeight: '85%', overflowY: 'auto' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 40px', maxHeight: '85%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Set up {label}</p>
         <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 20px' }}>Choose how you want to manage your {type === 'website' ? 'wedding website' : 'digital invites'}.</p>
@@ -1160,10 +1160,10 @@ function FavorsSheet({ onClose }) {
   return (
     <>
       <motion.div key="favors-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
       <motion.div key="favors-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px', maxHeight: '82%', overflowY: 'auto' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px', maxHeight: '82%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(160,112,32,0.10)', border: '1px solid rgba(160,112,32,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1236,10 +1236,10 @@ function WardrobeSheet({ onClose }) {
   return (
     <>
       <motion.div key="wd-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
       <motion.div key="wd-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px', maxHeight: '80%', overflowY: 'auto' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px', maxHeight: '80%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: 20 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(122,15,70,0.10)', border: '1px solid rgba(122,15,70,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1275,10 +1275,10 @@ function RegistrySheet({ onClose }) {
   return (
     <>
       <motion.div key="rg-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
       <motion.div key="rg-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: 20 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(45,96,37,0.10)', border: '1px solid rgba(45,96,37,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1317,10 +1317,10 @@ function CustomAssetSheet({ onClose, onSave }) {
   return (
     <>
       <motion.div key="ca-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 200 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
       <motion.div key="ca-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 201, padding: '20px 20px 44px' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Add custom asset</p>
         <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 20px' }}>Track anything else you're managing for your guests.</p>

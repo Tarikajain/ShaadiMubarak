@@ -35,8 +35,8 @@ export default function NavIcons({ light = false }) {
           <Bell size={17} color={iconColor} strokeWidth={1.8} />
         </button>
 
-        {/* Active-user avatar — tap to switch */}
-        <button onClick={() => setShowSwitcher(true)} style={{ ...btnStyle, background: light ? 'rgba(255,255,255,0.22)' : activeUser.bg, border: light ? '1px solid rgba(255,255,255,0.30)' : `1.5px solid ${activeUser.color}44` }} title={`Logged in as ${activeUser.name}`}>
+        {/* Active-user avatar — tap to go to profile */}
+        <button onClick={() => navigate('/profile')} style={{ ...btnStyle, background: light ? 'rgba(255,255,255,0.22)' : activeUser.bg, border: light ? '1px solid rgba(255,255,255,0.30)' : `1.5px solid ${activeUser.color}44` }} title="Profile">
           <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 700, color: light ? '#FFF' : activeUser.color, letterSpacing: '0.02em', lineHeight: 1, userSelect: 'none' }}>
             {activeUser.initials}
           </span>
@@ -51,13 +51,13 @@ export default function NavIcons({ light = false }) {
               key="fsw-bd"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowSwitcher(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 80 }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 320 }}
             />
             <motion.div
               key="fsw-sh"
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-              style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 81, padding: '18px 18px 36px' }}
+              style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '18px 18px 36px' }}
             >
               {/* Handle */}
               <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.10)', borderRadius: 99, margin: '0 auto 18px' }} />

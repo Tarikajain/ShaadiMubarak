@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Check, Calendar, ArrowRight } from 'lucide-react'
+import { X, Check, Calendar, ArrowRight, Sparkles } from 'lucide-react'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
@@ -116,11 +116,11 @@ function WidgetModal({ onClose, installPrompt }) {
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 55 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 320 }} />
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '24px 24px 0 0', zIndex: 56, padding: '20px 22px 36px' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '24px 24px 0 0', zIndex: 321, padding: '20px 22px 36px' }}
       >
         {/* Handle */}
         <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 22px' }} />
@@ -248,6 +248,9 @@ function WidgetModal({ onClose, installPrompt }) {
 export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests = [], onOpenAgent }) {
   const navigate = useNavigate()
   const [couplePhoto, setCouplePhoto] = useState(null)
+  const [planBannerDismissed, setPlanBannerDismissed] = useState(
+    () => localStorage.getItem('sm_plan_banner_dismissed') === '1'
+  )
   const [widgetDismissed, setWidgetDismissed] = useState(false)
   const [showWidgetModal, setShowWidgetModal] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
@@ -353,22 +356,37 @@ export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests 
         <motion.div className="flex flex-col gap-5 px-5 pb-4" variants={container} initial="hidden" animate="show" style={{ paddingTop: 20 }}>
 
           {/* ── Plan-ready alert banner ── */}
-          <motion.div variants={item}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, background: 'rgba(122,15,70,0.05)', border: '1px solid rgba(122,15,70,0.18)' }}>
-              <div style={{ width: 28, height: 28, borderRadius: 9, background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 13, color: '#fff' }}>✦</span>
-              </div>
-              <p className="font-work-sans flex-1" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.70)', margin: 0, lineHeight: 1.45 }}>
-                Your wedding plan is ready — curated from your inputs
-              </p>
-              <button
-                onClick={onOpenAgent}
-                className="font-work-sans flex-shrink-0"
-                style={{ fontSize: '10px', fontWeight: 600, color: '#7A0F46', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.24)', borderRadius: '99px', padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                Customize →
-              </button>
-            </div>
-          </motion.div>
+          <AnimatePresence>
+            {!planBannerDismissed && (
+              <motion.div
+                variants={item}
+                exit={{ opacity: 0, height: 0, marginBottom: 0, overflow: 'hidden' }}
+                transition={{ duration: 0.25 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, background: 'rgba(122,15,70,0.05)', border: '1px solid rgba(122,15,70,0.18)' }}>
+                  {/* Sparkle icon — light bg, maroon icon */}
+                  <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Sparkles size={14} color="#7A0F46" strokeWidth={1.8} />
+                  </div>
+                  <p className="font-work-sans flex-1" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.70)', margin: 0, lineHeight: 1.45 }}>
+                    Your curated wedding plan is ready
+                  </p>
+                  <button
+                    onClick={onOpenAgent}
+                    className="font-work-sans flex-shrink-0"
+                    style={{ fontSize: '10px', fontWeight: 600, color: '#7A0F46', background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.24)', borderRadius: '99px', padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    Customize
+                  </button>
+                  {/* Dismiss */}
+                  <button
+                    onClick={() => { setPlanBannerDismissed(true); localStorage.setItem('sm_plan_banner_dismissed', '1') }}
+                    style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(122,15,70,0.07)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0 }}>
+                    <X size={11} color="rgba(122,15,70,0.60)" strokeWidth={2.5} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* ── AT A GLANCE stats card ── */}
           <motion.div variants={item}>
