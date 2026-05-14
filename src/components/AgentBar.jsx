@@ -623,23 +623,41 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
       setGuests(gs => [newGuest, ...gs])
       confirmText = `${cmd.name} added to the guest list as pending RSVP ✓`
     } else if (cmd.type === 'update_wedding') {
-      // Write updated profile fields to localStorage
+      const u = cmd.updates || {}
       try {
         const profile = JSON.parse(localStorage.getItem('sm_profile') || '{}')
-        if (cmd.updates?.bride)    profile.bride    = cmd.updates.bride
-        if (cmd.updates?.partner)  profile.partner  = cmd.updates.partner
-        if (cmd.updates?.date)     profile.date     = cmd.updates.date
-        if (cmd.updates?.location) profile.location = cmd.updates.location
+        // LLM uses 'groom' / 'city'; stored profile uses 'partner' / 'location'
+        if (u.bride)  profile.bride    = u.bride
+        if (u.groom)  profile.partner  = u.groom
+        if (u.date)   profile.date     = u.date
+        if (u.city)   profile.location = u.city
+        if (u.theme)  profile.theme    = u.theme
+        if (u.budget) profile.budget   = u.budget
         localStorage.setItem('sm_profile', JSON.stringify(profile))
+        // Notify all screens that read profile data to re-render
+        window.dispatchEvent(new Event('sm_wedding_updated'))
       } catch (_) {}
-      const done = []
-      const u = cmd.updates || {}
-      if (u.bride || u.partner) done.push(`Names set to ${u.bride} & ${u.partner} ✓`)
-      if (u.date)     done.push(`Date updated to ${u.date} ✓`)
-      if (u.location) done.push(`Location set to ${u.location} ✓`)
-      if (cmd.pushWebsite) done.push('Website pushed live ✓')
-      if (cmd.notifyGuests && cmd.guestCount) done.push(`${cmd.guestCount} guests notified via WhatsApp ✓`)
-      confirmText = done.join('\n')
+
+      // Build what-changed list
+      const changes = []
+      if (u.bride || u.groom) changes.push(`Names → ${[u.bride, u.groom].filter(Boolean).join(' & ')}`)
+      if (u.date)   changes.push(`Date → ${u.date}`)
+      if (u.city)   changes.push(`Venue → ${u.city}`)
+      if (u.theme)  changes.push(`Theme → ${u.theme}`)
+      if (u.budget) changes.push(`Budget → ${u.budget}`)
+
+      // Build pushed-to list
+      const pushed = new Set()
+      if (u.bride || u.groom || u.date || u.city) {
+        pushed.add('Dashboard')
+        pushed.add('Wedding website')
+      }
+      if (u.date) pushed.add('Ceremony timeline')
+      if (u.theme || u.budget) pushed.add('Profile')
+      if (cmd.notifyGuests && cmd.guestCount) pushed.add(`${cmd.guestCount} guests notified`)
+
+      confirmText = changes.join(' · ') +
+        (pushed.size ? `\n\nPushed to: ${[...pushed].join(', ')} ✓` : ' ✓')
     } else if (cmd.type === 'send_invites') {
       confirmText = `Invitations sent to ${cmd.count} guests via WhatsApp and email ✓`
     }
@@ -687,8 +705,8 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
     if (response.command) setPendingCommand(response.command)
     setLoading(false)
 
-    // TTS for short agent replies
-    if (window.speechSynthesis && response.text.length < 200) {
+    // TTS only when voice mode is active
+    if (voiceConvRef.current && window.speechSynthesis && response.text.length < 200) {
       const utt = new SpeechSynthesisUtterance(response.text)
       utt.lang = 'en-IN'
       utt.rate = 1.05

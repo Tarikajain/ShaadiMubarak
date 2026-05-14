@@ -278,8 +278,14 @@ export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests 
     if (file) setCouplePhoto(URL.createObjectURL(file))
   }
 
-  // Read profile data (falls back to sensible defaults if no profile set)
-  const profile = getWeddingProfile()
+  // Read profile data — re-reads whenever Mubarak pushes an update
+  const [profile, setProfile] = useState(getWeddingProfile)
+  useEffect(() => {
+    const refresh = () => setProfile(getWeddingProfile())
+    window.addEventListener('sm_wedding_updated', refresh)
+    return () => window.removeEventListener('sm_wedding_updated', refresh)
+  }, [])
+
   const brideName = profile?.bride || 'The Bride'
   const partnerName = profile?.partner || 'The Groom'
   const venueShort = (profile?.location || 'Venue TBD').split(',')[0]
