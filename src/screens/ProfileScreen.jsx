@@ -328,15 +328,15 @@ function SignOutSheet({ onClose, onSignOut }) {
 
 // ── API Key Sheet ─────────────────────────────────────────────────
 function ApiKeySheet({ onClose }) {
-  const stored = localStorage.getItem('sm_gemini_key') || ''
-  const envKey = import.meta.env.VITE_GEMINI_KEY || ''
+  const stored = localStorage.getItem('sm_anthropic_key') || ''
+  const envKey = import.meta.env.VITE_ANTHROPIC_KEY || ''
   const [key, setKey] = useState(stored)
   const [show, setShow] = useState(false)
   const [saved, setSaved] = useState(false)
 
   const handleSave = () => {
-    if (key.trim()) localStorage.setItem('sm_gemini_key', key.trim())
-    else localStorage.removeItem('sm_gemini_key')
+    if (key.trim()) localStorage.setItem('sm_anthropic_key', key.trim())
+    else localStorage.removeItem('sm_anthropic_key')
     setSaved(true)
     setTimeout(onClose, 1200)
   }
@@ -377,7 +377,7 @@ function ApiKeySheet({ onClose }) {
             </button>
           </div>
           <p className="font-work-sans" style={{ fontSize: '11px', color: 'rgba(26,20,16,0.4)', margin: '0 0 20px 2px' }}>
-            Get a free key at aistudio.google.com → API keys
+            Get your key at console.anthropic.com → API keys
           </p>
           <motion.button onClick={handleSave} whileTap={{ scale: 0.97 }}
             className="w-full flex items-center justify-center gap-2 font-montserrat"
@@ -585,9 +585,9 @@ export default function ProfileScreen({ onSignOut }) {
         {
           icon: Sparkles,
           label: 'AI API key',
-          sub: (import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('sm_gemini_key')) ? 'Key configured — Mubarak is active' : 'Tap to configure — required for AI responses',
+          sub: (import.meta.env.VITE_ANTHROPIC_KEY || localStorage.getItem('sm_anthropic_key')) ? 'Key configured — Mubarak is active' : 'Tap to configure — required for AI responses',
           sheet: 'apikey',
-          alert: !(import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('sm_gemini_key')),
+          alert: !(import.meta.env.VITE_ANTHROPIC_KEY || localStorage.getItem('sm_anthropic_key')),
         },
       ],
     },

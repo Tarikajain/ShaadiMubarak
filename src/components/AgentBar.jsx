@@ -250,7 +250,7 @@ const DEMO_PHRASES = [
 
 async function callAgentLLM(message, vendors, tasks, guests, conversationHistory) {
   // Read key from env (local dev) or from localStorage (deployed / manually set)
-  const apiKey = import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('sm_gemini_key')
+  const apiKey = import.meta.env.VITE_ANTHROPIC_KEY || localStorage.getItem('sm_anthropic_key')
   if (!apiKey) return null
 
   let profile = {}
@@ -296,52 +296,50 @@ RULES — follow these strictly:
 OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
 {"text":"...","command":null,"actions":[],"remember":[]}`
 
-  // Gemini requires strict user/model alternation.
+  // Anthropic requires strict user/assistant alternation.
   // Merge any consecutive same-role messages so the history is always valid.
   const rawHistory = conversationHistory.slice(-10)
-  const contents = []
+  const messages = []
   for (const m of rawHistory) {
-    const role = m.role === 'user' ? 'user' : 'model'
-    if (contents.length && contents[contents.length - 1].role === role) {
-      // Merge into previous turn
-      contents[contents.length - 1].parts[0].text += '\n' + m.text
+    const role = m.role === 'user' ? 'user' : 'assistant'
+    if (messages.length && messages[messages.length - 1].role === role) {
+      messages[messages.length - 1].content += '\n' + m.text
     } else {
-      contents.push({ role, parts: [{ text: m.text }] })
+      messages.push({ role, content: m.text })
     }
   }
   // Append new user message, merging if last turn was also user
-  if (contents.length && contents[contents.length - 1].role === 'user') {
-    contents[contents.length - 1].parts[0].text += '\n' + message
+  if (messages.length && messages[messages.length - 1].role === 'user') {
+    messages[messages.length - 1].content += '\n' + message
   } else {
-    contents.push({ role: 'user', parts: [{ text: message }] })
+    messages.push({ role: 'user', content: message })
   }
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents,
-        generationConfig: {
-          maxOutputTokens: 800,
-          temperature: 0.7,
-          responseMimeType: 'application/json',  // forces clean JSON output, no markdown wrapping
-        },
-      }),
-    }
-  )
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+      'anthropic-dangerous-allow-browser': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 800,
+      system: systemPrompt,
+      messages,
+    }),
+  })
 
   if (!res.ok) {
     const errText = await res.text()
-    console.error('[Mubarak] Gemini API error:', res.status, errText)
+    console.error('[Mubarak] Anthropic API error:', res.status, errText)
     return null
   }
   const data = await res.json()
-  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || ''
+  const raw = data.content?.[0]?.text?.trim() || ''
   if (!raw) {
-    console.error('[Mubarak] Empty response from Gemini:', JSON.stringify(data))
+    console.error('[Mubarak] Empty response from Anthropic:', JSON.stringify(data))
     return null
   }
   // Strip any markdown fences just in case
