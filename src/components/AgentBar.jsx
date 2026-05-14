@@ -315,7 +315,7 @@ OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
     messages.push({ role: 'user', content: message })
   }
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('/api/claude/v1/messages', {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
