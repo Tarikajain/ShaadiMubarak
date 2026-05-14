@@ -25,10 +25,10 @@ function Sheet({ onClose, children }) {
     <>
       <motion.div key="backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 55 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
       <motion.div key="sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={sheetSpring}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 60, padding: '20px 20px 44px', maxHeight: '88%', overflowY: 'auto' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px', maxHeight: '88%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 22px' }} />
         {children}
       </motion.div>
