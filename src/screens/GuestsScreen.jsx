@@ -332,8 +332,54 @@ function WebsitePreviewMock({ templateId }) {
 }
 
 // ─── Full-screen Wedding Website Setup ───────────────────────────
-function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig = null }) {
-  const [mode, setMode] = useState(null) // null | 'template' | 'custom'
+// ─── Website choice drawer (shown before the full setup screen) ──
+function WebsiteChoiceDrawer({ onClose, onSelectTemplate, onSelectConnect }) {
+  return (
+    <>
+      <motion.div key="wcd-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 320 }} />
+      <motion.div key="wcd-sh"
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px' }}>
+        {/* Handle */}
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.10)', margin: '0 auto 20px' }} />
+        {/* Header */}
+        <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Wedding Website</p>
+        <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', textAlign: 'center', margin: '0 0 22px', lineHeight: 1.5 }}>How would you like to get started?</p>
+        {/* Choice tiles */}
+        <div style={{ display: 'flex', gap: 10 }}>
+          <motion.button onClick={onSelectTemplate} whileTap={{ scale: 0.97 }}
+            className="font-work-sans"
+            style={{ flex: 1, borderRadius: 16, background: 'rgba(122,15,70,0.04)', border: '1px solid rgba(122,15,70,0.18)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 14px' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Palette size={17} color="#7A0F46" strokeWidth={1.6} />
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: '0 0 3px', lineHeight: 1.2 }}>Create from template</p>
+              <p style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: 0, lineHeight: 1.45 }}>Pick a style, Mubarak fills in your details</p>
+            </div>
+          </motion.button>
+          <motion.button onClick={onSelectConnect} whileTap={{ scale: 0.97 }}
+            className="font-work-sans"
+            style={{ flex: 1, borderRadius: 16, background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.09)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 14px' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Link2 size={17} color="rgba(26,20,16,0.65)" strokeWidth={1.6} />
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: '0 0 3px', lineHeight: 1.2 }}>Connect existing site</p>
+              <p style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: 0, lineHeight: 1.45 }}>Paste your URL — AI still updates it</p>
+            </div>
+          </motion.button>
+        </div>
+      </motion.div>
+    </>
+  )
+}
+
+function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig = null, initialMode = null }) {
+  const [mode, setMode] = useState(initialMode) // null | 'template' | 'custom'
   const [selectedTemplate, setSelectedTemplate] = useState(
     initialConfig?.template || WEBSITE_TEMPLATES[0].id
   )
@@ -959,7 +1005,6 @@ function WebsiteCard({ config, onSetup }) {
           </div>
           <div>
             <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Wedding Website</p>
-            <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
           </div>
         </div>
         {isActive ? (
@@ -1009,7 +1054,6 @@ function InviteCard({ config, onSetup }) {
           </div>
           <div>
             <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Digital Invites</p>
-            <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
           </div>
         </div>
         {isActive ? (
@@ -1047,7 +1091,6 @@ function GiftRegistryCard() {
         </div>
         <div className="flex-1">
           <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>Gift Registry</p>
-          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests</p>
         </div>
         {saved && <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: '#2D6025', background: 'rgba(45,96,37,0.09)', border: '1px solid rgba(45,96,37,0.22)', padding: '3px 8px', borderRadius: '99px' }}>Linked</span>}
       </div>
@@ -1171,7 +1214,6 @@ function FavorsSheet({ onClose }) {
           </div>
           <div>
             <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 500, color: '#1A1410', margin: 0, letterSpacing: '-0.02em' }}>Guest Favors</p>
-            <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.4)', margin: 0 }}>For all guests · customize per type below</p>
           </div>
         </div>
 
@@ -1366,7 +1408,6 @@ function GuestAssets({ onOpenAgent, onOpenWebsite, websiteConfig }) {
     <>
       <motion.div initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.22 }}>
 
-        <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(26,20,16,0.54)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 12px' }}>For all guests</p>
 
         {/* 2-column tile grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
@@ -1431,6 +1472,8 @@ function GuestAssets({ onOpenAgent, onOpenWebsite, websiteConfig }) {
 // ════════════════════════════════════════════════════════════════
 export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsProp, onOpenAgent }) {
   const [mainTab, setMainTab]             = useState('list') // 'list' | 'assets'
+  const [showWebsiteChoice, setShowWebsiteChoice] = useState(false)
+  const [websiteInitialMode, setWebsiteInitialMode] = useState(null)
   const [showWebsiteSetup, setShowWebsiteSetup] = useState(false)
   const [websiteConfig, setWebsiteConfig]       = useState(null)
   const [filter, setFilter]               = useState('All')
@@ -1799,7 +1842,7 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
             {/* ─── GUEST ASSETS TAB ───────────────────────────────── */}
             {mainTab === 'assets' && (
               <motion.div key="assets" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
-                <GuestAssets onOpenAgent={onOpenAgent} onOpenWebsite={() => setShowWebsiteSetup(true)} websiteConfig={websiteConfig} />
+                <GuestAssets onOpenAgent={onOpenAgent} onOpenWebsite={() => websiteConfig ? setShowWebsiteSetup(true) : setShowWebsiteChoice(true)} websiteConfig={websiteConfig} />
               </motion.div>
             )}
 
@@ -1819,12 +1862,28 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
         {showGoogleSheets && (
           <GoogleSheetsModal onClose={() => setShowGoogleSheets(false)} onConnect={handleGoogleConnect} connected={googleConnected} lastSync={lastSync} />
         )}
+        {showWebsiteChoice && (
+          <WebsiteChoiceDrawer
+            onClose={() => setShowWebsiteChoice(false)}
+            onSelectTemplate={() => {
+              setShowWebsiteChoice(false)
+              setWebsiteInitialMode('template')
+              setShowWebsiteSetup(true)
+            }}
+            onSelectConnect={() => {
+              setShowWebsiteChoice(false)
+              setWebsiteInitialMode('custom')
+              setShowWebsiteSetup(true)
+            }}
+          />
+        )}
         {showWebsiteSetup && (
           <WeddingWebsiteSetupScreen
-            onClose={() => setShowWebsiteSetup(false)}
+            onClose={() => { setShowWebsiteSetup(false); setWebsiteInitialMode(null) }}
             onSave={(cfg) => setWebsiteConfig(cfg)}
             onOpenAgent={onOpenAgent}
             initialConfig={websiteConfig}
+            initialMode={websiteInitialMode}
           />
         )}
       </AnimatePresence>

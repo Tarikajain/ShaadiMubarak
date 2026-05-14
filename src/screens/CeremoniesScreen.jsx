@@ -214,30 +214,24 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
 
   return (
     <>
-      {/* Backdrop */}
-      <motion.div key="cd-bd"
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.55)', zIndex: 320 }} />
-
-      {/* Sheet */}
-      <motion.div key="cd-sh"
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        transition={spring}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, maxHeight: '90%', display: 'flex', flexDirection: 'column' }}>
+      {/* Full-screen page */}
+      <motion.div key="cd-page"
+        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+        style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 321, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Hero image */}
-        <div style={{ position: 'relative', height: 160, borderRadius: '22px 22px 0 0', overflow: 'hidden', flexShrink: 0 }}>
+        <div style={{ position: 'relative', height: 220, overflow: 'hidden', flexShrink: 0 }}>
           <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${data.image})`, backgroundSize: data.bgSize || 'cover', backgroundPosition: data.bgPosition || 'center', backgroundRepeat: 'no-repeat' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(26,20,16,0.72) 100%)' }} />
-          {/* Handle */}
-          <div style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.40)' }} />
-          {/* Close */}
-          <button onClick={onClose} style={{ position: 'absolute', top: 18, right: 16, width: 30, height: 30, borderRadius: '50%', background: 'rgba(0,0,0,0.30)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <X size={14} color="#FFFFFF" strokeWidth={2} />
+          {/* Back pill */}
+          <button onClick={onClose}
+            style={{ position: 'absolute', top: 18, left: 16, display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(26,20,16,0.50)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: '99px', padding: '6px 12px 6px 8px', cursor: 'pointer', zIndex: 2 }}>
+            <ChevronRight size={14} color="#FFFBF5" strokeWidth={2} style={{ transform: 'rotate(180deg)' }} />
+            <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#FFFBF5' }}>Ceremonies</span>
           </button>
           {/* Status badge */}
-          <span className="font-work-sans" style={{ position: 'absolute', top: 22, left: 18, fontSize: '9px', fontWeight: 700, color: st.color, background: st.bg, border: `1px solid ${st.border}`, borderRadius: 99, padding: '3px 9px', letterSpacing: '0.06em' }}>
+          <span className="font-work-sans" style={{ position: 'absolute', top: 22, right: 16, fontSize: '9px', fontWeight: 700, color: st.color, background: st.bg, border: `1px solid ${st.border}`, borderRadius: 99, padding: '3px 9px', letterSpacing: '0.06em' }}>
             {st.label.toUpperCase()}
           </span>
           {/* Name + time */}
@@ -262,7 +256,7 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
         </div>
 
         {/* Tab content */}
-        <div style={{ overflowY: 'auto', flex: 1, padding: '18px 18px 36px' }}>
+        <div style={{ overflowY: 'auto', flex: 1, padding: '18px 18px 20px' }}>
 
           {/* ── Timeline ── */}
           {activeTab === 'Timeline' && (
@@ -473,6 +467,7 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
           )}
 
         </div>
+        <BottomNav />
       </motion.div>
     </>
   )
