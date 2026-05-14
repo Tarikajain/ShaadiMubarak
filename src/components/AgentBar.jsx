@@ -169,269 +169,63 @@ const MONTH_RE = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:
 function getAgentResponse(text, vendors = [], tasks = [], guests = []) {
   const t = text.toLowerCase()
 
-  // ── Vendor status mutations ───────────────────────────────────────────────
-  const confirmVendorRe  = /\b(confirm|confirmed|mark.*confirmed|set.*confirmed)\b/
-  const atRiskVendorRe   = /\b(at.?risk|risky|flag.*risk|mark.*risk)\b/
-  const pendingVendorRe  = /\b(pending|set.*pending|mark.*pending|unconfirm)\b/
-  const cancelVendorRe   = /\b(cancel|cancelled|remove.*vendor)\b/
-
-  const isVendorMutation = confirmVendorRe.test(t) || atRiskVendorRe.test(t) || pendingVendorRe.test(t) || cancelVendorRe.test(t)
-
-  if (isVendorMutation) {
+  // ── Vendor status mutations ─────────────────────────────────────────────
+  const confirmRe = /\b(confirm|confirmed)\b/
+  const atRiskRe  = /\b(at.?risk|risky)\b/
+  const cancelRe  = /\b(cancel|cancelled)\b/
+  const isMutation = confirmRe.test(t) || atRiskRe.test(t) || cancelRe.test(t)
+  if (isMutation) {
     const target = matchVendor(text, vendors)
     if (target) {
-      const newStatus = confirmVendorRe.test(t) ? 'confirmed'
-        : atRiskVendorRe.test(t)  ? 'at_risk'
-        : pendingVendorRe.test(t) ? 'pending'
-        : 'cancelled'
-      if (target.status === newStatus) {
-        return { text: `${target.name} is already ${STATUS_LABEL[newStatus]}.`, actions: [{ label: 'View vendors', route: '/vendors' }] }
-      }
+      const newStatus = confirmRe.test(t) ? 'confirmed' : atRiskRe.test(t) ? 'at_risk' : 'cancelled'
       return {
-        text: `I'll update ${target.name} to ${STATUS_LABEL[newStatus]}. Confirm?`,
+        text: `Done — ${target.name} marked ${newStatus}.`,
         command: { type: 'vendor_status', vendorId: target.id, newStatus },
-        actions: [{ label: 'View vendors', route: '/vendors' }],
-      }
-    }
-    const needAttention = vendors.filter(v => v.status !== 'confirmed')
-    if (needAttention.length > 0) {
-      return {
-        text: `Which vendor? These still need attention: ${needAttention.map(v => v.name).join(', ')}.`,
-        actions: [{ label: 'View vendors', route: '/vendors' }],
-      }
-    }
-  }
-
-  // ── Wedding details update (names / date / location + website push + guest alert) ─
-  const namesMatch  = text.match(/\b([A-Z][a-z]{1,})\s+(?:and|&)\s+([A-Z][a-z]{1,})\b/)
-  const dateMatch   = text.match(/\b(?:dec(?:ember)?|jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?)\b.*?\b(20\d\d)\b/i)
-                   || text.match(/\b(20\d\d)\b.*\b(?:dec(?:ember)?|jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?)\b/i)
-  const cityMatch   = INDIAN_CITIES.find(c => t.includes(c))
-  const dayNumMatch = text.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s+(?:dec|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov)/i)
-
-  const isWebsitePush = /\b(push|publish|update.*site|push.*site|go.*live|site.*update|update.*website|push.*website|push.*update|send.*website)\b/.test(t)
-  const isGuestNotify = /\b(notify|alert|tell|message|email|whatsapp|send.*update|let.*know|inform)\b.*\b(guest|everyone|them|all)\b/i.test(t)
-    || /\b(guest|everyone)\b.*\b(notify|alert|tell|update|know|inform)\b/i.test(t)
-
-  const isProfileChange = namesMatch || dateMatch || cityMatch
-    || /\b(our name|names|bride|groom|update.*name|change.*date|set.*date|wedding date|venue|location|city|where.*wedding|when.*wedding)\b/.test(t)
-
-  if (isProfileChange || isWebsitePush) {
-    const updates = {}
-    const lines = []
-
-    if (namesMatch) {
-      updates.bride = namesMatch[1]; updates.partner = namesMatch[2]
-      lines.push(`Couple names → ${namesMatch[1]} & ${namesMatch[2]}`)
-    }
-    if (dateMatch) {
-      // Capture the date string cleanly
-      const raw = dateMatch[0].replace(/\s+/g, ' ').trim()
-      const day = dayNumMatch ? dayNumMatch[1] : null
-      const label = day ? `${day} ${raw}` : raw
-      updates.date = label
-      lines.push(`Wedding date → ${label}`)
-    }
-    if (cityMatch) {
-      updates.location = cityMatch.charAt(0).toUpperCase() + cityMatch.slice(1)
-      lines.push(`Location → ${updates.location}`)
-    }
-    if (isWebsitePush) lines.push('Push all changes to your live wedding website')
-    if (isGuestNotify) lines.push(`Send update notification to ${guests.length} guests`)
-
-    if (lines.length > 0) {
-      return {
-        text: `Here's what I'll do:\n\n${lines.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nConfirm?`,
-        command: { type: 'update_wedding', updates, pushWebsite: isWebsitePush, notifyGuests: isGuestNotify, guestCount: guests.length },
-        actions: [{ label: 'View website', route: '/website' }, { label: 'View guests', route: '/guests' }],
-      }
-    }
-  }
-
-  // ── Just push website update (no profile changes) ─────────────────────────
-  if (isWebsitePush) {
-    return {
-      text: `I'll push your latest wedding details live to your website${isGuestNotify ? ` and notify ${guests.length} guests` : ''}. Confirm?`,
-      command: { type: 'update_wedding', updates: {}, pushWebsite: true, notifyGuests: isGuestNotify, guestCount: guests.length },
-      actions: [{ label: 'View website', route: '/website' }],
-    }
-  }
-
-  // ── Profile queries ───────────────────────────────────────────────────────
-  if (/\b(when.*wedding|wedding date|what.*date|how many.*day|days.*left|countdown|which city|where.*wedding|venue|location|who.*bride|who.*groom|couple)\b/.test(t)) {
-    const p = loadWeddingProfile()
-    const parts = []
-    if (p.bride && p.partner) parts.push(`Couple: ${p.bride} & ${p.partner}`)
-    if (p.date) parts.push(`Date: ${p.date}`)
-    if (p.location) parts.push(`Location: ${p.location}`)
-    if (p.theme) parts.push(`Theme: ${p.theme}`)
-    if (parts.length) {
-      return { text: parts.join('\n'), actions: [{ label: 'Edit details', route: '/' }] }
-    }
-    return { text: "I don't have your full wedding details yet. Just tell me the names, date, and city — I'll save them instantly." }
-  }
-
-  // ── Add task ─────────────────────────────────────────────────────────────
-  const addTaskRe = /\badd.*task\b|\bnew.*task\b|\bcreate.*task\b|\bremind.*to\b|\bi need to\b|\badd to.*list\b/
-  if (addTaskRe.test(t)) {
-    const desc = text
-      .replace(/add (a )?task[:\s]*/i, '').replace(/new task[:\s]*/i, '')
-      .replace(/create (a )?task[:\s]*/i, '').replace(/remind me to\s*/i, '')
-      .replace(/i need to\s*/i, '').replace(/add to (my )?list[:\s]*/i, '').trim()
-    if (desc.length > 2) {
-      return {
-        text: `I'll add "${desc}" to your task list. Confirm?`,
-        command: { type: 'add_task', title: desc },
         actions: [],
       }
     }
   }
 
-  // ── Complete task ─────────────────────────────────────────────────────────
-  if (/\b(done|complete|completed|finished?|mark.*done|check.*off)\b/.test(t)) {
-    const target = matchTask(text, tasks.filter(tk => !tk.done))
-    if (target) {
-      return {
-        text: `I'll mark "${target.title || target.text}" as done. Confirm?`,
-        command: { type: 'complete_task', taskId: target.id },
-        actions: [{ label: 'View tasks', route: '/tasks' }],
-      }
-    }
+  // ── Guest RSVP count ───────────────────────────────────────────────────
+  if (/\brsvp|how many.*confirm|who.*coming|guest.*count\b/.test(t)) {
+    const c = guests.filter(g => g.rsvp === 'confirmed').length
+    const p = guests.filter(g => g.rsvp === 'pending').length
+    return { text: `${c} confirmed, ${p} still pending.`, actions: [{ label: 'Guest list', route: '/guests' }] }
   }
 
-  // ── Add guest ─────────────────────────────────────────────────────────────
-  const addGuestRe = /\badd.*guest\b|\badd.*to.*guest.*list\b|\bnew.*guest\b/
-  if (addGuestRe.test(t)) {
-    const nameMatch = text.match(/(?:add guest|add)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?)/i)
-    const guestName = nameMatch ? nameMatch[1] : null
-    if (guestName) {
-      return {
-        text: `I'll add ${guestName} to the guest list with RSVP status "pending". Confirm?`,
-        command: { type: 'add_guest', name: guestName },
-        actions: [{ label: 'View guest list', route: '/guests' }],
-      }
-    }
-    return { text: "What's the name of the guest you'd like to add?", actions: [{ label: 'View guest list', route: '/guests' }] }
-  }
-
-  // ── Send invites ──────────────────────────────────────────────────────────
-  if (/\b(send.*invite|send.*invitation|blast.*invite|bulk.*invite)\b/.test(t)) {
-    const pending = guests.filter(g => g.rsvp === 'pending')
+  // ── Vendor summary ─────────────────────────────────────────────────────
+  if (/\bvendor\b/.test(t)) {
+    const c = vendors.filter(v => v.status === 'confirmed').length
+    const p = vendors.filter(v => v.status === 'pending').length
+    const r = vendors.filter(v => v.status === 'at_risk')
     return {
-      text: `I can send digital invitations to your ${pending.length} pending guests via WhatsApp and email. Want me to draft the message first, or send the standard invite now?`,
-      command: pending.length > 0 ? { type: 'send_invites', count: pending.length } : null,
-      actions: [{ label: 'View guest list', route: '/guests' }],
+      text: `${c} confirmed${p ? `, ${p} pending` : ''}${r.length ? `, ${r.length} at risk (${r.map(v => v.name).join(', ')})` : ''}.`,
+      actions: r.length ? [{ label: 'Vendors', route: '/vendors' }, { label: 'Resolve', route: '/crisis' }] : [{ label: 'Vendors', route: '/vendors' }],
     }
   }
 
-  // ── Guest follow-up / nudge ───────────────────────────────────────────────
-  if (/\b(follow.?up|nudge|remind).*guest|guest.*follow.?up/i.test(t)) {
-    const pending = guests.filter(g => g.rsvp === 'pending')
+  // ── Tasks ──────────────────────────────────────────────────────────────
+  if (/\btask|to.do|pending.*task\b/.test(t)) {
+    const p = tasks.filter(tk => !tk.done)
+    const u = p.filter(tk => tk.priority === 'high')
     return {
-      text: `${pending.length} guests haven't responded yet. I can send them a gentle WhatsApp nudge. Confirm?`,
-      command: pending.length > 0 ? { type: 'send_invites', count: pending.length } : null,
-      actions: [{ label: 'View guest list', route: '/guests' }],
+      text: `${p.length} tasks pending${u.length ? ` — ${u.length} urgent (${u.slice(0, 2).map(t => t.title).join(', ')})` : ''}.`,
+      actions: [{ label: 'Tasks', route: '/tasks' }],
     }
   }
 
-  // ── Vendor status summary ─────────────────────────────────────────────────
-  if (/\bvendor|confirm.*status|who.*confirmed|booked|who.*pending\b/.test(t)) {
-    const confirmed = vendors.filter(v => v.status === 'confirmed')
-    const atRisk    = vendors.filter(v => v.status === 'at_risk')
-    const pending   = vendors.filter(v => v.status === 'pending')
-    const parts = []
-    if (confirmed.length) parts.push(`${confirmed.length} confirmed ✓`)
-    if (pending.length)   parts.push(`${pending.length} pending — ${pending.map(v => v.name).join(', ')}`)
-    if (atRisk.length)    parts.push(`${atRisk.length} at risk ⚠️ — ${atRisk.map(v => v.name).join(', ')}`)
+  // ── Send invites ───────────────────────────────────────────────────────
+  if (/\bsend.*invite|send.*invitation\b/.test(t)) {
+    const p = guests.filter(g => g.rsvp === 'pending').length
     return {
-      text: parts.join('\n'),
-      actions: [
-        { label: 'View vendors', route: '/vendors' },
-        ...(atRisk.length ? [{ label: 'Resolve crisis', route: '/crisis' }] : []),
-      ],
+      text: `Sending invitations to ${p} pending guests now.`,
+      command: { type: 'send_invites', count: p },
+      actions: [],
     }
   }
 
-  // ── Tasks ─────────────────────────────────────────────────────────────────
-  if (/\btask|to.do|what.*pending|what.*left\b/.test(t)) {
-    const pending = tasks.filter(tk => !tk.done)
-    const urgent  = pending.filter(tk => tk.priority === 'high')
-    return {
-      text: `${pending.length} tasks pending${urgent.length ? `, ${urgent.length} urgent` : ''}. ${urgent.length ? `Most urgent: ${urgent.slice(0, 2).map(t => t.title).join(', ')}.` : 'Nothing critical right now.'}`,
-      actions: [{ label: 'View tasks', route: '/tasks' }, { label: 'Go to Today', route: '/' }],
-    }
-  }
-
-  // ── Guests / RSVP ─────────────────────────────────────────────────────────
-  if (/\brsvp|guest|how many.*attend|who.*coming\b/.test(t)) {
-    const confirmed = guests.filter(g => g.rsvp === 'confirmed').length
-    const pending   = guests.filter(g => g.rsvp === 'pending').length
-    const declined  = guests.filter(g => g.rsvp === 'declined').length
-    return {
-      text: `${confirmed} confirmed · ${pending} pending · ${declined} declined\n${guests.length} total invited.`,
-      actions: [{ label: 'View guest list', route: '/guests' }],
-    }
-  }
-
-  // ── Budget ────────────────────────────────────────────────────────────────
-  if (/\bbudget|spend|money|paid|cost|remaining|₹\b/.test(t)) {
-    return {
-      text: "₹31.8L spent of ₹50L (64%).\nMost urgent: Catering ₹6L due Dec 10, Photography ₹1.75L due Dec 15.\nFlorals are fully settled.",
-      actions: [{ label: 'View budget', route: '/budget' }],
-    }
-  }
-
-  // ── Schedule / ceremonies ─────────────────────────────────────────────────
-  if (/\bsangeet|baraat|pheras|ceremony|haldi|today|happening|schedule\b/.test(t)) {
-    return {
-      text: "Haldi ✓ done · Mehndi in progress · Sangeet at 7pm on track · Baraat at 4pm ⚠️ at risk (Mehndi delay).",
-      actions: [{ label: 'View ceremonies', route: '/ceremonies' }, { label: 'Resolve crisis', route: '/crisis' }],
-    }
-  }
-
-  // ── Crisis ────────────────────────────────────────────────────────────────
-  if (/\bcrisis|urgent.*problem|at.?risk|emergency|resolve\b/.test(t)) {
-    const atRisk = vendors.filter(v => v.status === 'at_risk')
-    if (atRisk.length) {
-      return {
-        text: `⚠️ ${atRisk.map(v => v.name).join(', ')} ${atRisk.length > 1 ? 'are' : 'is'} at risk and need immediate action.`,
-        actions: [{ label: 'Resolve crisis', route: '/crisis' }, { label: 'View vendors', route: '/vendors' }],
-      }
-    }
-    return { text: "No active crises — all key vendors are confirmed or pending follow-up.", actions: [{ label: 'View vendors', route: '/vendors' }] }
-  }
-
-  // ── Website ───────────────────────────────────────────────────────────────
-  if (/\bwebsite|wedding page|rsvp form|web page\b/.test(t)) {
-    return {
-      text: "Your wedding website is live. You have 284 page views and 127 RSVP responses so far. I can push updates to it anytime — just tell me what to change.",
-      actions: [{ label: 'View website', route: '/website' }, { label: 'View guests', route: '/guests' }],
-    }
-  }
-
-  // ── Greeting / capability query ───────────────────────────────────────────
-  if (/\b(hi|hello|hey|what can you|what do you|capabilities|help me|what.*do)\b/.test(t)) {
-    return {
-      text: "I'm Mubarak, your wedding AI. Here's what I can do:\n\n• Update wedding details (names, date, venue)\n• Push changes live to your website\n• Alert guests about updates\n• Track & follow up with vendors\n• Manage your task list\n• Send & track RSVPs\n• Give you a full wedding snapshot\n\nJust tell me what you need — in English, Hindi, or both.",
-      actions: [
-        { label: 'Update wedding details', query: 'Update our wedding details' },
-        { label: 'Push website update', query: 'Push the latest details to my website' },
-        { label: 'RSVP summary', query: 'How many guests have confirmed?' },
-        { label: 'Vendor status', route: '/vendors' },
-      ],
-    }
-  }
-
-  // ── Default ───────────────────────────────────────────────────────────────
-  return {
-    text: "I'm Mubarak — I can update your wedding details, push them to your website, alert guests, manage vendors, tasks, and RSVPs. What would you like to do?",
-    actions: [
-      { label: 'Update wedding details', query: 'Update our wedding details' },
-      { label: 'Push website update',    query: 'Push the latest details to my website and notify guests' },
-      { label: 'Vendor status',          route: '/vendors' },
-      { label: 'RSVP summary',           query: 'How many guests have confirmed?' },
-    ],
-  }
+  // ── Default (minimal) ──────────────────────────────────────────────────
+  return { text: "On it — what would you like me to do?", actions: [] }
 }
 
 const QUICK_CHIPS = [
@@ -460,49 +254,44 @@ async function callAgentLLM(message, vendors, tasks, guests, conversationHistory
   let profile = {}
   try { profile = JSON.parse(localStorage.getItem('sm_profile') || 'null') || {} } catch (_) {}
 
-  const confirmedGuests  = guests.filter(g => g.rsvp === 'confirmed').length
-  const pendingGuests    = guests.filter(g => g.rsvp === 'pending').length
-  const declinedGuests   = guests.filter(g => g.rsvp === 'declined').length
-  const pendingTasks     = tasks.filter(t => !t.done)
+  const confirmed = guests.filter(g => g.rsvp === 'confirmed').length
+  const pending   = guests.filter(g => g.rsvp === 'pending').length
+  const declined  = guests.filter(g => g.rsvp === 'declined').length
+  const pendingTasks = tasks.filter(t => !t.done)
 
-  const systemPrompt = `You are Mubarak, a warm and intelligent AI wedding planning assistant embedded in the ShaadiMubarak.ai app.
+  const systemPrompt = `You are Mubarak — an expert Indian wedding planner AI built into ShaadiMubarak.ai. You are knowledgeable, direct, and act immediately.
 
-Wedding Profile:
-- Bride: ${profile.bride || 'Not set'}
-- Groom: ${profile.groom || 'Not set'}
-- Date: ${profile.date || 'Not set'}
-- City: ${profile.city || 'Not set'}
-- Budget: ${profile.budget || 'Not set'}
-- Theme: ${profile.theme || 'Not set'}
+WEDDING DATA:
+Couple: ${profile.bride || '?'} & ${profile.groom || profile.partner || '?'}
+Date: ${profile.date || 'not set'} | City: ${profile.city || profile.location || 'not set'} | Budget: ${profile.budget || 'not set'} | Theme: ${profile.theme || 'not set'}
+Vendors (${vendors.length}): ${vendors.map(v => `${v.name} [${v.category}, ${v.status}]`).join(', ') || 'none booked'}
+Tasks: ${pendingTasks.length} pending${pendingTasks.length ? ' — ' + pendingTasks.slice(0, 5).map(t => t.title).join(', ') : ''}
+Guests: ${guests.length} total · ${confirmed} confirmed · ${pending} pending · ${declined} declined
 
-Booked Vendors (${vendors.length}):
-${vendors.length > 0 ? vendors.map(v => `  • ${v.name} (${v.category}) — ${v.status}`).join('\n') : '  None booked yet'}
+COMMANDS (use when the user asks you to take action):
+- vendor_status: { type:"vendor_status", vendorId, newStatus:"confirmed"|"pending"|"at_risk"|"cancelled" }
+- add_task: { type:"add_task", title }
+- complete_task: { type:"complete_task", taskId }
+- add_guest: { type:"add_guest", name, rsvp:"pending"|"confirmed"|"declined" }
+- update_wedding: { type:"update_wedding", updates:{bride?,groom?,date?,city?,theme?,budget?}, pushWebsite?:bool, notifyGuests?:bool }
+- send_invites: { type:"send_invites" }
 
-Pending Tasks (${pendingTasks.length}):
-${pendingTasks.slice(0, 8).map(t => `  • ${t.title}`).join('\n') || '  None'}
+KNOWLEDGE: You know everything about Indian weddings — Hindu, Muslim, Sikh, South Indian, Punjabi, Bengali, Gujarati, Telugu ceremonies; mehndi, sangeet, haldi, baraat, pheras, vidaai, reception; muhurtas and auspicious dates; trousseau, lehenga, sherwani, saree; pandit, choreographer, mehendi artist; catering veg/non-veg ratios; budgeting in lakhs; vendor negotiation; honeymoon planning; décor trends; invitation etiquette; pre-wedding shoot ideas; gift registry; guest seating; duties of baraat; family rituals. Answer any question in depth.
 
-Guests (${guests.length} total):
-  • ${confirmedGuests} confirmed · ${pendingGuests} pending · ${declinedGuests} declined
+RULES — follow these strictly:
+1. NEVER list what you can do. Never say "I can help with X, Y, Z". Just respond.
+2. NEVER say your name unless asked. Just talk.
+3. For questions: answer directly, knowledgeably, and conversationally.
+4. For actions: execute and confirm in ONE short sentence. No preamble.
+5. Be brief. 1–3 sentences unless detail is genuinely needed.
+6. Match the user's language — English, Hindi, or Hinglish.
+7. Only include "actions" chips when they are genuinely useful (0–2 max). Omit entirely if not helpful.
+8. Only include "command" when the user explicitly asks you to do something.
 
-Available commands you can execute on the user's behalf:
-  • vendor_status  — update a vendor's status: { type:"vendor_status", name, status:"confirmed"|"pending"|"at-risk"|"cancelled" }
-  • add_task       — add a new task: { type:"add_task", title }
-  • complete_task  — mark a task done: { type:"complete_task", title }
-  • add_guest      — add a guest: { type:"add_guest", name, phone, rsvp:"confirmed"|"pending"|"declined" }
-  • update_wedding — update wedding profile: { type:"update_wedding", bride?, groom?, date?, city?, theme?, budget?, pushWebsite?, notifyGuests? }
-  • send_invites   — send invites to pending guests: { type:"send_invites" }
+OUTPUT: Respond with ONLY valid JSON — no markdown, no extra text.
+{"text":"...","command":null,"actions":[]}`
 
-Rules:
-1. Always respond with valid JSON only (no markdown fences, no extra text).
-2. Format: { "text": "...", "command": {...} or null, "actions": [{"label":"...", "route":"..."} or {"label":"...", "query":"..."}] }
-3. "text" should be warm, concise, and conversational. Use line breaks (\\n) for lists.
-4. When the user asks to update wedding details AND push to website AND notify guests, use update_wedding with pushWebsite:true and notifyGuests:true.
-5. If you cannot execute an action, explain why and suggest alternatives in "text".
-6. You can speak back in English, Hindi, or Hinglish matching the user's language.
-7. Keep "actions" to 2-4 relevant quick-action buttons.`
-
-  // Build message history for API (last 8 turns)
-  const history = conversationHistory.slice(-8).map(m => ({
+  const history = conversationHistory.slice(-10).map(m => ({
     role: m.role === 'user' ? 'user' : 'assistant',
     content: m.text,
   }))
@@ -518,7 +307,7 @@ Rules:
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5',
-      max_tokens: 1024,
+      max_tokens: 600,
       system: systemPrompt,
       messages: history,
     }),
@@ -527,12 +316,15 @@ Rules:
   if (!res.ok) return null
   const data = await res.json()
   const raw = data.content?.[0]?.text?.trim() || ''
-  // Strip markdown code fences if present
-  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
-  const parsed = JSON.parse(cleaned)
-  // Normalise: ensure text, command, actions exist
+  // Strip markdown fences if model wraps output
+  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
+  // Find outermost JSON object (handles any leading/trailing text)
+  const jsonStart = cleaned.indexOf('{')
+  const jsonEnd   = cleaned.lastIndexOf('}')
+  if (jsonStart === -1 || jsonEnd === -1) return null
+  const parsed = JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1))
   return {
-    text: parsed.text || '',
+    text:    parsed.text    || '',
     command: parsed.command || null,
     actions: Array.isArray(parsed.actions) ? parsed.actions : [],
   }
