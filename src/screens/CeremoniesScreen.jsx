@@ -202,7 +202,9 @@ function getExtraAssets(ceremonyName) {
 function CeremonyDetail({ ceremony, tasks, setTasks, vendors, guests, setGuests, onClose, onOpenAgent }) {
   const data = CEREMONY_DATA[ceremony.name] || {}
   const [activeTab, setActiveTab] = useState('Timeline')
-  const [notes, setNotes] = useState([])
+  const [notes, setNotes] = useState([
+    { id: 1, text: 'Make sure you wear something comfortable and loose.', author: 'Chachi', time: '2h ago' }
+  ])
   const [noteInput, setNoteInput] = useState('')
   const [extraAssets, setExtraAssets] = useState(() => getExtraAssets(ceremony.name))
   const [selectedTask, setSelectedTask] = useState(null)
