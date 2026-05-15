@@ -332,32 +332,50 @@ function MiniPreviewCard({ theme, wp, onClick }) {
           </div>
         </div>
 
+        {/* Website nav bar */}
+        <div style={{ background: 'white', borderBottom: '1px solid rgba(0,0,0,0.07)', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
+          <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 13, color: t.accent, fontStyle: 'italic', marginRight: 'auto', padding: '8px 0' }}>A &amp; R</span>
+          {['STORY', 'EVENTS', 'PHOTOS', 'RSVP'].map(tab => (
+            <span key={tab} style={{ display: 'inline-block', padding: '10px 7px', fontSize: 7.5, letterSpacing: '0.07em', fontWeight: 600, color: tab === 'STORY' ? t.accent : 'rgba(26,20,16,0.38)', fontFamily: 'Inter, sans-serif', borderBottom: tab === 'STORY' ? `2px solid ${t.accent}` : '2px solid transparent' }}>
+              {tab}
+            </span>
+          ))}
+        </div>
+
         {/* Website content */}
         <div style={{ background: t.bg }}>
-          {/* Hero */}
-          <div style={{ height: 150, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 14, overflow: 'hidden' }}>
+          {/* Hero — flex column: name zone (flex:1) + countdown strip (fixed) */}
+          <div style={{ height: 260, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getVibeImage()})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(20,8,4,0.30) 0%, rgba(20,8,4,0.72) 100%)' }} />
-            <div style={{ position: 'relative', zIndex: 1, fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontStyle: 'italic', color: 'white', fontWeight: 400, marginBottom: 4 }}>
-              {wp.bride} &amp; {wp.groom}
-            </div>
-            <div style={{ position: 'relative', zIndex: 1, fontFamily: 'Inter, sans-serif', fontSize: 8, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.72)', textTransform: 'uppercase' }}>
-              DECEMBER 19, 2026 · UDAIPUR
-            </div>
-          </div>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(20,8,4,0.15) 0%, rgba(20,8,4,0.65) 60%, rgba(20,8,4,0.88) 100%)' }} />
 
-          {/* Countdown */}
-          <div style={{ background: 'white', padding: '12px 0', textAlign: 'center', borderBottom: `1px solid ${t.accent}18`, display: 'flex', justifyContent: 'center', gap: 20 }}>
-            {[{ v: days, l: 'DAYS' }, { v: hrs, l: 'HRS' }, { v: mins, l: 'MIN' }].map(({ v, l }) => (
-              <div key={l}>
-                <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, fontWeight: 300, color: '#1A1410', lineHeight: 1 }}>{v}</div>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 7, letterSpacing: '0.1em', color: 'rgba(26,20,16,0.4)', marginTop: 2 }}>{l}</div>
+            {/* Full-height flex column so the two zones never overlap */}
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+              {/* Name zone — grows to fill remaining space */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 16px' }}>
+                <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 24, fontStyle: 'italic', color: 'white', fontWeight: 400, marginBottom: 7 }}>
+                  {wp.bride} &amp; {wp.groom}
+                </div>
+                <div style={{ height: 1, width: 28, background: 'rgba(255,255,255,0.45)', marginBottom: 7 }} />
+                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 8, letterSpacing: '0.13em', color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' }}>
+                  DECEMBER 19, 2026 · UDAIPUR
+                </div>
               </div>
-            ))}
+
+              {/* Countdown strip — fixed 62px at bottom, never overlaps name zone */}
+              <div style={{ height: 62, flexShrink: 0, background: 'rgba(255,255,255,0.13)', backdropFilter: 'blur(8px)', borderTop: '1px solid rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 28 }}>
+                {[{ v: days, l: 'DAYS' }, { v: hrs, l: 'HRS' }, { v: mins, l: 'MIN' }].map(({ v, l }) => (
+                  <div key={l} style={{ textAlign: 'center' }}>
+                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 26, fontWeight: 300, color: 'white', lineHeight: 1 }}>{v}</div>
+                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 7, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.70)', marginTop: 3 }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Invite blurb */}
-          <div style={{ padding: '10px 18px 14px', textAlign: 'center' }}>
+          <div style={{ padding: '14px 18px 16px', textAlign: 'center', background: 'white', borderBottom: `1px solid ${t.accent}10` }}>
             <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 11, fontStyle: 'italic', color: 'rgba(26,20,16,0.6)', margin: 0, lineHeight: 1.7 }}>
               Join us as we begin our forever — Dec 19 at {wp.venue}
             </p>
