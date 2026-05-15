@@ -292,7 +292,7 @@ export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests 
     return () => window.removeEventListener('sm_wedding_updated', refresh)
   }, [])
 
-  const brideName = profile?.bride || 'The Bride'
+  const brideName = profile?.bride || profile?.name || 'The Bride'
   const partnerName = profile?.partner || 'The Groom'
   const venueShort = profile?.city || 'Venue TBD'
 
