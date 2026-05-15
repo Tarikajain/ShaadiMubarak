@@ -422,7 +422,7 @@ function CeremonyDetail({ ceremony, tasks, setTasks, vendors, guests, setGuests,
                   {notes.map(note => (
                     <div key={note.id} className="flex gap-3 items-start" style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(122,15,70,0.04)', border: '1px solid rgba(122,15,70,0.14)' }}>
                       <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(122,15,70,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: '#7A0F46' }}>Y</span>
+                        <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: '#7A0F46' }}>{note.author[0]}</span>
                       </div>
                       <div style={{ flex: 1 }}>
                         <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
