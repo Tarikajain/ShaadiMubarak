@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Sparkles, ChevronDown, ArrowRight } from 'lucide-react'
 import { getMemoryContext, addMemory } from '../utils/memoryUtils'
 import { ANTHROPIC_KEY } from '../config'
+import { WEDDING_PEOPLE } from '../screens/TasksScreen'
 
 // ─── Language detection ───────────────────────────────────────────────────────
 
@@ -274,11 +275,18 @@ Guests: ${guests.length} total · ${confirmed} confirmed · ${pending} pending �
 ${memoryContext ? `\nMEMORY (things I've already learned about this couple):\n${memoryContext}\n` : ''}
 COMMANDS (use when the user asks you to take action):
 - vendor_status: { type:"vendor_status", vendorId, newStatus:"confirmed"|"pending"|"at_risk"|"cancelled" }
-- add_task: { type:"add_task", title }
+- add_task: { type:"add_task", title, ceremony?:"Mehndi"|"Haldi Ceremony"|"Sangeet"|"Baraat Procession"|"Pheras & Vows"|"Reception" }
 - complete_task: { type:"complete_task", taskId }
 - add_guest: { type:"add_guest", name, rsvp:"pending"|"confirmed"|"declined" }
+- add_asset: { type:"add_asset", ceremony:"Mehndi"|"Haldi Ceremony"|"Sangeet"|"Baraat Procession"|"Pheras & Vows"|"Reception", label }
 - update_wedding: { type:"update_wedding", updates:{bride?,groom?,date?,city?,theme?,budget?}, pushWebsite?:bool, notifyGuests?:bool }
 - send_invites: { type:"send_invites" }
+- assign_task: { type:"assign_task", taskTitle:"...", assignees:["PersonName",...] }
+
+FAMILY MEMBERS (use their exact names in assign_task):
+Ananya (Bride), Rahul (Groom), Priya (Bride's Mom), Suresh (Bride's Dad), Meena (Groom's Mom), Vikram (Groom's Dad), Divya (Maid of Honour), Arjun (Best Man)
+
+CEREMONY NOTES: When the user asks to add something to a ceremony — whether as a task, an asset/item, or both — use the appropriate command(s). Assets are physical items needed for the ceremony (props, outfits, materials). Tasks are actions to complete. If the user asks to add something "as assets and tasks", send BOTH commands. To send two commands, wrap them in an array: "command": [cmd1, cmd2].
 
 KNOWLEDGE: You know everything about Indian weddings — Hindu, Muslim, Sikh, South Indian, Punjabi, Bengali, Gujarati, Telugu ceremonies; mehndi, sangeet, haldi, baraat, pheras, vidaai, reception; muhurtas and auspicious dates; trousseau, lehenga, sherwani, saree; pandit, choreographer, mehendi artist; catering veg/non-veg ratios; budgeting in lakhs; vendor negotiation; honeymoon planning; décor trends; invitation etiquette; pre-wedding shoot ideas; gift registry; guest seating; duties of baraat; family rituals. Answer any question in depth.
 
@@ -379,6 +387,7 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
   const [loading, setLoading] = useState(false)
   const [srAvailable, setSrAvailable] = useState(false)
   const [lang, setLang] = useState('en')
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const recognitionRef = useRef(null)
   const simulationRef = useRef(null)
@@ -520,6 +529,17 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
     window.speechSynthesis?.cancel()
   }, [])
 
+  useEffect(() => {
+    const onOpen = () => setDrawerOpen(true)
+    const onClose = () => setDrawerOpen(false)
+    window.addEventListener('sm_overlay_open', onOpen)
+    window.addEventListener('sm_overlay_close', onClose)
+    return () => {
+      window.removeEventListener('sm_overlay_open', onOpen)
+      window.removeEventListener('sm_overlay_close', onClose)
+    }
+  }, [])
+
   // Simulation: type out a demo phrase letter-by-letter
   const runSimulation = useCallback(() => {
     const phrase = DEMO_PHRASES[Math.floor(Math.random() * DEMO_PHRASES.length)]
@@ -592,78 +612,132 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
   }, [listening, open, srAvailable, runSimulation])
 
   // ── Execute a confirmed mutation command ─────────────────────────────────
+  // Map ceremony name → taskCategory used in CeremoniesScreen filters
+  const CEREMONY_TASK_CATEGORY = {
+    'Mehndi':             'mehndi',
+    'Haldi Ceremony':     'mehndi',
+    'Sangeet':            'music',
+    'Baraat Procession':  'venue',
+    'Pheras & Vows':      'venue',
+    'Reception':          'venue',
+  }
+
   const executeCommand = useCallback((cmd) => {
     if (!cmd) return
-    let confirmText = ''
-    if (cmd.type === 'vendor_status' && setVendors) {
-      setVendors(vs => vs.map(v => v.id === cmd.vendorId ? { ...v, status: cmd.newStatus, risk: cmd.newStatus === 'at_risk' ? 'high' : cmd.newStatus === 'pending' ? 'medium' : 'low' } : v))
-      const vName = vendors.find(v => v.id === cmd.vendorId)?.name || 'Vendor'
-      confirmText = `Done! ${vName} has been updated to ${STATUS_LABEL[cmd.newStatus]}.`
-    } else if (cmd.type === 'add_task' && setTasks) {
-      const newTask = {
-        id: Date.now(),
-        title: cmd.title,
-        text: cmd.title,
-        done: false,
-        priority: 'medium',
-        category: 'General',
-        dueDate: null,
-      }
-      setTasks(ts => [newTask, ...ts])
-      confirmText = `Added "${cmd.title}" to your task list! ✓`
-    } else if (cmd.type === 'complete_task' && setTasks) {
-      setTasks(ts => ts.map(t => t.id === cmd.taskId ? { ...t, done: true } : t))
-      const tTitle = tasks.find(t => t.id === cmd.taskId)?.title || 'Task'
-      confirmText = `"${tTitle}" marked as done ✓`
-    } else if (cmd.type === 'add_guest' && setGuests) {
-      const newGuest = {
-        id: Date.now(), name: cmd.name, rsvp: 'pending',
-        side: 'bride', tier: 'everyone', phone: '', email: '',
-      }
-      setGuests(gs => [newGuest, ...gs])
-      confirmText = `${cmd.name} added to the guest list as pending RSVP ✓`
-    } else if (cmd.type === 'update_wedding') {
-      const u = cmd.updates || {}
-      try {
-        const profile = JSON.parse(localStorage.getItem('sm_profile') || '{}')
-        // LLM uses 'groom' / 'city'; stored profile uses 'partner' / 'location'
-        if (u.bride)  profile.bride    = u.bride
-        if (u.groom)  profile.partner  = u.groom
-        if (u.date)   profile.date     = u.date
-        if (u.city)   profile.location = u.city
-        if (u.theme)  profile.theme    = u.theme
-        if (u.budget) profile.budget   = u.budget
-        localStorage.setItem('sm_profile', JSON.stringify(profile))
-        // Notify all screens that read profile data to re-render
-        window.dispatchEvent(new Event('sm_wedding_updated'))
-      } catch (_) {}
 
-      // Build what-changed list
-      const changes = []
-      if (u.bride || u.groom) changes.push(`Names → ${[u.bride, u.groom].filter(Boolean).join(' & ')}`)
-      if (u.date)   changes.push(`Date → ${u.date}`)
-      if (u.city)   changes.push(`Venue → ${u.city}`)
-      if (u.theme)  changes.push(`Theme → ${u.theme}`)
-      if (u.budget) changes.push(`Budget → ${u.budget}`)
-
-      // Build pushed-to list
-      const pushed = new Set()
-      if (u.bride || u.groom || u.date || u.city) {
-        pushed.add('Dashboard')
-        pushed.add('Wedding website')
+    // Inline single-command executor — returns confirm text string
+    const runOne = (c) => {
+      if (!c) return ''
+      let confirmText = ''
+      if (c.type === 'vendor_status' && setVendors) {
+        setVendors(vs => vs.map(v => v.id === c.vendorId ? { ...v, status: c.newStatus, risk: c.newStatus === 'at_risk' ? 'high' : c.newStatus === 'pending' ? 'medium' : 'low' } : v))
+        const vName = vendors.find(v => v.id === c.vendorId)?.name || 'Vendor'
+        confirmText = `Done! ${vName} has been updated to ${STATUS_LABEL[c.newStatus]}.`
+      } else if (c.type === 'add_task' && setTasks) {
+        const taskCategory = c.ceremony ? (CEREMONY_TASK_CATEGORY[c.ceremony] || 'General') : 'General'
+        const newTask = {
+          id: Date.now(),
+          title: c.title,
+          text: c.title,
+          done: false,
+          priority: 'medium',
+          category: taskCategory,
+          dueDate: null,
+        }
+        setTasks(ts => [newTask, ...ts])
+        confirmText = c.ceremony
+          ? `Added "${c.title}" to ${c.ceremony} tasks ✓`
+          : `Added "${c.title}" to your task list ✓`
+      } else if (c.type === 'complete_task' && setTasks) {
+        setTasks(ts => ts.map(t => t.id === c.taskId ? { ...t, done: true } : t))
+        const tTitle = tasks.find(t => t.id === c.taskId)?.title || 'Task'
+        confirmText = `"${tTitle}" marked as done ✓`
+      } else if (c.type === 'add_guest' && setGuests) {
+        const newGuest = {
+          id: Date.now(), name: c.name, rsvp: 'pending',
+          side: 'bride', tier: 'everyone', phone: '', email: '',
+        }
+        setGuests(gs => [newGuest, ...gs])
+        confirmText = `${c.name} added to the guest list as pending RSVP ✓`
+      } else if (c.type === 'add_asset') {
+        try {
+          const stored = JSON.parse(localStorage.getItem('sm_ceremony_assets') || '{}')
+          if (!stored[c.ceremony]) stored[c.ceremony] = []
+          stored[c.ceremony].push({ label: c.label, image: null, addedBy: 'agent' })
+          localStorage.setItem('sm_ceremony_assets', JSON.stringify(stored))
+          window.dispatchEvent(new Event('sm_assets_updated'))
+        } catch (_) {}
+        confirmText = `Added "${c.label}" to ${c.ceremony} assets ✓`
+      } else if (c.type === 'update_wedding') {
+        const u = c.updates || {}
+        try {
+          const profile = JSON.parse(localStorage.getItem('sm_profile') || '{}')
+          if (u.bride)  profile.bride    = u.bride
+          if (u.groom)  profile.partner  = u.groom
+          if (u.date)   profile.date     = u.date
+          if (u.city)   { profile.city = u.city; profile.location = u.city }
+          if (u.theme)  profile.theme    = u.theme
+          if (u.budget) profile.budget   = u.budget
+          localStorage.setItem('sm_profile', JSON.stringify(profile))
+          window.dispatchEvent(new Event('sm_wedding_updated'))
+        } catch (_) {}
+        const changes = []
+        if (u.bride || u.groom) changes.push(`Names → ${[u.bride, u.groom].filter(Boolean).join(' & ')}`)
+        if (u.date)   changes.push(`Date → ${u.date}`)
+        if (u.city)   changes.push(`Venue → ${u.city}`)
+        if (u.theme)  changes.push(`Theme → ${u.theme}`)
+        if (u.budget) changes.push(`Budget → ${u.budget}`)
+        const pushed = new Set()
+        if (u.bride || u.groom || u.date || u.city) { pushed.add('Dashboard'); pushed.add('Wedding website') }
+        if (u.date) pushed.add('Ceremony timeline')
+        if (u.theme || u.budget) pushed.add('Profile')
+        if (c.notifyGuests && c.guestCount) pushed.add(`${c.guestCount} guests notified`)
+        confirmText = changes.join(' · ') +
+          (pushed.size ? `\n\nPushed to: ${[...pushed].join(', ')} ✓` : ' ✓')
+      } else if (c.type === 'send_invites') {
+        confirmText = `Invitations sent to ${c.count} guests via WhatsApp and email ✓`
+      } else if (c.type === 'assign_task' && setTasks) {
+        // Fuzzy-match task title
+        const needle = (c.taskTitle || '').toLowerCase()
+        const found = tasks.find(t => {
+          const title = (t.title || t.text || '').toLowerCase()
+          return title === needle || title.includes(needle) || needle.includes(title.split(' ')[0])
+        })
+        if (found) {
+          // Map provided names → WEDDING_PEOPLE ids (case-insensitive name or role match)
+          const names = Array.isArray(c.assignees) ? c.assignees : []
+          const ids = names.reduce((acc, name) => {
+            const lname = name.toLowerCase()
+            const person = WEDDING_PEOPLE.find(
+              p => p.name.toLowerCase() === lname || p.role.toLowerCase() === lname
+            )
+            if (person) acc.push(person.id)
+            return acc
+          }, [])
+          if (ids.length) {
+            setTasks(ts => ts.map(t =>
+              t.id === found.id
+                ? { ...t, assignees: [...new Set([...(t.assignees || []), ...ids])] }
+                : t
+            ))
+            const displayNames = names.filter((n, i) => ids[i] !== undefined)
+            confirmText = `"${found.title || found.text}" assigned to ${displayNames.join(', ')} ✓`
+          } else {
+            confirmText = `Couldn't find those people in your wedding party.`
+          }
+        } else {
+          confirmText = `Couldn't find a task matching "${c.taskTitle}".`
+        }
       }
-      if (u.date) pushed.add('Ceremony timeline')
-      if (u.theme || u.budget) pushed.add('Profile')
-      if (cmd.notifyGuests && cmd.guestCount) pushed.add(`${cmd.guestCount} guests notified`)
-
-      confirmText = changes.join(' · ') +
-        (pushed.size ? `\n\nPushed to: ${[...pushed].join(', ')} ✓` : ' ✓')
-    } else if (cmd.type === 'send_invites') {
-      confirmText = `Invitations sent to ${cmd.count} guests via WhatsApp and email ✓`
+      return confirmText
     }
+
+    // Support array of commands — run all, post one combined message
+    const cmds = Array.isArray(cmd) ? cmd : [cmd]
+    const confirms = cmds.map(runOne).filter(Boolean)
     setPendingCommand(null)
-    if (confirmText) {
-      setMessages(m => [...m, { role: 'agent', text: confirmText, actions: [] }])
+    if (confirms.length) {
+      setMessages(m => [...m, { role: 'agent', text: confirms.join('\n'), actions: [] }])
     }
   }, [vendors, tasks, guests, setVendors, setTasks, setGuests])
 
@@ -773,7 +847,7 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
     <>
       {/* ── Collapsed pill bar ── */}
       <AnimatePresence>
-        {!open && (
+        {!open && !drawerOpen && (
           <motion.div
             key="pill"
             initial={{ opacity: 0, y: 10 }}
@@ -782,7 +856,7 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
             transition={{ duration: 0.25 }}
             onClick={() => setOpen(true)}
             style={{
-              position: 'absolute', bottom: '72px', left: '14px', right: '14px', zIndex: 300,
+              position: 'absolute', bottom: '72px', left: '14px', right: '14px', zIndex: 430,
               background: '#FFFBF5', borderRadius: '16px',
               border: '1px solid rgba(122,15,70,0.28)',
               boxShadow: '0 2px 16px rgba(0,0,0,0.07), 0 0 0 1px rgba(122,15,70,0.06)',
@@ -829,7 +903,7 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
               key="backdrop"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              style={{ position: 'absolute', inset: 0, background: 'rgba(44,44,44,0.3)', zIndex: 305 }}
+              style={{ position: 'absolute', inset: 0, background: 'rgba(44,44,44,0.3)', zIndex: 450 }}
             />
 
             <motion.div
@@ -839,7 +913,7 @@ export default function AgentBar({ vendors = [], setVendors, tasks = [], setTask
               style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0, height: '74%',
                 background: '#FFFBF5', borderRadius: '22px 22px 0 0',
-                zIndex: 310, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                zIndex: 452, display: 'flex', flexDirection: 'column', overflow: 'hidden',
               }}
             >
               {/* Header */}

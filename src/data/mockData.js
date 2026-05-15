@@ -14,23 +14,17 @@ export const currentUser = {
 }
 
 export const ceremonies = [
-  { id: 1, name: 'Haldi Ceremony',    time: '10:00 AM', status: 'done',     vendors: ['florist', 'photographer'] },
-  { id: 2, name: 'Mehndi',            time: '12:30 PM', status: 'live',     vendors: ['mehndi_artist', 'photographer'] },
+  { id: 1, name: 'Haldi Ceremony',    time: '10:00 AM', status: 'upcoming', vendors: ['florist', 'photographer'] },
+  { id: 2, name: 'Mehndi',            time: '12:30 PM', status: 'upcoming', vendors: ['mehndi_artist', 'photographer'] },
   { id: 3, name: 'Sangeet',           time: '7:00 PM',  status: 'upcoming', vendors: ['dj', 'caterer', 'decorator'] },
-  { id: 4, name: 'Baraat Procession', time: '4:00 PM',  status: 'at_risk',  vendors: ['band', 'decorator'] },
+  { id: 4, name: 'Baraat Procession', time: '4:00 PM',  status: 'upcoming', vendors: ['band', 'decorator'] },
   { id: 5, name: 'Pheras & Vows',     time: '7:00 PM',  status: 'upcoming', vendors: ['pandit', 'photographer', 'caterer'] },
   { id: 6, name: 'Reception',         time: '9:00 PM',  status: 'upcoming', vendors: ['dj', 'caterer', 'photographer', 'decorator'] },
 ]
 
 export const vendors = [
-  { id: 1, name: 'Rajan Photography',  category: 'Photographer',      ceremony: 'All events',            status: 'confirmed', lastContact: '2h ago',  risk: 'low',    phone: '+91 98400 12345', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=RP' },
-  { id: 2, name: 'Rekha Mehndi Art',   category: 'Mehndi Artist',     ceremony: 'Mehndi · 12–3pm',       status: 'at_risk',   lastContact: '48h ago', risk: 'high', alert: true, phone: '+91 99400 55678', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=RM' },
-  { id: 3, name: 'Aromas Catering',    category: 'Caterer',           ceremony: 'All meals',             status: 'confirmed', lastContact: '1d ago',  risk: 'low',    phone: '+91 98765 00123', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=AC' },
-  { id: 4, name: 'Pandit Sureshji',    category: 'Pandit',            ceremony: 'Pheras · 7–8:30pm',    status: 'pending',   lastContact: '3d ago',  risk: 'medium', phone: '+91 94400 77890', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=PS' },
-  { id: 5, name: 'Bloom Florals',      category: 'Florist',           ceremony: 'All events',            status: 'confirmed', lastContact: '6h ago',  risk: 'low',    phone: '+91 98200 34567', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=BF' },
-  { id: 6, name: 'Rhythm DJ Services', category: 'DJ',                ceremony: 'Sangeet · 7pm–1am',    status: 'pending',   lastContact: '2d ago',  risk: 'medium', phone: '+91 97300 22456', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=RD' },
-  { id: 7, name: 'Grand Decorators',   category: 'Decorator',         ceremony: 'All events',            status: 'confirmed', lastContact: '1h ago',  risk: 'low',    phone: '+91 98900 11234', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=GD' },
-  { id: 8, name: 'Royal Baraat Band',  category: 'Baraat Band',       ceremony: 'Baraat · 4–6pm',        status: 'confirmed', lastContact: '5h ago',  risk: 'low',    phone: '+91 96600 88012', image: 'https://placehold.co/72x72/EDE0D4/7A0F46?text=RB' },
+  { id: 1, name: 'Rajan Photography',  category: 'Photographer', ceremony: 'All events',         status: 'confirmed', lastContact: '2h ago',  risk: 'low',    phone: '+91 98400 12345', image: 'https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=144&q=80' },
+  { id: 4, name: 'Pandit Sureshji',    category: 'Pandit',       ceremony: 'Pheras · 7–8:30pm', status: 'pending',   lastContact: '3d ago',  risk: 'medium', phone: '+91 94400 77890', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=144&q=80' },
 ]
 
 export const crisis = {
@@ -293,6 +287,13 @@ export const vendorDetails = {
     bio: 'Rajan Photography has captured over 300 South Indian weddings across Chennai and Hyderabad. Known for intimate candid moments and cinematic portrait sessions that tell the full story of a day.',
     contact: { phone: '+91 98400 12345', email: 'rajan@rajanphotography.in', website: 'rajanphotography.in' },
     galleryColors: ['#C4956A', '#8B6A4F', '#D4A882', '#7A5C3A', '#E8D0B0'],
+    images: [
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=300&q=80',
+      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&q=80',
+      'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=300&q=80',
+      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=300&q=80',
+      'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=300&q=80',
+    ],
     bookedPackage: 'Gold',
     totalAmount: 280000,
     amountPaid: 140000,

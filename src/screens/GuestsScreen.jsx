@@ -10,7 +10,8 @@ import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import NavIcons from '../components/layout/NavIcons'
 import LogoMark from '../components/layout/LogoMark'
-import { guests as mockGuests, wedding } from '../data/mockData'
+import { guests as mockGuests } from '../data/mockData'
+import { useWeddingProfile } from '../hooks/useWeddingProfile'
 import { VIBES, DEFAULT_VIBE } from '../data/vibesData'
 import { getWeddingProfile } from '../utils/profileUtils'
 
@@ -67,10 +68,10 @@ function GuestActionDrawer({ guest, onClose, coupleNames, weddingDate, weddingVe
   return (
     <>
       <motion.div key="guest-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420 }} />
       <motion.div key="guest-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 40px' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 40px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: '24px' }}>
           <InitialAvatar name={guest.name} side={guest.side} size={48} />
@@ -183,9 +184,9 @@ function ImportModal({ onClose, onImport }) {
   }
   return (
     <>
-      <motion.div key="imp-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
+      <motion.div key="imp-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420 }} />
       <motion.div key="imp-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 36px' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 36px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '24px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Import guest list</p>
         <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 22px' }}>Upload a CSV or Excel file. Columns: Name, Contact, RSVP Status</p>
@@ -219,9 +220,9 @@ function GoogleSheetsModal({ onClose, onConnect, connected, lastSync }) {
   }
   return (
     <>
-      <motion.div key="gs-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
+      <motion.div key="gs-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420 }} />
       <motion.div key="gs-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 36px' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 36px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: '16px' }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(52,168,83,0.1)', border: '1px solid rgba(52,168,83,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Sheet size={20} color="#34A853" /></div>
@@ -249,26 +250,27 @@ function GoogleSheetsModal({ onClose, onConnect, connected, lastSync }) {
 
 const WEBSITE_TEMPLATES = [
   {
-    id: 'meera',  name: 'Meera',  style: 'Traditional · Red & Gold',
+    id: 'meera',  name: 'Traditional',
     image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=400&h=260&q=75',
     accent: '#7A0F46', accentBg: 'rgba(122,15,70,0.08)',
   },
   {
-    id: 'zara',   name: 'Zara',   style: 'Modern · Blush & Ivory',
+    id: 'zara',   name: 'Modern',
     image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&h=260&q=75',
     accent: '#C45A80', accentBg: 'rgba(196,90,128,0.08)',
   },
   {
-    id: 'priya',  name: 'Priya',  style: 'Garden · Sage & White',
+    id: 'priya',  name: 'Contemporary',
     image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=400&h=260&q=75',
     accent: '#2D6025', accentBg: 'rgba(45,96,37,0.08)',
   },
   {
-    id: 'ananya', name: 'Ananya', style: 'Royal · Navy & Gold',
+    id: 'ananya', name: 'Royal',
     image: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=400&h=260&q=75',
     accent: '#1A3A6B', accentBg: 'rgba(26,58,107,0.08)',
   },
 ]
+
 
 const INVITE_TEMPLATES = [
   { id: 'royal',   name: 'Royal',   gradient: 'linear-gradient(135deg, #7A0F46, #3D0822)', accent: '#7A0F46' },
@@ -331,18 +333,31 @@ function WebsitePreviewMock({ templateId }) {
   )
 }
 
+function TemplatePreviewCard({ t, height }) {
+  return (
+    <div style={{ width: '100%', height, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center top' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.55) 100%)' }} />
+      <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, textAlign: 'center' }}>
+        <span style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: Math.max(9, height * 0.16), fontWeight: 600, color: '#fff', letterSpacing: '0.01em' }}>A &amp; R</span>
+      </div>
+      <div style={{ position: 'absolute', top: 8, left: 8, width: 8, height: 8, borderRadius: '50%', background: t.accent, boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }} />
+    </div>
+  )
+}
+
 // ─── Full-screen Wedding Website Setup ───────────────────────────
 // ─── Website choice drawer (shown before the full setup screen) ──
-function WebsiteChoiceDrawer({ onClose, onSelectTemplate, onSelectConnect }) {
+function WebsiteChoiceDrawer({ onClose, onSelectTemplate, onSelectConnect }) { // zIndex 440/441 — above agent pill (430)
   return (
     <>
       <motion.div key="wcd-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 440 }} />
       <motion.div key="wcd-sh"
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 441, padding: '20px 20px 44px' }}>
         {/* Handle */}
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.10)', margin: '0 auto 20px' }} />
         {/* Header */}
@@ -352,9 +367,9 @@ function WebsiteChoiceDrawer({ onClose, onSelectTemplate, onSelectConnect }) {
         <div style={{ display: 'flex', gap: 10 }}>
           <motion.button onClick={onSelectTemplate} whileTap={{ scale: 0.97 }}
             className="font-work-sans"
-            style={{ flex: 1, borderRadius: 16, background: 'rgba(122,15,70,0.04)', border: '1px solid rgba(122,15,70,0.18)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 14px' }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(122,15,70,0.08)', border: '1px solid rgba(122,15,70,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Palette size={17} color="#7A0F46" strokeWidth={1.6} />
+            style={{ flex: 1, borderRadius: 16, background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.09)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 14px' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Palette size={17} color="rgba(26,20,16,0.65)" strokeWidth={1.6} />
             </div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: '0 0 3px', lineHeight: 1.2 }}>Create from template</p>
@@ -398,7 +413,7 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
       <motion.div key="ws-active"
         initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 32 }}
         transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
-        style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 320, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        style={{ position: 'absolute', inset: '0 0 64px 0', background: '#FFFBF5', zIndex: 420, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <StatusBar />
         {/* Header */}
         <div style={{ flexShrink: 0, borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '10px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -434,19 +449,32 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
             </div>
           )}
         </div>
-        {/* Edit button */}
-        <div style={{ flexShrink: 0, padding: '12px 20px 32px', borderTop: '1px solid rgba(0,0,0,0.06)', background: '#FFFBF5', display: 'flex', gap: 9 }}>
+        {/* Action buttons */}
+        <div style={{ flexShrink: 0, padding: '12px 20px 0', borderTop: '1px solid rgba(0,0,0,0.06)', background: '#FFFBF5' }}>
+          {/* Secondary row: Change setup + Edit */}
+          <div style={{ display: 'flex', gap: 9, marginBottom: 9 }}>
+            <button
+              onClick={() => { onSave(null); onClose() }}
+              className="font-work-sans"
+              style={{ flex: 1, padding: '12px', borderRadius: '13px', background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.09)', fontSize: '13px', fontWeight: 500, color: 'rgba(26,20,16,0.6)', cursor: 'pointer' }}>
+              Change setup
+            </button>
+            <button
+              onClick={() => { onClose(); setTimeout(() => onOpenAgent?.('What would you like to change on your wedding website?'), 320) }}
+              className="font-work-sans"
+              style={{ flex: 1, padding: '12px', borderRadius: '13px', background: 'rgba(122,15,70,0.06)', border: '1px solid rgba(122,15,70,0.22)', fontSize: '13px', fontWeight: 500, color: '#7A0F46', cursor: 'pointer' }}>
+              Edit
+            </button>
+          </div>
+          {/* Primary: Preview */}
           <button
-            onClick={() => { onSave(null); onClose() }}
-            className="font-work-sans"
-            style={{ flex: 1, padding: '13px', borderRadius: '14px', background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.09)', fontSize: '13px', fontWeight: 500, color: 'rgba(26,20,16,0.6)', cursor: 'pointer' }}>
-            Change setup
-          </button>
-          <button
-            onClick={() => { onClose(); setTimeout(() => onOpenAgent?.('What would you like to change on your wedding website?'), 320) }}
-            className="font-montserrat"
-            style={{ flex: 2, padding: '13px', borderRadius: '14px', background: 'linear-gradient(135deg, #C4501E, #A03A12)', boxShadow: '0 6px 20px rgba(196,80,30,0.28)', fontSize: '12px', fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Edit with Mubarak
+            onClick={() => {
+              const url = initialConfig.mode === 'custom' && initialConfig.url ? initialConfig.url : 'https://ananya-rahul.wedding'
+              window.open(url, '_blank')
+            }}
+            className="font-montserrat w-full flex items-center justify-center gap-2"
+            style={{ padding: '15px', borderRadius: '14px', background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', fontSize: '13px', fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase', border: 'none', marginBottom: 80 }}>
+            Preview live site →
           </button>
         </div>
       </motion.div>
@@ -457,8 +485,11 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
 
   const handlePersonalise = () => {
     onSave({ mode: 'template', template: selectedTemplate })
-    onClose()
-    if (onOpenAgent) setTimeout(onOpenAgent, 280)
+    // Open agent in-place — don't close the screen
+    if (onOpenAgent) {
+      const t = WEBSITE_TEMPLATES.find(t => t.id === selectedTemplate)
+      onOpenAgent(`I've picked the ${t?.name || selectedTemplate} template for my wedding website. Help me personalise it with our details.`)
+    }
   }
 
   const handleConnect = () => {
@@ -476,7 +507,7 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
     <motion.div key="ws-screen"
       initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 32 }}
       transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
-      style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 320, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 420, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
       {/* Status bar */}
       <StatusBar />
@@ -555,8 +586,8 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
           <motion.div key="template-mode" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-            {/* Live website preview — fills remaining space above carousel panel */}
-            <div style={{ flex: 1, padding: '12px 16px 8px', position: 'relative', minHeight: 0 }}>
+            {/* Live website preview — fixed height so carousel + button + agent pill all fit */}
+            <div style={{ flex: '0 0 260px', padding: '12px 16px 8px', position: 'relative', minHeight: 0 }}>
               <AnimatePresence mode="wait">
                 <motion.div key={selectedTemplate} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
@@ -570,37 +601,33 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
               </div>
             </div>
 
-            {/* Template carousel + CTA — fixed panel, never scrolls, always visible above BottomNav */}
-            <div style={{ flexShrink: 0, background: '#FFFBF5', borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: 12, paddingBottom: 16 }}>
+            {/* Template carousel + CTA — fixed panel, leaves room for agent bar pill */}
+            <div style={{ flexShrink: 0, background: '#FFFBF5', borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: 12, paddingBottom: 80 }}>
               {/* Templates label */}
-              <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.45)', letterSpacing: '0.09em', textTransform: 'uppercase', margin: '0 0 9px', paddingLeft: 16 }}>Templates</p>
-              {/* Carousel — spacer children give reliable left/right indent in WebKit (padding-start gets swallowed) */}
+              <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.45)', letterSpacing: '0.09em', textTransform: 'uppercase', margin: '0 0 9px', paddingLeft: 20 }}>Templates</p>
+              {/* Carousel */}
               <div ref={carouselRef}
-                style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, scrollSnapType: 'x mandatory', msOverflowStyle: 'none', scrollbarWidth: 'none' }} className="no-scrollbar">
-                {/* 6px spacer + 10px gap = 16px left indent */}
-                <div style={{ flexShrink: 0, width: 6 }} />
+                style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, paddingLeft: 20, paddingRight: 20, scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, msOverflowStyle: 'none', scrollbarWidth: 'none' }} className="no-scrollbar">
                   {WEBSITE_TEMPLATES.map(t => {
                     const isActive = selectedTemplate === t.id
                     return (
                       <motion.button key={t.id} onClick={() => handleTemplateSelect(t.id)} whileTap={{ scale: 0.96 }}
-                        style={{ flexShrink: 0, width: 110, borderRadius: 12, overflow: 'hidden', border: isActive ? `2.5px solid ${t.accent}` : '2px solid transparent', cursor: 'pointer', padding: 0, background: 'none', scrollSnapAlign: 'start', boxShadow: isActive ? `0 4px 14px ${t.accentBg}` : '0 1px 6px rgba(0,0,0,0.08)' }}>
-                        <div style={{ height: 68, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+                        style={{ flexShrink: 0, width: 110, borderRadius: 12, overflow: 'hidden', border: isActive ? `2.5px solid ${t.accent}` : '2px solid rgba(0,0,0,0.07)', cursor: 'pointer', padding: 0, background: 'none', scrollSnapAlign: 'start', boxShadow: isActive ? `0 4px 14px ${t.accentBg}` : '0 1px 6px rgba(0,0,0,0.08)' }}>
+                        <div style={{ position: 'relative' }}>
+                          <TemplatePreviewCard t={t} height={68} />
                           {isActive && (
                             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 26 }}
-                              style={{ position: 'absolute', top: 6, right: 6, width: 18, height: 18, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.3)' }}>
+                              style={{ position: 'absolute', top: 6, right: 6, width: 18, height: 18, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.3)', zIndex: 2 }}>
                               <Check size={10} color="#fff" strokeWidth={2.5} />
                             </motion.div>
                           )}
                         </div>
-                        <div style={{ padding: '7px 9px 9px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                          <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: isActive ? 600 : 500, color: isActive ? t.accent : '#1A1410', margin: '0 0 1px' }}>{t.name}</p>
-                          <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.style}</p>
+                        <div style={{ padding: '7px 9px 8px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                          <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: isActive ? 600 : 500, color: isActive ? t.accent : '#1A1410', margin: 0 }}>{t.name}</p>
                         </div>
                       </motion.button>
                     )
                   })}
-                {/* 6px right spacer mirrors left spacer */}
-                <div style={{ flexShrink: 0, width: 6 }} />
               </div>
 
               {/* Personalise CTA */}
@@ -702,10 +729,10 @@ function TemplatePickerSheet({ onClose, onSelect, onOpenAgent }) {
     <>
       <motion.div key="tpl-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 0.45 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,1)', zIndex: 320}} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,1)', zIndex: 420}} />
       <motion.div key="tpl-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 360, damping: 34 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, maxHeight: '90%', overflowY: 'auto', paddingBottom: 40 }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, maxHeight: '90%', overflowY: 'auto', paddingBottom: 40 }}>
         {/* Handle */}
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '20px auto 0' }} />
 
@@ -731,22 +758,19 @@ function TemplatePickerSheet({ onClose, onSelect, onOpenAgent }) {
             return (
               <motion.button key={t.id} onClick={() => setSelected(t.id)} whileTap={{ scale: 0.97 }}
                 style={{ borderRadius: 16, overflow: 'hidden', border: isSelected ? `2px solid ${t.accent}` : '2px solid transparent', cursor: 'pointer', background: 'none', padding: 0, position: 'relative', boxShadow: isSelected ? `0 4px 18px ${t.accentBg}` : '0 1px 8px rgba(0,0,0,0.06)', transition: 'box-shadow 0.2s' }}>
-                {/* Image */}
-                <div style={{ height: 130, position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%)' }} />
-                  {/* Selected checkmark */}
+                {/* CSS template preview */}
+                <div style={{ position: 'relative' }}>
+                  <TemplatePreviewCard t={t} height={130} />
                   {isSelected && (
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 480, damping: 28 }}
-                      style={{ position: 'absolute', top: 8, right: 8, width: 22, height: 22, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}>
+                      style={{ position: 'absolute', top: 8, right: 8, width: 22, height: 22, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)', zIndex: 2 }}>
                       <Check size={12} color="#FFFFFF" strokeWidth={2.5} />
                     </motion.div>
                   )}
                 </div>
                 {/* Label */}
                 <div style={{ padding: '10px 12px 12px', background: '#FFFFFF', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                  <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: '0 0 2px' }}>{t.name}</p>
-                  <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.52)', margin: 0 }}>{t.style}</p>
+                  <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>{t.name}</p>
                 </div>
               </motion.button>
             )
@@ -827,10 +851,10 @@ function AssetSetupSheet({ type, onClose, onSave, onOpenAgent }) {
   return (
     <>
       <motion.div key="asset-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420 }} />
       <motion.div key="asset-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 40px', maxHeight: '85%', overflowY: 'auto' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 40px', maxHeight: '85%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Set up {label}</p>
         <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 20px' }}>Choose how you want to manage your {type === 'website' ? 'wedding website' : 'digital invites'}.</p>
@@ -858,11 +882,10 @@ function AssetSetupSheet({ type, onClose, onSave, onOpenAgent }) {
                 return (
                   <div style={{ marginBottom: 20 }}>
                     <div style={{ borderRadius: 14, overflow: 'hidden', border: `1.5px solid ${t.accent}`, marginBottom: 10 }}>
-                      <div style={{ height: 90, backgroundImage: `url(${t.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                      <TemplatePreviewCard t={t} height={90} />
                       <div style={{ padding: '10px 12px', background: '#FFFFFF', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div>
-                          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: '0 0 1px' }}>{t.name}</p>
-                          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.52)', margin: 0 }}>{t.style}</p>
+                          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: 0 }}>{t.name}</p>
                         </div>
                         <button onClick={() => setShowTemplatePicker(true)} className="font-work-sans"
                           style={{ fontSize: '11px', fontWeight: 500, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.2)', padding: '5px 10px', borderRadius: '99px', cursor: 'pointer' }}>
@@ -1200,10 +1223,10 @@ function FavorsSheet({ onClose }) {
   return (
     <>
       <motion.div key="favors-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420}} />
       <motion.div key="favors-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px', maxHeight: '82%', overflowY: 'auto' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 44px', maxHeight: '82%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(160,112,32,0.10)', border: '1px solid rgba(160,112,32,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1275,10 +1298,10 @@ function WardrobeSheet({ onClose }) {
   return (
     <>
       <motion.div key="wd-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420}} />
       <motion.div key="wd-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px', maxHeight: '80%', overflowY: 'auto' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 44px', maxHeight: '80%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: 20 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(122,15,70,0.10)', border: '1px solid rgba(122,15,70,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1314,10 +1337,10 @@ function RegistrySheet({ onClose }) {
   return (
     <>
       <motion.div key="rg-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420}} />
       <motion.div key="rg-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 44px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <div className="flex items-center gap-3" style={{ marginBottom: 20 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(45,96,37,0.10)', border: '1px solid rgba(45,96,37,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1356,10 +1379,10 @@ function CustomAssetSheet({ onClose, onSave }) {
   return (
     <>
       <motion.div key="ca-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320}} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420}} />
       <motion.div key="ca-sh" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 44px' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 18px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '26px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', letterSpacing: '-0.02em', textAlign: 'center' }}>Add custom asset</p>
         <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: '0 0 20px' }}>Track anything else you're managing for your guests.</p>
@@ -1468,6 +1491,7 @@ function GuestAssets({ onOpenAgent, onOpenWebsite, websiteConfig }) {
 // ─── MAIN SCREEN ────────────────────────────────────────────────
 // ════════════════════════════════════════════════════════════════
 export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsProp, onOpenAgent }) {
+  const wp = useWeddingProfile()
   const [mainTab, setMainTab]             = useState('list') // 'list' | 'assets'
   const [showWebsiteChoice, setShowWebsiteChoice] = useState(false)
   const [websiteInitialMode, setWebsiteInitialMode] = useState(null)
@@ -1492,9 +1516,15 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
   const [importBanner, setImportBanner]   = useState(null)
   const [contactsStatus, setContactsStatus] = useState('idle')
 
+  const anyOverlayOpen = showWebsiteChoice || showWebsiteSetup || showImport || showGoogleSheets || !!selectedGuest
+  useEffect(() => {
+    window.dispatchEvent(new Event(anyOverlayOpen ? 'sm_overlay_open' : 'sm_overlay_close'))
+    return () => { window.dispatchEvent(new Event('sm_overlay_close')) }
+  }, [anyOverlayOpen])
+
   const closeDropdowns = () => { setShowRsvpDrop(false); setShowSideDrop(false); setShowUploadDrop(false) }
 
-  const coupleNames = `${wedding.couple.bride} & ${wedding.couple.groom}`
+  const coupleNames = `${wp.bride} & ${wp.groom}`
   const sideFiltered   = sideFilter === 'All' ? guestList : guestList.filter(g => g.side === sideFilter)
   const searchFiltered = search.trim()
     ? sideFiltered.filter(g => {
@@ -1670,7 +1700,7 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
                         color: sideFilter !== 'All' ? '#7A0F46' : 'rgba(26,20,16,0.55)',
                       }}>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {sideFilter === 'All' ? 'Both sides' : sideFilter === 'bride' ? `${wedding.couple.bride}'s` : `${wedding.couple.groom}'s`}
+                        {sideFilter === 'All' ? 'Both sides' : sideFilter === 'bride' ? `${wp.bride}'s` : `${wp.groom}'s`}
                       </span>
                       <ChevronDown size={11} style={{ flexShrink: 0, transition: 'transform 0.18s', transform: showSideDrop ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                     </button>
@@ -1682,8 +1712,8 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
                             style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: '#FFFBF5', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', zIndex: 21, overflow: 'hidden' }}>
                             {[
                               { key: 'All',   label: 'Both sides',             count: guestList.length },
-                              { key: 'bride', label: `${wedding.couple.bride}'s side`, count: guestList.filter(g => g.side === 'bride').length },
-                              { key: 'groom', label: `${wedding.couple.groom}'s side`, count: guestList.filter(g => g.side === 'groom').length },
+                              { key: 'bride', label: `${wp.bride}'s side`, count: guestList.filter(g => g.side === 'bride').length },
+                              { key: 'groom', label: `${wp.groom}'s side`, count: guestList.filter(g => g.side === 'groom').length },
                             ].map(({ key, label, count }) => (
                               <button key={key} onClick={() => { setSideFilter(key); setFilter('All'); setShowSideDrop(false) }}
                                 className="w-full flex items-center justify-between font-work-sans"
@@ -1776,7 +1806,7 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
                       ['bride', 'groom'].map(side => {
                         const sideGuests = filtered.filter(g => g.side === side)
                         if (sideGuests.length === 0) return null
-                        const sideLabel = side === 'bride' ? `${wedding.couple.bride}'s Side` : `${wedding.couple.groom}'s Side`
+                        const sideLabel = side === 'bride' ? `${wp.bride}'s Side` : `${wp.groom}'s Side`
                         return (
                           <motion.div key={side} layout className="flex flex-col gap-2">
                             {/* Section header */}
@@ -1796,9 +1826,16 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
                                 <InitialAvatar name={guest.name} side={guest.side} />
                                 <div className="flex flex-col flex-1 min-w-0">
                                   <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{guest.name}</span>
-                                  <span className="font-work-sans truncate" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.54)', marginTop: '1px' }}>
-                                    {guest.contact ? (guest.contactSource === 'contacts' ? `📱 ${guest.contact}` : guest.contact) : <span style={{ color: 'rgba(200,151,58,0.8)', fontWeight: 400 }}>No contact info</span>}
-                                  </span>
+                                  <div className="flex items-center gap-2 flex-wrap" style={{ marginTop: '1px' }}>
+                                    <span className="font-work-sans truncate" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.54)' }}>
+                                      {guest.contact ? (guest.contactSource === 'contacts' ? `📱 ${guest.contact}` : guest.contact) : <span style={{ color: 'rgba(200,151,58,0.8)', fontWeight: 400 }}>No contact info</span>}
+                                    </span>
+                                    {guest.ceremony && (
+                                      <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', borderRadius: 99, padding: '1px 6px', flexShrink: 0 }}>
+                                        {guest.ceremony}
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                                 <RsvpBadge status={guest.rsvp} />
                               </motion.button>
@@ -1853,7 +1890,7 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
       <AnimatePresence>
         {selectedGuest && (
           <GuestActionDrawer guest={selectedGuest} onClose={() => setSelectedGuest(null)}
-            coupleNames={coupleNames} weddingDate={wedding.date} weddingVenue={wedding.venue} />
+            coupleNames={coupleNames} weddingDate={wp.date} weddingVenue={wp.venue} />
         )}
         {showImport && <ImportModal onClose={() => setShowImport(false)} onImport={handleImport} />}
         {showGoogleSheets && (

@@ -7,6 +7,7 @@ import NavIcons from '../components/layout/NavIcons'
 import LogoMark from '../components/layout/LogoMark'
 import { ceremonies, vendors as mockVendors } from '../data/mockData'
 import { taskCategories } from '../data/tasksData'
+import { TaskTile, TaskDetailDrawer } from './TasksScreen'
 
 // ── Ceremony rich data ────────────────────────────────────────────────────────
 const CEREMONY_DATA = {
@@ -190,12 +191,86 @@ const DETAIL_TABS = ['Timeline', 'Notes', 'Guests', 'Tasks', 'Vendors']
 const spring = { type: 'spring', stiffness: 380, damping: 36 }
 
 // ── Ceremony detail bottom sheet ──────────────────────────────────────────────
-function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
+// Read agent-added assets for a ceremony from localStorage
+function getExtraAssets(ceremonyName) {
+  try {
+    const stored = JSON.parse(localStorage.getItem('sm_ceremony_assets') || '{}')
+    return stored[ceremonyName] || []
+  } catch (_) { return [] }
+}
+
+function CeremonyDetail({ ceremony, tasks, setTasks, vendors, guests, setGuests, onClose, onOpenAgent }) {
   const data = CEREMONY_DATA[ceremony.name] || {}
   const [activeTab, setActiveTab] = useState('Timeline')
   const [notes, setNotes] = useState([])
   const [noteInput, setNoteInput] = useState('')
+  const [extraAssets, setExtraAssets] = useState(() => getExtraAssets(ceremony.name))
+  const [selectedTask, setSelectedTask] = useState(null)
+
+  // Inline add-task state
+  const [taskInput, setTaskInput] = useState('')
+  const taskInputRef = useRef(null)
+
+  // Inline add-guest state
+  const [guestInput, setGuestInput] = useState('')
+  const [guestSide, setGuestSide] = useState('bride')
+  const guestInputRef = useRef(null)
+
+  const handleToggle = (id) => setTasks && setTasks(ts => ts.map(t => t.id === id ? { ...t, done: !t.done } : t))
+  const handleSetDue = (id, date) => setTasks && setTasks(ts => ts.map(t => t.id === id ? { ...t, dueDate: date } : t))
+
+  const CEREMONY_TASK_CATEGORY = {
+    'Mehndi':             'mehndi',
+    'Haldi Ceremony':     'mehndi',
+    'Sangeet':            'music',
+    'Baraat Procession':  'venue',
+    'Pheras & Vows':      'venue',
+    'Reception':          'venue',
+  }
+
+  const handleAddTask = () => {
+    const title = taskInput.trim()
+    if (!title || !setTasks) return
+    const newTask = {
+      id: Date.now(),
+      title,
+      text: title,
+      done: false,
+      priority: 'medium',
+      category: CEREMONY_TASK_CATEGORY[ceremony.name] || 'General',
+      ceremony: ceremony.name,
+      dueDate: null,
+    }
+    setTasks(ts => [newTask, ...ts])
+    setTaskInput('')
+    taskInputRef.current?.focus()
+  }
+
+  const handleAddGuest = () => {
+    const name = guestInput.trim()
+    if (!name || !setGuests) return
+    const newGuest = {
+      id: Date.now(),
+      name,
+      rsvp: 'pending',
+      side: guestSide,
+      tier: 'everyone',
+      phone: '',
+      email: '',
+      ceremony: ceremony.name,
+    }
+    setGuests(gs => [newGuest, ...gs])
+    setGuestInput('')
+    guestInputRef.current?.focus()
+  }
   const st = STATUS_CONFIG[ceremony.status] || STATUS_CONFIG.upcoming
+
+  // Re-read assets whenever agent adds one
+  useEffect(() => {
+    const refresh = () => setExtraAssets(getExtraAssets(ceremony.name))
+    window.addEventListener('sm_assets_updated', refresh)
+    return () => window.removeEventListener('sm_assets_updated', refresh)
+  }, [ceremony.name])
 
   const addNote = () => {
     if (!noteInput.trim()) return
@@ -207,8 +282,14 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
   const ceremonyVendors = (vendors || mockVendors).filter(v =>
     (data.vendorKeys || []).some(k => v.name?.toLowerCase().includes(k.split('_')[0]) || v.category?.toLowerCase().includes(k.split('_')[0]))
   )
-  const ceremonyTasks = (tasks || []).filter(t => t.category === data.taskCategory || !data.taskCategory)
-  const ceremonyGuests = (guests || []).filter(g => g.tier === 'core' || g.tier === 'close' || !data.guestNote?.includes('Close'))
+  const ceremonyTasks = (tasks || []).filter(t => t.ceremony === ceremony.name || t.category === data.taskCategory)
+  const ceremonyGuests = (guests || []).filter(g =>
+    g.ceremony === ceremony.name ||
+    g.tier === 'core' || g.tier === 'close' ||
+    !data.guestNote?.includes('Close')
+  )
+  // Merge hardcoded assets with agent-added ones
+  const allAssets = [...(data.assets || []), ...extraAssets]
 
   const statusDot = { done: '✓', live: '●', upcoming: '○', at_risk: '⚠' }
 
@@ -218,7 +299,7 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
       <motion.div key="cd-page"
         initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 321, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        style={{ position: 'absolute', inset: 0, background: '#FFFBF5', zIndex: 421, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Hero image */}
         <div style={{ position: 'relative', height: 220, overflow: 'hidden', flexShrink: 0 }}>
@@ -256,7 +337,7 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
         </div>
 
         {/* Tab content */}
-        <div style={{ overflowY: 'auto', flex: 1, padding: '18px 18px 20px' }}>
+        <div style={{ overflowY: 'auto', flex: 1, padding: '18px 18px 140px' }}>
 
           {/* ── Timeline ── */}
           {activeTab === 'Timeline' && (
@@ -291,37 +372,24 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
             </div>
           )}
 
-          {/* ── Assets ── */}
-          {activeTab === 'Timeline' && (data.assets || []).length > 0 && (
-            <div style={{ marginTop: 8 }}>
-              <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(26,20,16,0.40)', letterSpacing: '0.10em', textTransform: 'uppercase', margin: '0 0 12px' }}>Assets needed</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {(data.assets || []).map((asset, i) => (
-                  <div key={i} style={{ position: 'relative', height: 96, borderRadius: 12, overflow: 'hidden' }}>
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      backgroundImage: `url(${asset.image})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                    }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.72) 100%)' }} />
-                    <p className="font-work-sans" style={{
-                      position: 'absolute', bottom: 0, left: 0, right: 0,
-                      padding: '6px 8px 8px',
-                      fontSize: '10px', fontWeight: 500, color: '#FFFFFF',
-                      margin: 0, lineHeight: 1.35,
-                    }}>
-                      {asset.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── Notes ── */}
+          {/* ── Notes (includes assets checklist) ── */}
           {activeTab === 'Notes' && (
             <div>
+              {/* Assets needed — bulleted checklist */}
+              {allAssets.length > 0 && (
+                <div style={{ marginBottom: 24 }}>
+                  <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(26,20,16,0.40)', letterSpacing: '0.10em', textTransform: 'uppercase', margin: '0 0 10px' }}>Assets needed</p>
+                  <div className="flex flex-col gap-1">
+                    {allAssets.map((asset, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <span style={{ fontSize: '13px', color: '#7A0F46', lineHeight: '20px', flexShrink: 0 }}>•</span>
+                        <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 400, color: '#1A1410', margin: 0, lineHeight: '20px' }}>{asset.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(26,20,16,0.40)', letterSpacing: '0.10em', textTransform: 'uppercase', margin: '0 0 14px' }}>Family notes</p>
 
               {/* Add note */}
@@ -376,20 +444,28 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
             <div>
               <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(26,20,16,0.40)', letterSpacing: '0.10em', textTransform: 'uppercase', margin: '0 0 6px' }}>Guests</p>
               <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: '0 0 14px' }}>{data.guestNote}</p>
+
               {ceremonyGuests.length === 0 ? (
-                <EmptyState icon={Users} label="No guests found" sub="Guest list not yet populated" />
+                <EmptyState icon={Users} label="No guests yet" sub="Add guests using the form below" />
               ) : (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2" style={{ marginBottom: 20 }}>
                   {ceremonyGuests.slice(0, 12).map(g => (
                     <div key={g.id} className="flex items-center gap-3" style={{ padding: '10px 13px', borderRadius: 12, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)' }}>
                       <div style={{ width: 32, height: 32, borderRadius: '50%', background: g.side === 'bride' ? 'rgba(122,15,70,0.12)' : 'rgba(26,58,107,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 700, color: g.side === 'bride' ? '#7A0F46' : '#1A3A6B' }}>{g.name?.[0] || '?'}</span>
                       </div>
-                      <div style={{ flex: 1 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 1px' }}>{g.name}</p>
-                        <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', margin: 0, textTransform: 'capitalize' }}>{g.side}'s side · {g.tier}</p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', textTransform: 'capitalize' }}>{g.side}'s side</span>
+                          {g.ceremony && (
+                            <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: '#7A0F46', background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.18)', borderRadius: 99, padding: '1px 6px' }}>
+                              {g.ceremony}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, padding: '3px 8px', borderRadius: 99,
+                      <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, padding: '3px 8px', borderRadius: 99, flexShrink: 0,
                         color: g.rsvp === 'confirmed' ? '#2D6025' : g.rsvp === 'declined' ? '#B03A10' : '#A07020',
                         background: g.rsvp === 'confirmed' ? 'rgba(45,96,37,0.08)' : g.rsvp === 'declined' ? 'rgba(196,80,30,0.08)' : 'rgba(200,151,58,0.10)',
                         border: `1px solid ${g.rsvp === 'confirmed' ? 'rgba(45,96,37,0.22)' : g.rsvp === 'declined' ? 'rgba(196,80,30,0.22)' : 'rgba(200,151,58,0.30)'}`,
@@ -403,6 +479,34 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
                   )}
                 </div>
               )}
+
+              {/* Inline add-guest — below list */}
+              <div style={{ borderTop: ceremonyGuests.length > 0 ? '1px solid rgba(0,0,0,0.06)' : 'none', paddingTop: ceremonyGuests.length > 0 ? 16 : 0 }}>
+                <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
+                  <input
+                    ref={guestInputRef}
+                    value={guestInput}
+                    onChange={e => setGuestInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleAddGuest()}
+                    placeholder="Guest name…"
+                    className="font-work-sans"
+                    style={{ flex: 1, padding: '11px 13px', borderRadius: 12, border: '1px solid rgba(122,15,70,0.22)', fontSize: '13px', fontWeight: 400, color: '#1A1410', background: '#FFFFFF', outline: 'none', fontFamily: 'Inter, sans-serif' }}
+                  />
+                  <button onClick={handleAddGuest} style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Plus size={16} color="#FFFFFF" strokeWidth={2.5} />
+                  </button>
+                </div>
+                {/* Side toggle */}
+                <div className="flex gap-2">
+                  {['bride', 'groom'].map(side => (
+                    <button key={side} onClick={() => setGuestSide(side)}
+                      className="font-work-sans"
+                      style={{ flex: 1, padding: '7px', borderRadius: 10, border: `1px solid ${guestSide === side ? 'rgba(122,15,70,0.40)' : 'rgba(0,0,0,0.09)'}`, background: guestSide === side ? 'rgba(122,15,70,0.07)' : 'transparent', fontSize: '11px', fontWeight: 500, color: guestSide === side ? '#7A0F46' : 'rgba(26,20,16,0.5)', cursor: 'pointer', textTransform: 'capitalize' }}>
+                      {side}'s side
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
@@ -412,26 +516,40 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
               <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(26,20,16,0.40)', letterSpacing: '0.10em', textTransform: 'uppercase', margin: '0 0 14px' }}>
                 Related tasks · {ceremonyTasks.filter(t => !t.done).length} pending
               </p>
+
+              {/* Inline add-task */}
+              <div className="flex items-center gap-2" style={{ marginBottom: 16 }}>
+                <input
+                  ref={taskInputRef}
+                  value={taskInput}
+                  onChange={e => setTaskInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleAddTask()}
+                  placeholder="Add a task…"
+                  className="font-work-sans"
+                  style={{ flex: 1, padding: '11px 13px', borderRadius: 12, border: '1px solid rgba(122,15,70,0.22)', fontSize: '13px', fontWeight: 400, color: '#1A1410', background: '#FFFFFF', outline: 'none', fontFamily: 'Inter, sans-serif' }}
+                />
+                <button onClick={handleAddTask} style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Plus size={16} color="#FFFFFF" strokeWidth={2.5} />
+                </button>
+              </div>
+
               {ceremonyTasks.length === 0 ? (
-                <EmptyState icon={CheckSquare} label="No tasks linked" sub="Tasks for this ceremony will appear here" />
+                <EmptyState icon={CheckSquare} label="No tasks yet" sub="Tasks for this ceremony will appear here" />
               ) : (
-                <div className="flex flex-col gap-2">
-                  {ceremonyTasks.filter(t => !t.done).map(t => {
-                    const cat = taskCategories[t.category]
-                    return (
-                      <div key={t.id} className="flex items-center gap-3" style={{ padding: '11px 13px', borderRadius: 12, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)' }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.priority === 'high' ? '#B03A10' : t.priority === 'medium' ? '#A07020' : '#2D6025', flexShrink: 0 }} />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title}</p>
-                          <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', margin: 0 }}>{cat?.label || t.category}</p>
-                        </div>
-                        <span className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: t.priority === 'high' ? '#B03A10' : t.priority === 'medium' ? '#A07020' : '#2D6025', background: t.priority === 'high' ? 'rgba(196,80,30,0.08)' : t.priority === 'medium' ? 'rgba(200,151,58,0.10)' : 'rgba(45,96,37,0.08)', border: `1px solid ${t.priority === 'high' ? 'rgba(196,80,30,0.22)' : t.priority === 'medium' ? 'rgba(200,151,58,0.30)' : 'rgba(45,96,37,0.22)'}`, borderRadius: 99, padding: '3px 8px', textTransform: 'capitalize', flexShrink: 0 }}>
-                          {t.priority}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
+                <AnimatePresence>
+                  <div className="flex flex-col gap-2">
+                    {ceremonyTasks.map(t => (
+                      <TaskTile
+                        key={t.id}
+                        task={t}
+                        onToggle={handleToggle}
+                        onSetDue={handleSetDue}
+                        onEdit={null}
+                        onDetail={setSelectedTask}
+                      />
+                    ))}
+                  </div>
+                </AnimatePresence>
               )}
             </div>
           )}
@@ -469,6 +587,20 @@ function CeremonyDetail({ ceremony, tasks, vendors, guests, onClose }) {
         </div>
         <BottomNav />
       </motion.div>
+
+      {/* Task detail drawer */}
+      <AnimatePresence>
+        {selectedTask && (
+          <TaskDetailDrawer
+            task={selectedTask}
+            onClose={() => setSelectedTask(null)}
+            onEdit={null}
+            onUpdateAssignees={(id, assignees) =>
+              setTasks && setTasks(ts => ts.map(t => t.id === id ? { ...t, assignees } : t))
+            }
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }
@@ -522,10 +654,6 @@ function CeremonyTile({ ceremony, index, onOpen }) {
         <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.55)' }}>
           {String(index + 1).padStart(2, '0')}
         </span>
-        <span className="font-work-sans flex items-center gap-1.5" style={{ fontSize: '10px', fontWeight: 700, color: st.color, background: st.bg, border: `1px solid ${st.border}`, borderRadius: 99, padding: '4px 10px', backdropFilter: 'blur(6px)', letterSpacing: '0.04em' }}>
-          {isLive && <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#7A0F46', display: 'inline-block', animation: 'pulse 1.6s ease-in-out infinite' }} />}
-          {st.label}
-        </span>
       </div>
 
       {/* Bottom: name + time + tap hint */}
@@ -553,7 +681,7 @@ function CeremonyTile({ ceremony, index, onOpen }) {
 }
 
 // ── Main screen ───────────────────────────────────────────────────────────────
-export default function CeremoniesScreen({ tasks, vendors, guests }) {
+export default function CeremoniesScreen({ tasks, setTasks, vendors, guests, setGuests, onOpenAgent }) {
   const [selected, setSelected] = useState(null)
 
   const liveCount = ceremonies.filter(c => c.status === 'live').length
@@ -596,9 +724,12 @@ export default function CeremoniesScreen({ tasks, vendors, guests }) {
           <CeremonyDetail
             ceremony={selected}
             tasks={tasks}
+            setTasks={setTasks}
             vendors={vendors}
             guests={guests}
+            setGuests={setGuests}
             onClose={() => setSelected(null)}
+            onOpenAgent={onOpenAgent}
           />
         )}
       </AnimatePresence>

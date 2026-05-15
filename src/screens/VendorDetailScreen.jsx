@@ -268,7 +268,11 @@ export default function VendorDetailScreen({ vendors = [], setVendors }) {
 
         {/* ── Gallery strip ── */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar px-5 py-3" style={{ flexShrink: 0, borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-          {gc.map((color, i) => (
+          {detail.images ? detail.images.map((src, i) => (
+            <div key={i} style={{ width: '96px', height: '64px', borderRadius: '10px', flexShrink: 0, overflow: 'hidden' }}>
+              <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
+          )) : gc.map((color, i) => (
             <div key={i} style={{
               width: '96px', height: '64px', borderRadius: '10px', flexShrink: 0,
               background: `linear-gradient(135deg, ${color} 0%, ${gc[(i + 1) % gc.length]} 100%)`,

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -51,6 +51,21 @@ const riskOrder = { high: 0, medium: 1, low: 2 }
 
 const DISC_CATS = ['All', 'Photographer', 'Caterer', 'Florist', 'Decorator', 'DJ', 'Pandit', 'Mehndi Artist', 'Videographer']
 
+const CAT_IMAGES = {
+  'Photographer':         'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=144&q=75',
+  'Videographer':         'https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?w=144&q=75',
+  'Caterer':              'https://images.unsplash.com/photo-1555244162-803834f70033?w=144&q=75',
+  'Florist':              'https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=144&q=75',
+  'Decorator':            'https://images.unsplash.com/photo-1478146059778-26028b07395a?w=144&q=75',
+  'DJ':                   'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=144&q=75',
+  'Pandit':               'https://images.unsplash.com/photo-1601455763557-db1bea8a9a5a?w=144&q=75',
+  'Mehndi Artist':        'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?w=144&q=75',
+  'Makeup Artist':        'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=144&q=75',
+  'Choreographer':        'https://images.unsplash.com/photo-1547153760-18fc86324498?w=144&q=75',
+  'Invitation Designer':  'https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=144&q=75',
+  'Baraat Band':          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=144&q=75',
+}
+
 
 function draftMessage(vendor) {
   if (vendor.status === 'at_risk') {
@@ -77,10 +92,10 @@ function FollowUpSheet({ vendor, onClose }) {
     <>
       <motion.div key="backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
+        style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420 }} />
       <motion.div key="sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={sheetSpring}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px' }}>
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 44px' }}>
         {/* Handle */}
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 20px' }} />
 
@@ -164,9 +179,6 @@ function ShortlistSection({ onVendorClick, bookedCategories }) {
               {/* Card header */}
               <div className="flex items-center justify-between gap-2" style={{ padding: '0 16px', marginBottom: 12 }}>
                 <div className="flex items-center gap-2.5">
-                  <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(122,15,70,0.07)', border: '1px solid rgba(122,15,70,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Icon size={15} color="#7A0F46" strokeWidth={1.6} />
-                  </div>
                   <div>
                     <p className="font-work-sans" style={{ fontSize: '13px', fontWeight: 600, color: '#1A1410', margin: 0 }}>{category}</p>
                     <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.45)', margin: 0 }}>
@@ -221,6 +233,11 @@ function ShortlistSection({ onVendorClick, bookedCategories }) {
 
 function MyVendors({ onVendorClick, sortedVendors, atRiskCount, vendors }) {
   const [followUpVendor, setFollowUpVendor] = useState(null)
+
+  useEffect(() => {
+    window.dispatchEvent(new Event(followUpVendor ? 'sm_overlay_open' : 'sm_overlay_close'))
+    return () => { window.dispatchEvent(new Event('sm_overlay_close')) }
+  }, [followUpVendor])
 
   return (
     <div style={{ position: 'relative' }}>
@@ -369,7 +386,7 @@ function DiscoverVendors({ onVendorClick }) {
                 whileHover={{ y: -2, transition: { duration: 0.15 } }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-center gap-3">
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-work-sans" style={{ fontSize: '13px', fontWeight: 500, color: '#1A1410' }}>{v.name}</span>
@@ -399,7 +416,14 @@ function DiscoverVendors({ onVendorClick }) {
                       </div>
                     )}
                   </div>
-                  <ChevronRight size={16} color="rgba(26,20,16,0.25)" strokeWidth={2} style={{ flexShrink: 0, marginTop: 2 }} />
+                  {/* Vendor photo */}
+                  <div style={{ width: 68, height: 68, borderRadius: 12, overflow: 'hidden', flexShrink: 0, background: 'rgba(0,0,0,0.06)' }}>
+                    <img
+                      src={CAT_IMAGES[v.category] || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=144&q=75'}
+                      alt={v.category}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </div>
                 </div>
               </motion.div>
             )

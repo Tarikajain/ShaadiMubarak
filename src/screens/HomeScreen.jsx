@@ -116,11 +116,11 @@ function WidgetModal({ onClose, installPrompt }) {
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 420 }} />
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '24px 24px 0 0', zIndex: 321, padding: '20px 22px 36px' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '24px 24px 0 0', zIndex: 421, padding: '20px 22px 36px' }}
       >
         {/* Handle */}
         <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 22px' }} />
@@ -263,6 +263,12 @@ export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests 
     return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
 
+  useEffect(() => {
+    const anyOpen = showWidgetModal || !!selectedTask
+    window.dispatchEvent(new Event(anyOpen ? 'sm_overlay_open' : 'sm_overlay_close'))
+    return () => { window.dispatchEvent(new Event('sm_overlay_close')) }
+  }, [showWidgetModal, selectedTask])
+
   const toggleTask = useCallback((id) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
   }, [setTasks])
@@ -288,7 +294,7 @@ export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests 
 
   const brideName = profile?.bride || 'The Bride'
   const partnerName = profile?.partner || 'The Groom'
-  const venueShort = (profile?.location || 'Venue TBD').split(',')[0]
+  const venueShort = profile?.city || 'Venue TBD'
 
   // Compute live countdown from wedding date
   const weddingDateTime = profile?.date ? new Date(profile.date) : new Date('2026-12-17T00:00:00')
