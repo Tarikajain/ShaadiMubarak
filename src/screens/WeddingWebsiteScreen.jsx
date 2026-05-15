@@ -21,10 +21,10 @@ const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transiti
 const spring = { type: 'spring', stiffness: 420, damping: 32 }
 
 const THEMES = [
-  { id: 'ivory',  label: 'Ivory',  bg: '#F5F0E8', accent: '#7A0F46' },
-  { id: 'blush',  label: 'Blush',  bg: '#FAE8EC', accent: '#C4507A' },
-  { id: 'forest', label: 'Forest', bg: '#E8F0E8', accent: '#3A7A50' },
-  { id: 'slate',  label: 'Slate',  bg: '#E8ECF5', accent: '#4A6AB0' },
+  { id: 'ivory',  label: 'Traditional',   bg: '#F5F0E8', accent: '#7A0F46', img: 'https://images.unsplash.com/photo-1777707462540-45cb64753591?w=400&h=400&fit=crop&q=75' },
+  { id: 'blush',  label: 'Modern',        bg: '#FAE8EC', accent: '#C4507A', img: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=400&fit=crop&q=75' },
+  { id: 'forest', label: 'Contemporary',  bg: '#E8F0E8', accent: '#3A7A50', img: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=400&h=400&fit=crop&q=75' },
+  { id: 'slate',  label: 'Destination',   bg: '#E8ECF5', accent: '#4A6AB0', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=400&fit=crop&q=75' },
 ]
 
 function Toggle({ enabled, onChange }) {
@@ -275,11 +275,15 @@ function SetupSheet({ published, setPublished, sections, toggleSection, theme, s
           {THEMES.map(t => (
             <button key={t.id} onClick={() => setTheme(t.id)}
               style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: '100%', aspectRatio: '1', borderRadius: 12, background: t.bg, border: theme === t.id ? `2px solid ${t.accent}` : '2px solid rgba(0,0,0,0.08)', position: 'relative', overflow: 'hidden', transition: 'border 0.18s ease' }}>
-                <div style={{ position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)', width: '60%', height: '4px', borderRadius: '99px', background: t.accent, opacity: 0.7 }} />
+              <div style={{ width: '100%', aspectRatio: '1', borderRadius: 12, border: theme === t.id ? `2px solid ${t.accent}` : '2px solid rgba(0,0,0,0.08)', position: 'relative', overflow: 'hidden', transition: 'border 0.18s ease' }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${t.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.52) 100%)' }} />
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(255,255,255,0.90)', fontWeight: 400 }}>A &amp; R</span>
+                </div>
                 {theme === t.id && (
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.3)' }}>
-                    <Check size={14} color={t.accent} strokeWidth={2.5} />
+                  <div style={{ position: 'absolute', top: 6, right: 6, width: 18, height: 18, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={10} color="white" strokeWidth={2.5} />
                   </div>
                 )}
               </div>
@@ -483,11 +487,15 @@ export default function WeddingWebsiteScreen({ onOpenAgent }) {
                 <button key={t.id} onClick={() => setTheme(t.id)}
                   className="flex flex-col items-center gap-1.5 flex-1"
                   style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                  <div style={{ width: '100%', aspectRatio: '1', borderRadius: '12px', background: t.bg, border: theme === t.id ? `2px solid ${t.accent}` : '2px solid rgba(0,0,0,0.08)', position: 'relative', overflow: 'hidden', transition: 'border 0.18s ease' }}>
-                    <div style={{ position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)', width: '60%', height: '4px', borderRadius: '99px', background: t.accent, opacity: 0.7 }} />
+                  <div style={{ width: '100%', aspectRatio: '1', borderRadius: '12px', border: theme === t.id ? `2px solid ${t.accent}` : '2px solid rgba(0,0,0,0.08)', position: 'relative', overflow: 'hidden', transition: 'border 0.18s ease' }}>
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${t.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.52) 100%)' }} />
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(255,255,255,0.90)', fontWeight: 400, letterSpacing: '0.04em' }}>A &amp; R</span>
+                    </div>
                     {theme === t.id && (
-                      <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.3)' }}>
-                        <Check size={14} color={t.accent} strokeWidth={2.5} />
+                      <div style={{ position: 'absolute', top: 6, right: 6, width: 18, height: 18, borderRadius: '50%', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Check size={10} color="white" strokeWidth={2.5} />
                       </div>
                     )}
                   </div>
