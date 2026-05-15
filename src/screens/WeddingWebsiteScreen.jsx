@@ -6,6 +6,15 @@ import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import { weddingWebsite } from '../data/mockData'
 import { useWeddingProfile } from '../hooks/useWeddingProfile'
+import { VIBES, DEFAULT_VIBE } from '../data/vibesData'
+
+function getVibeImage() {
+  try {
+    const p = JSON.parse(localStorage.getItem('sm_profile') || '{}')
+    const vibe = VIBES.find(v => v.id === p.vibe) || DEFAULT_VIBE
+    return vibe.img
+  } catch { return DEFAULT_VIBE.img }
+}
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] } } }
@@ -44,9 +53,10 @@ function StoryTab({ t, wp }) {
   return (
     <div>
       {/* Hero */}
-      <div style={{ position: 'relative', height: 260, background: 'linear-gradient(180deg, #8B6040 0%, #4A2010 45%, rgba(20,8,4,0.97) 100%)', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 25%, rgba(20,8,4,0.65) 100%)' }} />
-        <div style={{ position: 'absolute', bottom: 22, left: 0, right: 0, textAlign: 'center', color: 'white' }}>
+      <div style={{ position: 'relative', height: 260, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getVibeImage()})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(20,8,4,0.35) 0%, rgba(20,8,4,0.72) 100%)' }} />
+        <div style={{ position: 'absolute', bottom: 22, left: 0, right: 0, textAlign: 'center', color: 'white', zIndex: 1 }}>
           <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 30, fontStyle: 'italic', fontWeight: 400, marginBottom: 6 }}>
             {wp.bride} &amp; {wp.groom}
           </div>
@@ -325,11 +335,13 @@ function MiniPreviewCard({ theme, wp, onClick }) {
         {/* Website content */}
         <div style={{ background: t.bg }}>
           {/* Hero */}
-          <div style={{ height: 150, background: 'linear-gradient(180deg, #8B6040 0%, #4A2010 45%, rgba(20,8,4,0.97) 100%)', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 14 }}>
-            <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontStyle: 'italic', color: 'white', fontWeight: 400, marginBottom: 4 }}>
+          <div style={{ height: 150, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 14, overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getVibeImage()})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(20,8,4,0.30) 0%, rgba(20,8,4,0.72) 100%)' }} />
+            <div style={{ position: 'relative', zIndex: 1, fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontStyle: 'italic', color: 'white', fontWeight: 400, marginBottom: 4 }}>
               {wp.bride} &amp; {wp.groom}
             </div>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 8, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.72)', textTransform: 'uppercase' }}>
+            <div style={{ position: 'relative', zIndex: 1, fontFamily: 'Inter, sans-serif', fontSize: 8, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.72)', textTransform: 'uppercase' }}>
               DECEMBER 19, 2026 · UDAIPUR
             </div>
           </div>
