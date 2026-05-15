@@ -88,7 +88,7 @@ export default function App() {
   const [showNotifPrompt, setShowNotifPrompt] = useState(false)
   const [tasks,   setTasks]   = useState(() => getProfileTasks())
   const [vendors, setVendors] = useState(() => getProfileVendors())
-  const [guests,  setGuests]  = useState(() => { const pg = getProfileGuests(); return pg.length > 0 ? pg : initialGuests })
+  const [guests,  setGuests]  = useState(() => initialGuests)
   // Controls programmatic open of AgentBar (e.g. from "Customize with Mubarak")
   const [agentOpen, setAgentOpen] = useState(false)
   const [agentQuery, setAgentQuery] = useState(null) // proactive message to auto-send on open
