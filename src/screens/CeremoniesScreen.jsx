@@ -595,9 +595,10 @@ function CeremonyDetail({ ceremony, tasks, setTasks, vendors, guests, setGuests,
             task={selectedTask}
             onClose={() => setSelectedTask(null)}
             onEdit={null}
-            onUpdateAssignees={(id, assignees) =>
+            onUpdateAssignees={(id, assignees) => {
               setTasks && setTasks(ts => ts.map(t => t.id === id ? { ...t, assignees } : t))
-            }
+              setSelectedTask(prev => prev?.id === id ? { ...prev, assignees } : prev)
+            }}
           />
         )}
       </AnimatePresence>

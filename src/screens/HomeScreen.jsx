@@ -275,6 +275,7 @@ export default function HomeScreen({ tasks = [], setTasks, vendors = [], guests 
 
   const updateAssignees = useCallback((id, assignees) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, assignees } : t))
+    setSelectedTask(prev => prev?.id === id ? { ...prev, assignees } : prev)
   }, [setTasks])
 
   const topTasks = getTopTasks(tasks, 5)
