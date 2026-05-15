@@ -51,13 +51,13 @@ export default function NavIcons({ light = false }) {
               key="fsw-bd"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowSwitcher(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 320 }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 420 }}
             />
             <motion.div
               key="fsw-sh"
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-              style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '18px 18px 36px' }}
+              style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '18px 18px 36px' }}
             >
               {/* Handle */}
               <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.10)', borderRadius: 99, margin: '0 auto 18px' }} />

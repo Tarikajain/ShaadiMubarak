@@ -36,10 +36,10 @@ function AnimatedRoutes({ tasks, setTasks, vendors, setVendors, guests, setGuest
         <Route path="/vendors"          element={<VendorScreen vendors={vendors} setVendors={setVendors} />} />
         <Route path="/vendors/:vendorId" element={<VendorDetailScreen vendors={vendors} setVendors={setVendors} />} />
         <Route path="/tasks"         element={<TasksScreen tasks={tasks} setTasks={setTasks} />} />
-        <Route path="/ceremonies"    element={<CeremoniesScreen tasks={tasks} vendors={vendors} guests={guests} />} />
+        <Route path="/ceremonies"    element={<CeremoniesScreen tasks={tasks} setTasks={setTasks} vendors={vendors} guests={guests} setGuests={setGuests} onOpenAgent={onOpenAgent} />} />
         <Route path="/family"        element={<FamilyScreen />} />
         <Route path="/guests"        element={<GuestsScreen guests={guests} setGuests={setGuests} onOpenAgent={onOpenAgent} />} />
-        <Route path="/website"       element={<WeddingWebsiteScreen />} />
+        <Route path="/website"       element={<WeddingWebsiteScreen onOpenAgent={onOpenAgent} />} />
         <Route path="/notifications" element={<NotificationsScreen />} />
         <Route path="/profile"       element={<ProfileScreen onSignOut={onSignOut} />} />
       </Routes>

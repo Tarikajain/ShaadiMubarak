@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
-import { familyStats, wedding } from '../data/mockData'
+import { familyStats } from '../data/mockData'
+import { useWeddingProfile } from '../hooks/useWeddingProfile'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25,0.1,0.25,1] } } }
@@ -13,6 +14,7 @@ const statCards = [
 ]
 
 export default function FamilyScreen() {
+  const wp = useWeddingProfile()
   const isOnTrack = familyStats.overallStatus === 'on_track'
   return (
     <div className="relative flex flex-col h-full" style={{ background: '#FFFBF5' }}>
@@ -21,7 +23,7 @@ export default function FamilyScreen() {
         <motion.div className="flex flex-col gap-7 px-5 pt-5 pb-8" variants={container} initial="hidden" animate="show">
           <motion.div variants={item} className="flex flex-col gap-2 mt-3 text-center">
             <h1 className="font-cormorant italic" style={{ fontSize: '40px', color: '#1A1410', fontWeight: 500, lineHeight: 1.05, margin: 0, letterSpacing: '-0.02em', textAlign: 'center' }}>
-              {wedding.couple.bride}'s Wedding
+              {wp.bride}'s Wedding
             </h1>
             <p className="font-work-sans" style={{ fontSize: '16px', fontWeight: 400, color: isOnTrack ? 'rgba(26,20,16,0.52)' : '#B03A10', margin: 0 }}>
               {familyStats.message}
@@ -60,8 +62,8 @@ export default function FamilyScreen() {
           </motion.div>
 
           <motion.div variants={item} className="glass-card text-center" style={{ padding: '18px' }}>
-            <p className="font-cormorant italic" style={{ fontSize: '18px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', margin: '0 0 4px', textAlign: 'center' }}>{wedding.venue}</p>
-            <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: 0 }}>{wedding.date}</p>
+            <p className="font-cormorant italic" style={{ fontSize: '18px', fontWeight: 400, color: 'rgba(26,20,16,0.65)', margin: '0 0 4px', textAlign: 'center' }}>{wp.venue}</p>
+            <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.50)', margin: 0 }}>{wp.date}</p>
           </motion.div>
 
           <motion.p variants={item} className="text-center font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(26,20,16,0.2)', letterSpacing: '0.1em', marginTop: '8px' }}>

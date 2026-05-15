@@ -53,12 +53,12 @@ function FilterDropdown({ label, value, options, onChange }) {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -6, scale: 0.95 }}
+            initial={{ opacity: 0, y: -4, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.95 }}
+            exit={{ opacity: 0, y: -4, scale: 0.96 }}
             transition={{ duration: 0.14 }}
             style={{
-              position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 90,
+              position: 'absolute', top: 'calc(100% + 2px)', left: 0, zIndex: 90,
               background: '#FFFBF5', borderRadius: 12, border: '1px solid rgba(0,0,0,0.09)',
               boxShadow: '0 6px 24px rgba(0,0,0,0.13)', minWidth: 150, overflow: 'hidden',
             }}>
@@ -83,7 +83,7 @@ function FilterDropdown({ label, value, options, onChange }) {
   )
 }
 
-const WEDDING_PEOPLE = [
+export const WEDDING_PEOPLE = [
   { id: 'bride',     name: 'Ananya', role: 'Bride',           initials: 'An', color: '#7A0F46', bg: 'rgba(122,15,70,0.10)' },
   { id: 'groom',     name: 'Rahul',  role: 'Groom',           initials: 'Ra', color: '#1A3A6B', bg: 'rgba(26,58,107,0.10)' },
   { id: 'bride_mom', name: 'Priya',  role: "Bride's Mom",     initials: 'Pr', color: '#2D6025', bg: 'rgba(45,96,37,0.10)'  },
@@ -119,7 +119,6 @@ export function TaskDetailDrawer({ task, onClose, onEdit, onUpdateAssignees }) {
   const cat = taskCategories[task.category] || taskCategories.vendors
   const pri = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium
   const [showAssignPicker, setShowAssignPicker] = useState(false)
-  const assignPickerRef = useRef(null)
   const assignees = (task.assignees || []).map(id => WEDDING_PEOPLE.find(p => p.id === id)).filter(Boolean)
   const showSuggestedVendors = task.category === 'venue' || task.title?.toLowerCase().includes('decorator') || task.title?.toLowerCase().includes('decor')
 
@@ -131,25 +130,17 @@ export function TaskDetailDrawer({ task, onClose, onEdit, onUpdateAssignees }) {
     onUpdateAssignees(task.id, next)
   }
 
-  // Close picker on outside click
-  useEffect(() => {
-    if (!showAssignPicker) return
-    const handler = (e) => { if (!assignPickerRef.current?.contains(e.target)) setShowAssignPicker(false) }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [showAssignPicker])
-
   const mapsUrl = task.location ? `https://maps.google.com/?q=${encodeURIComponent(task.location)}` : null
 
   return (
     <>
       <motion.div key="td-bd" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.55)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.55)', zIndex: 420 }} />
       <motion.div key="td-sh"
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 360, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, maxHeight: '90%', overflowY: 'auto' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, maxHeight: '90%', overflowY: 'auto' }}
       >
         {/* ── Cover image ── */}
         <div style={{ position: 'relative', height: 172, flexShrink: 0, overflow: 'hidden', borderRadius: '22px 22px 0 0' }}>
@@ -220,54 +211,81 @@ export function TaskDetailDrawer({ task, onClose, onEdit, onUpdateAssignees }) {
             </div>
           )}
 
-          {/* ── Assigned to — upward multi-select dropdown ── */}
-          <div style={{ marginBottom: 20, position: 'relative' }} ref={assignPickerRef}>
+          {/* ── Assigned to — inline-expanding panel (avoids overflow clipping) ── */}
+          <div style={{ marginBottom: 20 }}>
             <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>
               Assigned to {assignees.length > 0 ? `· ${assignees.length}` : ''}
             </p>
 
-            {/* Tap area — shows pills + placeholder */}
+            {/* Trigger field — pills + chevron */}
             <button
               onClick={() => setShowAssignPicker(v => !v)}
               className="w-full text-left"
-              style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', minHeight: 44, padding: '8px 12px', borderRadius: 12, border: showAssignPicker ? '1px solid rgba(122,15,70,0.35)' : '1px solid rgba(0,0,0,0.09)', background: showAssignPicker ? 'rgba(122,15,70,0.03)' : 'rgba(0,0,0,0.02)', cursor: 'pointer', transition: 'all 0.15s' }}>
+              style={{
+                display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
+                minHeight: 44, padding: '8px 12px',
+                borderRadius: showAssignPicker ? '12px 12px 0 0' : '12px',
+                border: showAssignPicker ? '1px solid rgba(122,15,70,0.35)' : '1px solid rgba(0,0,0,0.09)',
+                borderBottom: showAssignPicker ? '1px solid rgba(122,15,70,0.12)' : '1px solid rgba(0,0,0,0.09)',
+                background: showAssignPicker ? 'rgba(122,15,70,0.03)' : 'rgba(0,0,0,0.02)',
+                cursor: 'pointer', transition: 'border-radius 0.15s, border 0.15s, background 0.15s',
+              }}>
               {assignees.length === 0 && (
                 <span className="font-work-sans flex items-center gap-1.5" style={{ fontSize: '12px', color: 'rgba(26,20,16,0.40)' }}>
                   <Users size={13} color="rgba(26,20,16,0.28)" /> Tap to assign family members…
                 </span>
               )}
               {assignees.map(p => (
-                <span key={p.id} className="font-work-sans flex items-center gap-1"
+                <span key={p.id} className="font-work-sans"
                   style={{ background: p.bg, border: `1px solid ${p.color}40`, borderRadius: 99, padding: '3px 8px 3px 5px', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ width: 16, height: 16, borderRadius: '50%', background: p.color, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '7px', fontWeight: 700, color: '#FFF', flexShrink: 0 }}>{p.initials}</span>
                   <span style={{ fontSize: '11px', fontWeight: 500, color: p.color }}>{p.name}</span>
                 </span>
               ))}
               <span style={{ marginLeft: 'auto', flexShrink: 0 }}>
-                <ChevronDown size={13} color="rgba(26,20,16,0.30)" style={{ transform: showAssignPicker ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                <ChevronDown size={13} color="rgba(26,20,16,0.30)"
+                  style={{ transform: showAssignPicker ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </span>
             </button>
 
-            {/* Upward dropdown — 0px gap, flush against the field */}
+            {/* Inline expanding panel — no overflow clipping ── */}
             <AnimatePresence>
               {showAssignPicker && (
                 <motion.div
-                  initial={{ opacity: 0, y: 6, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                  transition={{ duration: 0.14 }}
-                  style={{ position: 'absolute', bottom: '100%', left: 0, right: 0, zIndex: 10, background: '#FFFBF5', borderRadius: '14px 14px 0 0', border: '1px solid rgba(0,0,0,0.10)', borderBottom: 'none', boxShadow: '0 -8px 32px rgba(0,0,0,0.12)', overflow: 'hidden' }}>
-                  <div style={{ padding: '10px 8px 0' }}>
-                    <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.10em', textTransform: 'uppercase', padding: '2px 8px 8px' }}>Select family members</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18, ease: [0.25, 0.1, 0.25, 1] }}
+                  style={{ overflow: 'hidden' }}>
+                  <div style={{
+                    background: 'rgba(122,15,70,0.02)',
+                    border: '1px solid rgba(122,15,70,0.22)',
+                    borderTop: 'none',
+                    borderRadius: '0 0 12px 12px',
+                    padding: '10px 10px 12px',
+                  }}>
+                    <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(26,20,16,0.38)', letterSpacing: '0.10em', textTransform: 'uppercase', margin: '0 0 8px 2px' }}>
+                      Select family members
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                       {WEDDING_PEOPLE.map(p => {
                         const isAssigned = (task.assignees || []).includes(p.id)
                         return (
                           <button key={p.id} onClick={() => toggleAssignee(p.id)}
                             className="flex items-center gap-2 font-work-sans"
-                            style={{ padding: '8px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: isAssigned ? `1.5px solid ${p.color}44` : '1px solid rgba(0,0,0,0.06)', background: isAssigned ? p.bg : 'rgba(0,0,0,0.015)', transition: 'all 0.12s' }}>
-                            {/* Checkbox */}
-                            <div style={{ width: 16, height: 16, borderRadius: 4, flexShrink: 0, border: isAssigned ? `2px solid ${p.color}` : '1.5px solid rgba(26,20,16,0.22)', background: isAssigned ? p.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.12s' }}>
+                            style={{
+                              padding: '8px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                              border: isAssigned ? `1.5px solid ${p.color}55` : '1px solid rgba(0,0,0,0.08)',
+                              background: isAssigned ? p.bg : 'rgba(255,255,255,0.70)',
+                              transition: 'all 0.12s',
+                            }}>
+                            <div style={{
+                              width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                              border: isAssigned ? `2px solid ${p.color}` : '1.5px solid rgba(26,20,16,0.22)',
+                              background: isAssigned ? p.color : 'transparent',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              transition: 'all 0.12s',
+                            }}>
                               {isAssigned && <Check size={9} color="#FFF" strokeWidth={3} />}
                             </div>
                             <div style={{ minWidth: 0, flex: 1 }}>
@@ -377,17 +395,17 @@ export function TaskDetailDrawer({ task, onClose, onEdit, onUpdateAssignees }) {
 }
 
 // ── Date picker mini-modal ────────────────────────────────────────────────────
-function DatePickerModal({ task, onClose, onSave }) {
+export function DatePickerModal({ task, onClose, onSave }) {
   const [date, setDate] = useState(task.dueDate || '')
   return (
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 420 }} />
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 400, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 36px' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 36px' }}
       >
         <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 20px' }} />
         <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 500, color: '#1A1410', margin: '0 0 4px', textAlign: 'center' }}>Set due date</p>
@@ -418,7 +436,7 @@ function DatePickerModal({ task, onClose, onSave }) {
 }
 
 // ── Task tile ─────────────────────────────────────────────────────────────────
-function TaskTile({ task, onToggle, onSetDue, onEdit, onDetail, compact = false }) {
+export function TaskTile({ task, onToggle, onSetDue, onEdit, onDetail, compact = false }) {
   const cat = taskCategories[task.category] || taskCategories.vendors
   const dueLabel = task.dueDate ? formatDue(task.dueDate) : 'No date'
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.done
@@ -609,11 +627,11 @@ function AddTaskSheet({ onClose, onAdd }) {
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 420 }} />
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 36px' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 36px' }}
       >
         <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 18px' }} />
         <div className="flex items-center justify-between" style={{ marginBottom: 18 }}>
@@ -709,11 +727,11 @@ function EditTaskSheet({ task, onClose, onSave }) {
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.4)', zIndex: 420 }} />
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 36px' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 36px' }}
       >
         <div style={{ width: 36, height: 4, background: 'rgba(0,0,0,0.1)', borderRadius: 99, margin: '0 auto 18px' }} />
         <div className="flex items-center justify-between" style={{ marginBottom: 18 }}>

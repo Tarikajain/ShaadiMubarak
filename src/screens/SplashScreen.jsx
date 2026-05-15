@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { preloadSVG, injectIllustrationSVG } from '../utils/svgPreloader'
+import LogoMark from '../components/layout/LogoMark'
 
 const MAGENTA = '#7A0F46'
 const BRAND_DURATION = 2600
@@ -103,6 +104,11 @@ export default function SplashScreen({ onComplete }) {
           gap: 12,
         }}
       >
+        {/* Couple silhouette logo above brand title */}
+        <div style={{ marginBottom: 8 }}>
+          <LogoMark bare={true} light={true} width={64} height={72} />
+        </div>
+
         {/* layoutId wrapper stays clean; inner span carries the cinematic animation */}
         <motion.span layoutId="brand-title" className="font-cormorant"
           style={{ fontSize: '40px', color: '#FFFFFF', fontWeight: 700, textTransform: 'uppercase', lineHeight: 1, letterSpacing: '0.12em', textAlign: 'center' }}

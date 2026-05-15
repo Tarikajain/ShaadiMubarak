@@ -9,6 +9,7 @@ import {
 import StatusBar from '../components/layout/StatusBar'
 import BottomNav from '../components/layout/BottomNav'
 import { wedding } from '../data/mockData'
+import { useWeddingProfile } from '../hooks/useWeddingProfile'
 import {
   getMemories, deleteMemory, clearMemories,
   isMemoryEnabled, setMemoryEnabled,
@@ -25,10 +26,10 @@ function Sheet({ onClose, children }) {
     <>
       <motion.div key="backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 320 }} />
+        style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.50)', zIndex: 420 }} />
       <motion.div key="sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={sheetSpring}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 321, padding: '20px 20px 44px', maxHeight: '88%', overflowY: 'auto' }}>
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#FFFBF5', borderRadius: '22px 22px 0 0', zIndex: 421, padding: '20px 20px 44px', maxHeight: '88%', overflowY: 'auto' }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.1)', margin: '0 auto 22px' }} />
         {children}
       </motion.div>
@@ -52,7 +53,8 @@ function Toggle({ value, onChange }) {
 
 // ── Personal Details Sheet ────────────────────────────────────────
 function PersonalDetailsSheet({ onClose }) {
-  const [name,  setName]  = useState(`${wedding.couple.bride} Sharma`)
+  const wp = useWeddingProfile()
+  const [name,  setName]  = useState(`${wp.bride} Sharma`)
   const [email, setEmail] = useState('tarika.jain@gmail.com')
   const [phone, setPhone] = useState('+91 98765 43210')
   const [saved, setSaved] = useState(false)
@@ -71,7 +73,7 @@ function PersonalDetailsSheet({ onClose }) {
       <div className="flex flex-col items-center" style={{ marginBottom: 24 }}>
         <div style={{ position: 'relative', width: 72, height: 72 }}>
           <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(122,15,70,0.3)' }}>
-            <span className="font-cormorant italic" style={{ fontSize: '28px', color: '#FFF', fontWeight: 400 }}>{wedding.couple.bride[0]}</span>
+            <span className="font-cormorant italic" style={{ fontSize: '28px', color: '#FFF', fontWeight: 400 }}>{wp.bride[0]}</span>
           </div>
           <button style={{ position: 'absolute', bottom: 0, right: 0, width: 26, height: 26, borderRadius: '50%', background: '#FFFBF5', border: '2px solid #FFFBF5', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', cursor: 'pointer' }}>
             <Camera size={12} color="rgba(26,20,16,0.6)" />
@@ -484,6 +486,7 @@ function MemorySheet({ onClose }) {
 
 // ── Home Screen Widget Sheet ──────────────────────────────────────
 function WidgetSheet({ onClose }) {
+  const wp = useWeddingProfile()
   const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent)
   const isAndroid = /android/i.test(navigator.userAgent)
   const platform  = isIOS ? 'ios' : isAndroid ? 'android' : 'desktop'
@@ -510,7 +513,7 @@ function WidgetSheet({ onClose }) {
       {/* Widget preview */}
       <div style={{ borderRadius: 18, background: 'linear-gradient(145deg, #7A0F46 0%, #5C0B35 100%)', padding: '18px 20px 20px', marginBottom: 24, boxShadow: '0 8px 28px rgba(122,15,70,0.28)' }}>
         <p className="font-cormorant italic" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', margin: '0 0 2px', letterSpacing: '0.02em' }}>ShaadiMubarak.ai</p>
-        <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF', margin: '0 0 10px', letterSpacing: '-0.01em' }}>{wedding.couple.bride} &amp; {wedding.couple.groom}</p>
+        <p className="font-cormorant italic" style={{ fontSize: '22px', fontWeight: 700, color: '#FFFFFF', margin: '0 0 10px', letterSpacing: '-0.01em' }}>{wp.bride} &amp; {wp.groom}</p>
         <div className="flex items-end justify-between">
           <div>
             <p className="font-work-sans" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', margin: '0 0 2px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Next ceremony</p>
@@ -555,6 +558,7 @@ function WidgetSheet({ onClose }) {
 // ── Main ─────────────────────────────────────────────────────────
 export default function ProfileScreen({ onSignOut }) {
   const navigate = useNavigate()
+  const wp = useWeddingProfile()
   const [activeSheet, setActiveSheet] = useState(null)
 
   const [memoryCount, setMemoryCount] = useState(() => getMemories().length)
@@ -616,10 +620,10 @@ export default function ProfileScreen({ onSignOut }) {
           {/* Avatar + name */}
           <motion.div variants={item} className="glass-card flex items-center gap-4" style={{ padding: '20px' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg, #7A0F46, #5C0B35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 16px rgba(122,15,70,0.30)' }}>
-              <span className="font-cormorant italic" style={{ fontSize: '22px', color: '#FFF', fontWeight: 400 }}>{wedding.couple.bride[0]}</span>
+              <span className="font-cormorant italic" style={{ fontSize: '22px', color: '#FFF', fontWeight: 400 }}>{wp.bride[0]}</span>
             </div>
             <div>
-              <p className="font-work-sans" style={{ fontSize: '16px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>{wedding.couple.bride} Sharma</p>
+              <p className="font-work-sans" style={{ fontSize: '16px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px' }}>{wp.bride} Sharma</p>
               <p className="font-work-sans" style={{ fontSize: '12px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>tarika.jain@gmail.com</p>
             </div>
           </motion.div>
@@ -629,8 +633,8 @@ export default function ProfileScreen({ onSignOut }) {
             <p className="font-work-sans" style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(26,20,16,0.50)', letterSpacing: '0.14em', margin: '0 0 12px' }}>YOUR WEDDING</p>
             <div className="flex items-center gap-3">
               <div style={{ flex: 1 }}>
-                <p className="font-cormorant italic" style={{ fontSize: '20px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', letterSpacing: '-0.01em' }}>{wedding.couple.bride} &amp; {wedding.couple.groom}</p>
-                <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>{wedding.venue} · {wedding.date}</p>
+                <p className="font-cormorant italic" style={{ fontSize: '20px', fontWeight: 500, color: '#1A1410', margin: '0 0 2px', letterSpacing: '-0.01em' }}>{wp.bride} &amp; {wp.groom}</p>
+                <p className="font-work-sans" style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(26,20,16,0.62)', margin: 0 }}>{wp.venue} · {wp.date}</p>
               </div>
               <span className="font-work-sans" style={{ fontSize: '11px', fontWeight: 500, border: '1px solid rgba(122,15,70,0.30)', color: '#7A0F46', padding: '4px 12px', borderRadius: '99px', background: 'rgba(122,15,70,0.07)', flexShrink: 0 }}>
                 {wedding.daysAway}d
