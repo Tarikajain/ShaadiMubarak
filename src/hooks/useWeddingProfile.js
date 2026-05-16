@@ -10,10 +10,11 @@ import { getWeddingProfile } from '../utils/profileUtils'
 function buildProfile() {
   const stored = getWeddingProfile()
   return {
-    bride:  stored?.bride    || wedding.couple.bride,
+    bride:  stored?.name     || stored?.bride  || wedding.couple.bride,
     groom:  stored?.partner  || wedding.couple.groom,
     date:   stored?.date     || wedding.date,
-    venue:  stored?.location || wedding.venue,
+    venue:  stored?.location || stored?.city   || wedding.venue,
+    city:   stored?.city     || 'Udaipur',
     theme:  stored?.theme    || null,
     budget: stored?.budget   || null,
   }

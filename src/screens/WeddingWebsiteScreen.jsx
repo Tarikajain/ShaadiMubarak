@@ -43,8 +43,13 @@ function Toggle({ enabled, onChange }) {
 /* ─────────────────────────────────────────────────────────
    Full-screen interactive website preview
    ───────────────────────────────────────────────────────── */
+function formatWeddingDate(dateStr) {
+  if (!dateStr) return 'DECEMBER 19, 2026'
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()
+}
+
 function StoryTab({ t, wp }) {
-  const weddingDate = new Date('2026-12-19')
+  const weddingDate = wp.date ? new Date(wp.date + 'T12:00:00') : new Date('2026-12-19T12:00:00')
   const diff = weddingDate - new Date()
   const days = Math.max(0, Math.floor(diff / 86400000))
   const hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000))
@@ -62,7 +67,7 @@ function StoryTab({ t, wp }) {
           </div>
           <div style={{ height: 1, width: 36, background: 'rgba(255,255,255,0.45)', margin: '0 auto 8px' }} />
           <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 9, letterSpacing: '0.14em', color: 'rgba(255,255,255,0.78)', textTransform: 'uppercase' }}>
-            DECEMBER 19, 2026 · UDAIPUR
+            {formatWeddingDate(wp.date)} · {(wp.city || 'UDAIPUR').toUpperCase()}
           </div>
         </div>
       </div>
@@ -82,7 +87,7 @@ function StoryTab({ t, wp }) {
       {/* Invitation */}
       <div style={{ padding: '22px 24px 6px', textAlign: 'center' }}>
         <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 14, fontStyle: 'italic', color: 'rgba(26,20,16,0.65)', lineHeight: 1.9, margin: 0 }}>
-          Join us as we begin our forever — Dec 19 at {wp.venue}
+          Join us as we begin our forever — {wp.date ? new Date(wp.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Dec 19'} at {wp.venue}
         </p>
       </div>
 
@@ -312,7 +317,7 @@ function SetupSheet({ published, setPublished, sections, toggleSection, theme, s
    ───────────────────────────────────────────────────────── */
 function MiniPreviewCard({ theme, wp, onClick }) {
   const t = THEMES.find(t2 => t2.id === theme) || THEMES[0]
-  const weddingDate = new Date('2026-12-19')
+  const weddingDate = wp.date ? new Date(wp.date + 'T12:00:00') : new Date('2026-12-19T12:00:00')
   const diff = weddingDate - new Date()
   const days = Math.max(0, Math.floor(diff / 86400000))
   const hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000))
@@ -362,7 +367,7 @@ function MiniPreviewCard({ theme, wp, onClick }) {
                 </div>
                 <div style={{ height: 1, width: 28, background: 'rgba(255,255,255,0.45)', marginBottom: 7 }} />
                 <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 8, letterSpacing: '0.13em', color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' }}>
-                  DECEMBER 19, 2026 · UDAIPUR
+                  {formatWeddingDate(wp.date)} · {(wp.city || 'UDAIPUR').toUpperCase()}
                 </div>
               </div>
 
@@ -381,7 +386,7 @@ function MiniPreviewCard({ theme, wp, onClick }) {
           {/* Invite blurb */}
           <div style={{ padding: '14px 18px 16px', textAlign: 'center', background: 'white', borderBottom: `1px solid ${t.accent}10` }}>
             <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 11, fontStyle: 'italic', color: 'rgba(26,20,16,0.6)', margin: 0, lineHeight: 1.7 }}>
-              Join us as we begin our forever — Dec 19 at {wp.venue}
+              Join us as we begin our forever — {wp.date ? new Date(wp.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Dec 19'} at {wp.venue}
             </p>
           </div>
         </div>

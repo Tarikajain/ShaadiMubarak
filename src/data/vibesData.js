@@ -3,7 +3,7 @@ export const VIBES = [
     id: 'royal-rajasthan',
     name: 'Royal Rajasthan',
     desc: 'Forts, marigolds, sand & regal grandeur',
-    img: 'https://images.unsplash.com/photo-1777707462540-45cb64753591?w=500&h=680&fit=crop&q=80',
+    img: '/images/jaipurwedding.jpg',
     gradient: 'linear-gradient(to top, rgba(90,25,10,0.92) 0%, rgba(140,55,20,0.55) 55%, rgba(0,0,0,0.15) 100%)',
   },
   {
@@ -24,7 +24,7 @@ export const VIBES = [
     id: 'south-indian-traditional',
     name: 'South Indian Traditional',
     desc: 'Silk, banana leaves, temple grandeur',
-    img: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=500&h=680&fit=crop&q=80',
+    img: '/images/south-indian-traditional.jpg',
     gradient: 'linear-gradient(to top, rgba(100,35,10,0.92) 0%, rgba(150,70,20,0.50) 55%, rgba(0,0,0,0.12) 100%)',
   },
   {

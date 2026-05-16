@@ -251,7 +251,7 @@ function GoogleSheetsModal({ onClose, onConnect, connected, lastSync }) {
 const WEBSITE_TEMPLATES = [
   {
     id: 'meera',  name: 'Traditional',
-    image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=400&h=260&q=75',
+    image: '/images/jaipurwedding.jpg',
     accent: '#7A0F46', accentBg: 'rgba(122,15,70,0.08)',
   },
   {
@@ -281,6 +281,16 @@ const INVITE_TEMPLATES = [
 // ─── Website live-preview mockup ─────────────────────────────────
 function WebsitePreviewMock({ templateId }) {
   const t = WEBSITE_TEMPLATES.find(t => t.id === templateId) || WEBSITE_TEMPLATES[0]
+  const wp = useWeddingProfile()
+  const brideInitial = (wp.bride || 'A')[0].toUpperCase()
+  const groomInitial = (wp.groom || 'R')[0].toUpperCase()
+  const urlSlug = `${(wp.bride || 'ananya').toLowerCase()}-${(wp.groom || 'rahul').toLowerCase()}.wedding`
+  const weddingDate = wp.date ? new Date(wp.date + 'T12:00:00') : new Date('2026-12-19T12:00:00')
+  const dateDisplay = weddingDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · ' + (wp.city || 'Udaipur').toUpperCase()
+  const diff = weddingDate - new Date()
+  const countdown = diff > 0
+    ? (() => { const m = Math.floor(diff/60000); return [[String(Math.floor(m/60/24)), 'Days'], [String(Math.floor(m/60)%24), 'Hrs'], [String(m%60), 'Min']] })()
+    : [['0', 'Days'], ['0', 'Hrs'], ['0', 'Min']]
   return (
     <div style={{ width: '100%', height: '100%', background: '#fff', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Mock browser chrome */}
@@ -291,12 +301,12 @@ function WebsitePreviewMock({ templateId }) {
           <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#28C840' }} />
         </div>
         <div style={{ flex: 1, height: 14, borderRadius: 4, background: 'rgba(0,0,0,0.08)', marginLeft: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 7.5, color: 'rgba(0,0,0,0.38)', fontFamily: 'Inter, sans-serif', letterSpacing: '0.02em' }}>ananya-rahul.wedding</span>
+          <span style={{ fontSize: 7.5, color: 'rgba(0,0,0,0.38)', fontFamily: 'Inter, sans-serif', letterSpacing: '0.02em' }}>{urlSlug}</span>
         </div>
       </div>
       {/* Website nav */}
       <div style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', borderBottom: '1px solid rgba(0,0,0,0.06)', flexShrink: 0 }}>
-        <span style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 13, fontWeight: 600, color: t.accent, letterSpacing: '0.02em' }}>A &amp; R</span>
+        <span style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 13, fontWeight: 600, color: t.accent, letterSpacing: '0.02em' }}>{brideInitial} &amp; {groomInitial}</span>
         <div style={{ display: 'flex', gap: 14 }}>
           {['Story', 'Events', 'Photos', 'RSVP'].map(n => (
             <span key={n} style={{ fontSize: 8, fontFamily: 'Inter, sans-serif', color: 'rgba(0,0,0,0.42)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>{n}</span>
@@ -309,13 +319,13 @@ function WebsitePreviewMock({ templateId }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.62) 100%)' }} />
         {/* Couple names */}
         <div style={{ position: 'absolute', top: '28%', left: 0, right: 0, textAlign: 'center', padding: '0 20px' }}>
-          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 32, fontWeight: 500, color: '#fff', margin: '0 0 6px', lineHeight: 1.1, letterSpacing: '-0.01em' }}>Ananya &amp; Rahul</p>
+          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 32, fontWeight: 500, color: '#fff', margin: '0 0 6px', lineHeight: 1.1, letterSpacing: '-0.01em' }}>{wp.bride} &amp; {wp.groom}</p>
           <div style={{ width: 36, height: 1, background: 'rgba(255,255,255,0.5)', margin: '0 auto 10px' }} />
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.82)', letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>December 19, 2026 · Udaipur</p>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.82)', letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>{dateDisplay}</p>
         </div>
         {/* Countdown */}
         <div style={{ position: 'absolute', bottom: 20, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 24 }}>
-          {[['218', 'Days'], ['14', 'Hrs'], ['32', 'Min']].map(([n, l]) => (
+          {countdown.map(([n, l]) => (
             <div key={l} style={{ textAlign: 'center' }}>
               <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 26, fontWeight: 600, color: '#fff', margin: 0, lineHeight: 1 }}>{n}</p>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 7.5, color: 'rgba(255,255,255,0.65)', margin: '3px 0 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{l}</p>
@@ -402,6 +412,7 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
   const [connected, setConnected] = useState(!!initialConfig?.url)
   const carouselRef = useRef(null)
 
+  const wp = useWeddingProfile()
   // Hero image: use the profile vibe image (or default)
   const _profile = getWeddingProfile()
   const _vibe = VIBES.find(v => v.id === _profile?.vibe) || DEFAULT_VIBE
@@ -450,7 +461,7 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
           )}
         </div>
         {/* Action buttons */}
-        <div style={{ flexShrink: 0, padding: '12px 20px 0', borderTop: '1px solid rgba(0,0,0,0.06)', background: '#FFFBF5' }}>
+        <div style={{ flexShrink: 0, padding: '12px 20px 80px', borderTop: '1px solid rgba(0,0,0,0.06)', background: '#FFFBF5' }}>
           {/* Secondary row: Change setup + Edit */}
           <div style={{ display: 'flex', gap: 9, marginBottom: 9 }}>
             <button
@@ -473,7 +484,7 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
               window.open(url, '_blank')
             }}
             className="font-montserrat w-full flex items-center justify-center gap-2"
-            style={{ padding: '15px', borderRadius: '14px', background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', fontSize: '13px', fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase', border: 'none', marginBottom: 80 }}>
+            style={{ padding: '15px', borderRadius: '14px', background: 'linear-gradient(135deg, #7A0F46 0%, #5C0B35 100%)', boxShadow: '0 6px 20px rgba(122,15,70,0.28)', fontSize: '13px', fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase', border: 'none' }}>
             Preview live site →
           </button>
         </div>
@@ -545,9 +556,9 @@ function WeddingWebsiteSetupScreen({ onClose, onSave, onOpenAgent, initialConfig
                 <span className="font-work-sans" style={{ fontSize: '12px', fontWeight: 500, color: '#FFFBF5' }}>Guests</span>
               </button>
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px 28px 32px', textAlign: 'center' }}>
-                <p className="font-cormorant italic" style={{ fontSize: '34px', fontWeight: 500, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.01em', lineHeight: 1.1 }}>Ananya &amp; Rahul</p>
+                <p className="font-cormorant italic" style={{ fontSize: '34px', fontWeight: 500, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.01em', lineHeight: 1.1 }}>{wp.bride} &amp; {wp.groom}</p>
                 <div style={{ width: 32, height: 1, background: 'rgba(255,255,255,0.45)', margin: '0 auto 10px' }} />
-                <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(255,255,255,0.70)', letterSpacing: '0.14em', textTransform: 'uppercase', margin: 0 }}>December 19, 2026 · Udaipur</p>
+                <p className="font-work-sans" style={{ fontSize: '10px', fontWeight: 400, color: 'rgba(255,255,255,0.70)', letterSpacing: '0.14em', textTransform: 'uppercase', margin: 0 }}>{wp.date ? new Date(wp.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'December 19, 2026'} · {(wp.city || 'Udaipur').toUpperCase()}</p>
               </div>
             </div>
             {/* Mode choice tiles — horizontal, equal weight */}
@@ -1516,7 +1527,7 @@ export default function GuestsScreen({ guests: guestsProp, setGuests: setGuestsP
   const [importBanner, setImportBanner]   = useState(null)
   const [contactsStatus, setContactsStatus] = useState('idle')
 
-  const anyOverlayOpen = showWebsiteChoice || showWebsiteSetup || showImport || showGoogleSheets || !!selectedGuest
+  const anyOverlayOpen = showWebsiteChoice || showImport || showGoogleSheets || !!selectedGuest
   useEffect(() => {
     window.dispatchEvent(new Event(anyOverlayOpen ? 'sm_overlay_open' : 'sm_overlay_close'))
     return () => { window.dispatchEvent(new Event('sm_overlay_close')) }
